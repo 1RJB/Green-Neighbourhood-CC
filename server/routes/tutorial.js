@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { User, Tutorial } = require('../models');
 const { Op } = require("sequelize");
-const { validateToken } = require('../middlewares/auth');
 const yup = require("yup");
+const { validateToken } = require('../middlewares/auth');
 
 router.post("/", validateToken, async (req, res) => {
     let data = req.body;
@@ -102,12 +102,19 @@ router.put("/:id", validateToken, async (req, res) => {
     }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
     // Check id not found
     let tutorial = await Tutorial.findByPk(id);
     if (!tutorial) {
         res.sendStatus(404);
+        return;
+    }
+
+    // Check request user id
+    let userId = req.user.id;
+    if (tutorial.userId != userId) {
+        res.sendStatus(403);
         return;
     }
 
