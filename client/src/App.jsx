@@ -3,9 +3,9 @@ import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/materi
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import Tutorials from './pages/Tutorials';
-import AddTutorial from './pages/AddTutorial';
-import EditTutorial from './pages/EditTutorial';
+import Events from './pages/Events';
+import AddEvent from './pages/AddEvent';
+import EditEvent from './pages/EditEvent';
 import MyForm from './pages/MyForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -31,10 +31,10 @@ function App() {
             <Toolbar disableGutters={true}>
               <Link to="/">
                 <Typography variant="h6" component="div">
-                  Learning
+                  Green Neighbourhood CC
                 </Typography>
               </Link>
-              <Link to="/tutorials" ><Typography>Tutorials</Typography></Link>
+              <Link to="/Events" ><Typography>Events</Typography></Link>
               <Box sx={{ flexGrow: 1 }}></Box>
               {user && (
                 <>
@@ -55,10 +55,10 @@ function App() {
 
         <Container>
           <Routes>
-            <Route path={"/"} element={<Tutorials />} />
-            <Route path={"/tutorials"} element={<Tutorials />} />
-            <Route path={"/addtutorial"} element={<AddTutorial />} />
-            <Route path={"/edittutorial/:id"} element={<EditTutorial />} />
+            <Route path={"/"} element={<Events />} />
+            <Route path={"/Events"} element={<Events />} />
+            <Route path={"/addEvent"} element={<AddEvent />} />
+            <Route path={"/editEvent/:id"} element={<EditEvent />} />
             <Route path={"/form"} element={<MyForm />} />
             <Route path={"/register"} element={<Register />} />
             <Route path={"/login"} element={<Login />} />

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Tutorial } = require('../models');
+const { User, Event } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
@@ -16,7 +16,7 @@ router.post("/", validateToken, async (req, res) => {
     try {
         data = await validationSchema.validate(data,
             { abortEarly: false });
-        let result = await Tutorial.create(data);
+        let result = await Event.create(data);
         res.json(result);
     }
     catch (err) {
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
     // You can add condition for other columns here
     // e.g. condition.columnName = value;
 
-    let list = await Tutorial.findAll({
+    let list = await Event.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
         include: { model: User, as: "user", attributes: ['name'] }
@@ -46,29 +46,29 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
-    let tutorial = await Tutorial.findByPk(id, {
+    let Event = await Event.findByPk(id, {
         include: { model: User, as: "user", attributes: ['name'] }
     });
     // Check id not found
-    if (!tutorial) {
+    if (!Event) {
         res.sendStatus(404);
         return;
     }
-    res.json(tutorial);
+    res.json(Event);
 });
 
 router.put("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
     // Check id not found
-    let tutorial = await Tutorial.findByPk(id);
-    if (!tutorial) {
+    let Event = await Event.findByPk(id);
+    if (!Event) {
         res.sendStatus(404);
         return;
     }
 
     // Check request user id
     let userId = req.user.id;
-    if (tutorial.userId != userId) {
+    if (Event.userId != userId) {
         res.sendStatus(403);
         return;
     }
@@ -83,17 +83,17 @@ router.put("/:id", validateToken, async (req, res) => {
         data = await validationSchema.validate(data,
             { abortEarly: false });
 
-        let num = await Tutorial.update(data, {
+        let num = await Event.update(data, {
             where: { id: id }
         });
         if (num == 1) {
             res.json({
-                message: "Tutorial was updated successfully."
+                message: "Event was updated successfully."
             });
         }
         else {
             res.status(400).json({
-                message: `Cannot update tutorial with id ${id}.`
+                message: `Cannot update Event with id ${id}.`
             });
         }
     }
@@ -105,30 +105,30 @@ router.put("/:id", validateToken, async (req, res) => {
 router.delete("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
     // Check id not found
-    let tutorial = await Tutorial.findByPk(id);
-    if (!tutorial) {
+    let Event = await Event.findByPk(id);
+    if (!Event) {
         res.sendStatus(404);
         return;
     }
 
     // Check request user id
     let userId = req.user.id;
-    if (tutorial.userId != userId) {
+    if (Event.userId != userId) {
         res.sendStatus(403);
         return;
     }
 
-    let num = await Tutorial.destroy({
+    let num = await Event.destroy({
         where: { id: id }
     })
     if (num == 1) {
         res.json({
-            message: "Tutorial was deleted successfully."
+            message: "Event was deleted successfully."
         });
     }
     else {
         res.status(400).json({
-            message: `Cannot delete tutorial with id ${id}.`
+            message: `Cannot delete Event with id ${id}.`
         });
     }
 });

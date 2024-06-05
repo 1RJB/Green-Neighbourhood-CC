@@ -6,49 +6,49 @@ import http from '../http';
 import dayjs from 'dayjs';
 import global from '../global';
 
-function Tutorials() {
-    const [tutorialList, setTutorialList] = useState([]);
+function Events() {
+    const [EventList, setEventList] = useState([]);
     const [search, setSearch] = useState('');
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
     };
 
-    const getTutorials = () => {
-        http.get('/tutorial').then((res) => {
-            setTutorialList(res.data);
+    const getEvents = () => {
+        http.get('/Event').then((res) => {
+            setEventList(res.data);
         });
     };
 
-    const searchTutorials = () => {
-        http.get(`/tutorial?search=${search}`).then((res) => {
-            setTutorialList(res.data);
+    const searchEvents = () => {
+        http.get(`/Event?search=${search}`).then((res) => {
+            setEventList(res.data);
         });
     };
 
     useEffect(() => {
-        getTutorials();
+        getEvents();
     }, []);
 
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
-            searchTutorials();
+            searchEvents();
         }
     };
 
     const onClickSearch = () => {
-        searchTutorials();
+        searchEvents();
     }
 
     const onClickClear = () => {
         setSearch('');
-        getTutorials();
+        getEvents();
     };
 
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Tutorials
+                Events
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -64,7 +64,7 @@ function Tutorials() {
                     <Clear />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
-                <Link to="/addtutorial" style={{ textDecoration: 'none' }}>
+                <Link to="/addEvent" style={{ textDecoration: 'none' }}>
                     <Button variant='contained'>
                         Add
                     </Button>
@@ -73,16 +73,16 @@ function Tutorials() {
 
             <Grid container spacing={2}>
                 {
-                    tutorialList.map((tutorial, i) => {
+                    EventList.map((Event, i) => {
                         return (
-                            <Grid item xs={12} md={6} lg={4} key={tutorial.id}>
+                            <Grid item xs={12} md={6} lg={4} key={Event.id}>
                                 <Card>
                                     <CardContent>
                                         <Box sx={{ display: 'flex', mb: 1 }}>
                                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                                                {tutorial.title}
+                                                {Event.title}
                                             </Typography>
-                                            <Link to={`/edittutorial/${tutorial.id}`}>
+                                            <Link to={`/editEvent/${Event.id}`}>
                                                 <IconButton color="primary" sx={{ padding: '4px' }}>
                                                     <Edit />
                                                 </IconButton>
@@ -92,11 +92,11 @@ function Tutorials() {
                                             color="text.secondary">
                                             <AccessTime sx={{ mr: 1 }} />
                                             <Typography>
-                                                {dayjs(tutorial.createdAt).format(global.datetimeFormat)}
+                                                {dayjs(Event.createdAt).format(global.datetimeFormat)}
                                             </Typography>
                                         </Box>
                                         <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                                            {tutorial.description}
+                                            {Event.description}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -109,4 +109,4 @@ function Tutorials() {
     );
 }
 
-export default Tutorials;
+export default Events;

@@ -16,8 +16,8 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-const tutorialRoute = require('./routes/tutorial');
-app.use("/tutorial", tutorialRoute);
+const EventRoute = require('./routes/Event');
+app.use("/Event", EventRoute);
 const userRoute = require('./routes/user');
 app.use("/user", userRoute);
 
@@ -26,7 +26,7 @@ db.sequelize.sync({ alter: true })
     .then(() => {
         let port = process.env.APP_PORT;
         app.listen(port, () => {
-            console.log(`⚡ Sever running on http://localhost:${port}`);
+            console.log(`⚡ Server running on http://localhost:${port}`);
         });
     })
     .catch((err) => {

@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Tutorial = sequelize.define("Tutorial", {
+    const Event = sequelize.define("Event", {
         title: {
             type: DataTypes.STRING(100),
             allowNull: false
@@ -9,15 +9,15 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     }, {
-        tableName: 'tutorials'
+        tableName: 'Events'
     });
 
-    Tutorial.associate = (models) => {
-        Tutorial.belongsTo(models.User, {
+    Event.associate = (models) => {
+        Event.belongsTo(models.User, {
             foreignKey: "userId",
             as: 'user'
         });
     };
 
-    return Tutorial;
+    return Event;
 }

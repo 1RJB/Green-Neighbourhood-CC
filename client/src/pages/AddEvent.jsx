@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../http';
 
-function AddTutorial() {
+function AddEvent() {
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -26,10 +26,10 @@ function AddTutorial() {
         onSubmit: (data) => {
             data.title = data.title.trim();
             data.description = data.description.trim();
-            http.post("/tutorial", data)
+            http.post("/Event", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/tutorials");
+                    navigate("/Events");
                 });
         }
     });
@@ -37,7 +37,7 @@ function AddTutorial() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Add Tutorial
+                Add Event
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit}>
                 <TextField
@@ -71,4 +71,4 @@ function AddTutorial() {
     );
 }
 
-export default AddTutorial;
+export default AddEvent;

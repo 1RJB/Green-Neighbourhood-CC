@@ -6,25 +6,25 @@ import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-function EditTutorial() {
+function EditEvent() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [tutorial, setTutorial] = useState({
+    const [Event, setEvent] = useState({
         title: "",
         description: ""
     });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        http.get(`/tutorial/${id}`).then((res) => {
-            setTutorial(res.data);
+        http.get(`/Event/${id}`).then((res) => {
+            setEvent(res.data);
             setLoading(false);
         });
     }, []);
 
     const formik = useFormik({
-        initialValues: tutorial,
+        initialValues: Event,
         enableReinitialize: true,
         validationSchema: yup.object({
             title: yup.string().trim()
@@ -39,10 +39,10 @@ function EditTutorial() {
         onSubmit: (data) => {
             data.title = data.title.trim();
             data.description = data.description.trim();
-            http.put(`/tutorial/${id}`, data)
+            http.put(`/Event/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/tutorials");
+                    navigate("/Events");
                 });
         }
     });
@@ -57,18 +57,18 @@ function EditTutorial() {
         setOpen(false);
     };
 
-    const deleteTutorial = () => {
-        http.delete(`/tutorial/${id}`)
+    const deleteEvent = () => {
+        http.delete(`/Event/${id}`)
             .then((res) => {
                 console.log(res.data);
-                navigate("/tutorials");
+                navigate("/Events");
             });
     }
 
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Edit Tutorial
+                Edit Event
             </Typography>
             {
                 !loading && (
@@ -109,11 +109,11 @@ function EditTutorial() {
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>
-                    Delete Tutorial
+                    Delete Event
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete this tutorial?
+                        Are you sure you want to delete this Event?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -122,7 +122,7 @@ function EditTutorial() {
                         Cancel
                     </Button>
                     <Button variant="contained" color="error"
-                        onClick={deleteTutorial}>
+                        onClick={deleteEvent}>
                         Delete
                     </Button>
                 </DialogActions>
@@ -131,4 +131,4 @@ function EditTutorial() {
     );
 }
 
-export default EditTutorial;
+export default EditEvent;
