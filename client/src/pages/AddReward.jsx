@@ -18,9 +18,9 @@ function AddReward() {
         },
         validationSchema: yup.object({
             title: yup.string().trim()
-                .min(3, 'Title must be at least 3 characters')
-                .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
+                .min(3, 'Reward title must be at least 3 characters')
+                .max(100, 'Reward title must be at most 100 characters')
+                .required('Reward title is required'),
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
