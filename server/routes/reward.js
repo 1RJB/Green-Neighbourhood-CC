@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { User, Reward } = require('../models');
+const { Staff, Reward } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 
 router.post("/", validateToken, async (req, res) => {
     let data = req.body;
-    data.userId = req.user.id;
+    data.staffId = req.staff.id;
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100).required(),
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
     let list = await Reward.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
-        include: { model: User, as: "user", attributes: ['name'] }
+        include: { model: Staff, as: "staff", attributes: ['name'] }
     });
     res.json(list);
 });
@@ -53,7 +53,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let reward = await Reward.findByPk(id, {
-        include: { model: User, as: "user", attributes: ['name'] }
+        include: { model: Staff, as: "staff", attributes: ['name'] }
     });
     // Check id not found
     if (!reward) {
@@ -72,9 +72,9 @@ router.put("/:id", validateToken, async (req, res) => {
         return;
     }
 
-    // Check request user id
-    let userId = req.user.id;
-    if (reward.userId != userId) {
+    // Check request staff id
+    let staffId = req.staff.id;
+    if (reward.staffId != staffId) {
         res.sendStatus(403);
         return;
     }
@@ -120,9 +120,9 @@ router.delete("/:id", validateToken, async (req, res) => {
         return;
     }
 
-    // Check request user id
-    let userId = req.user.id;
-    if (reward.userId != userId) {
+    // Check request staff id
+    let staffId = req.staff.id;
+    if (reward.staffId != staffId) {
         res.sendStatus(403);
         return;
     }

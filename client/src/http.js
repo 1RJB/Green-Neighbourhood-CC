@@ -11,8 +11,8 @@ instance.interceptors.request.use(function (config) {
     if (accessToken) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    if (config.data && config.data.user) {
-        delete config.data.user;
+    if (config.data && config.data.staff) {
+        delete config.data.staff;
     }
     return config;
 }, function (error) {

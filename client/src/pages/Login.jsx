@@ -6,11 +6,11 @@ import * as yup from 'yup';
 import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from '../contexts/UserContext';
+import StaffContext from '../contexts/StaffContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { setStaff } = useContext(StaffContext);
 
     const formik = useFormik({
         initialValues: {
@@ -30,10 +30,10 @@ function Login() {
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/user/login", data)
+            http.post("/staff/login", data)
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
-                    setUser(res.data.user);
+                    setStaff(res.data.staff);
                     navigate("/");
                 })
                 .catch(function (err) {

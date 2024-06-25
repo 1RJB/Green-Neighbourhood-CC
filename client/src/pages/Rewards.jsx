@@ -4,13 +4,13 @@ import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } f
 import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Grain } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
-import UserContext from '../contexts/UserContext';
+import StaffContext from '../contexts/StaffContext';
 import global from '../global';
 
 function Rewards() {
     const [rewardList, setRewardList] = useState([]);
     const [search, setSearch] = useState('');
-    const { user } = useContext(UserContext);
+    const { staff } = useContext(StaffContext);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -67,7 +67,7 @@ function Rewards() {
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
                 {
-                    user && (
+                    staff && (
                         <Link to="/addreward">
                             <Button variant='contained'>
                                 Add
@@ -98,7 +98,7 @@ function Rewards() {
                                                 {reward.title}
                                             </Typography>
                                             {
-                                                user && user.id === reward.userId && (
+                                                staff && staff.id === reward.staffId && (
                                                     <Link to={`/editreward/${reward.id}`}>
                                                         <IconButton color="primary" sx={{ padding: '4px' }}>
                                                             <Edit />
@@ -111,7 +111,7 @@ function Rewards() {
                                             color="text.secondary">
                                             <AccountCircle sx={{ mr: 1 }} />
                                             <Typography>
-                                                {reward.user?.name}
+                                                {reward.staff?.name}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}

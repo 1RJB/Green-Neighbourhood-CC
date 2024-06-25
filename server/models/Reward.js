@@ -28,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Reward.associate = (models) => {
-        Reward.belongsTo(models.User, {
-            foreignKey: "userId",
-            as: 'user'
+        Reward.belongsTo(models.Staff, {
+            foreignKey: "staffId",
+            as: 'staff'
         });
     };
 

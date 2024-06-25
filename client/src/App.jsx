@@ -11,15 +11,15 @@ import MyForm from './pages/MyForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import http from './http';
-import UserContext from './contexts/UserContext';
+import StaffContext from './contexts/StaffContext';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [staff, setStaff] = useState(null);
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      http.get('/user/auth').then((res) => {
-        setUser(res.data.user);
+      http.get('/staff/auth').then((res) => {
+        setStaff(res.data.staff);
       });
     }
   }, []);
@@ -30,7 +30,7 @@ function App() {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <StaffContext.Provider value={{ staff, setStaff }}>
       <Router>
         <ThemeProvider theme={MyTheme}>
           <AppBar position="static" className="AppBar">
@@ -41,14 +41,14 @@ function App() {
                 </Link>
                 <Link to="/rewards" ><Typography>Rewards</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
-                {user && (
+                {staff && (
                   <>
-                    <Typography>{user.name}</Typography>
+                    <Typography>{staff.name}</Typography>
                     <Button onClick={logout}>Logout</Button>
                   </>
                 )
                 }
-                {!user && (
+                {!staff && (
                   <>
                     <Link to="/register" ><Typography>Register</Typography></Link>
                     <Link to="/login" ><Typography>Login</Typography></Link>
@@ -71,7 +71,7 @@ function App() {
           </Container>
         </ThemeProvider>
       </Router>
-    </UserContext.Provider>
+    </StaffContext.Provider>
   );
 }
 

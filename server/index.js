@@ -20,8 +20,8 @@ app.get("/", (req, res) => {
 // Routes
 const rewardRoute = require('./routes/reward');
 app.use("/reward", rewardRoute);
-const userRoute = require('./routes/user');
-app.use("/user", userRoute);
+const staffRoute = require('./routes/staff');
+app.use("/staff", staffRoute);
 const fileRoute = require('./routes/file');
 app.use("/file", fileRoute);
 
