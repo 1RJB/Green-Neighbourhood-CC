@@ -37,9 +37,7 @@ function App() {
             <Container>
               <Toolbar disableGutters={true}>
                 <Link to="/">
-                  <Typography variant="h6" component="div">
-                    Green Neighbourhood
-                  </Typography>
+                <img src="greenhood.jpg" alt="Green Neighbourhood" width='80'/> 
                 </Link>
                 <Link to="/rewards" ><Typography>Rewards</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
