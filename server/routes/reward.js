@@ -11,7 +11,10 @@ router.post("/", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100).required(),
-        description: yup.string().trim().min(3).max(500).required()
+        description: yup.string().trim().min(3).max(500).required(),
+        startDate: yup.date().min(new Date()).required(),
+        endDate: yup.date().min(yup.ref('startDate')).required(),
+        points: yup.number().min(1).required()
     });
     try {
         data = await validationSchema.validate(data,
@@ -30,7 +33,10 @@ router.get("/", async (req, res) => {
     if (search) {
         condition[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
-            { description: { [Op.like]: `%${search}%` } }
+            { description: { [Op.like]: `%${search}%` } },
+            { startDate: { [Op.like]: `%${search}%` } },
+            { endDate: { [Op.like]: `%${search}%` } },
+            { points: { [Op.like]: `%${search}%` } }
         ];
     }
     // You can add condition for other columns here
@@ -77,7 +83,10 @@ router.put("/:id", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100),
-        description: yup.string().trim().min(3).max(500)
+        description: yup.string().trim().min(3).max(500),
+        startDate: yup.date().min(new Date()),
+        endDate: yup.date().min(yup.ref('startDate')),
+        points: yup.number().min(1)
     });
     try {
         data = await validationSchema.validate(data,

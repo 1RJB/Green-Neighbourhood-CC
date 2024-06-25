@@ -4,6 +4,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100),
             allowNull: false
         },
+        startDate: {
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        endDate: {
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        points: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         description: {
             type: DataTypes.TEXT,
             allowNull: false

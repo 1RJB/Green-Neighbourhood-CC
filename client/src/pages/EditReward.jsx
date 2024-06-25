@@ -10,11 +10,14 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function EditReward() {
     const { id } = useParams();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 4
 
     const [reward, setReward] = useState({
         title: "",
-        description: ""
+        description: "",
+        startDate: "",
+        endDate: "",
+        points: "",
     });
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -38,7 +41,16 @@ function EditReward() {
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
-                .required('Description is required')
+                .required('Description is required'),
+            startDate: yup.date()
+             .min(new Date(), 'Start date cannot be in the past or the current date')
+                .required('Start date is required'),
+            endDate: yup.date()
+                .min(yup.ref('startDate'), 'End date cannot be before start date')
+                .required('End date is required'),
+            points: yup.number()
+                .min(1, 'Points must be at least 1')
+                .required('Points are required')
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -75,8 +87,8 @@ function EditReward() {
     const onFileChange = (e) => {
         let file = e.target.files[0];
         if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
+            if (file.size > 10240 * 10240) {
+                toast.error('Maximum file size is 10MB');
                 return;
             }
 
@@ -126,6 +138,45 @@ function EditReward() {
                                     onBlur={formik.handleBlur}
                                     error={formik.touched.description && Boolean(formik.errors.description)}
                                     helperText={formik.touched.description && formik.errors.description}
+                                />
+                                <TextField
+                                    fullWidth margin="dense" autoComplete="off"
+                                    label="Start Date"
+                                    name="startDate"
+                                    type="date"
+                                    value={formik.values.startDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                                    helperText={formik.touched.startDate && formik.errors.startDate}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth margin="dense" autoComplete="off"
+                                    label="End Date"
+                                    name="endDate"
+                                    type="date"
+                                    value={formik.values.endDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                    helperText={formik.touched.endDate && formik.errors.endDate}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                                <TextField
+                                    fullWidth margin="dense" autoComplete="off"
+                                    label="Points"
+                                    name="points"
+                                    type="number"
+                                    value={formik.values.points}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.points && Boolean(formik.errors.points)}
+                                    helperText={formik.touched.points && formik.errors.points}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6} lg={4}>

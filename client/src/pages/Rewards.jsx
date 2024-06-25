@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Grain } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import UserContext from '../contexts/UserContext';
@@ -45,7 +45,7 @@ function Rewards() {
     const onClickClear = () => {
         setSearch('');
         getRewards();
-    };
+    }
 
     return (
         <Box>
@@ -119,6 +119,24 @@ function Rewards() {
                                             <AccessTime sx={{ mr: 1 }} />
                                             <Typography>
                                                 {dayjs(reward.createdAt).format(global.datetimeFormat)}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                            color="text.secondary">
+                                            <CalendarMonth sx={{ mr: 1 }} />
+                                            <Typography>
+                                                Start Date: {dayjs(reward.startDate).format("DD/MM/YYYY")}
+                                            </Typography>
+                                            <CalendarMonth sx={{ mr: 1 }} />
+                                            <Typography>
+                                                End Date: {dayjs(reward.endDate).format("DD/MM/YYYY")}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                            color="text.secondary">
+                                            <Grain sx={{ mr: 1 }} />
+                                            <Typography>
+                                                Points: {reward.points}
                                             </Typography>
                                         </Box>
                                         <Typography sx={{ whiteSpace: 'pre-wrap' }}>

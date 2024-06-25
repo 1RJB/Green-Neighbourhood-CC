@@ -20,8 +20,8 @@ function MyForm() {
 
     const formik = useFormik({
         initialValues: {
-            title: 'My title',
-            description: 'My description',
+            title: 'Reward title',
+            description: 'Reward description',
             price: 0,
             option: 'A',
             date: dayjs().add(1, 'day'),
@@ -63,8 +63,8 @@ function MyForm() {
     const onFileChange = (e) => {
         let file = e.target.files[0];
         if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
+            if (file.size > 10240 * 10240) {
+                toast.error('Maximum file size is 10MB');
                 return;
             }
 
