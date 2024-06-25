@@ -14,12 +14,12 @@ app.use(cors({
 
 // Simple Route
 app.get("/", (req, res) => {
-    res.send("Welcome to the learning space.");
+    res.send("Welcome to the Green Neighbourhood Rewards");
 });
 
 // Routes
-const tutorialRoute = require('./routes/tutorial');
-app.use("/tutorial", tutorialRoute);
+const rewardRoute = require('./routes/reward');
+app.use("/reward", rewardRoute);
 const userRoute = require('./routes/user');
 app.use("/user", userRoute);
 const fileRoute = require('./routes/file');
@@ -30,7 +30,7 @@ db.sequelize.sync({ alter: true })
     .then(() => {
         let port = process.env.APP_PORT;
         app.listen(port, () => {
-            console.log(`⚡ Sever running on http://localhost:${port}`);
+            console.log(`⚡ Server running on http://localhost:${port}`);
         });
     })
     .catch((err) => {
