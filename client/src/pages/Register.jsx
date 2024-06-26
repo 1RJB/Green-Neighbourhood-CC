@@ -29,9 +29,9 @@ function Register() {
                 .max(50, 'Email must be at most 50 characters')
                 .required('Email is required')
                 .matches(/^[A-Za-z0-9._%+-]+@greenneighbourhoodcc\.gov.sg$/,
-                                    "Email must be from Green Neighbourhood CC"),
-                
-                                
+                    "Email must be from Green Neighbourhood CC"),
+
+
             password: yup.string().trim()
                 .min(8, 'Password must be at least 8 characters')
                 .max(50, 'Password must be at most 50 characters')

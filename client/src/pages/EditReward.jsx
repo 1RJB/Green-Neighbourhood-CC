@@ -43,7 +43,7 @@ function EditReward() {
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
             startDate: yup.date()
-             .min(new Date(), 'Start date cannot be in the past or the current date')
+                .min(new Date(), 'Start date cannot be in the past or the current date')
                 .required('Start date is required'),
             endDate: yup.date()
                 .min(yup.ref('startDate'), 'End date cannot be before start date')
