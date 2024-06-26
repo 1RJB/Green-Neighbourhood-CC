@@ -1,4 +1,6 @@
+<p align="center">
 <img src="[https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true]" />
+</p>
 
 # Green Neighbourhood Community Center
 
