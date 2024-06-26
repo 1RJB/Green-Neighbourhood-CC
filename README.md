@@ -1,5 +1,5 @@
 <p align="center">
-![green-neighbourhood-cc logo](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)
+<img src="[http://some_place.com/image.png](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)" />
 </p>
 
 # Green Neighbourhood Community Center
