@@ -1,6 +1,6 @@
-<div align="center">
+
   ![alt text](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)
-</div>
+
 
 # Green Neighbourhood Community Center
 
