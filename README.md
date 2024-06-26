@@ -1,5 +1,5 @@
 <div align="center">
-![Green Neighbourhood Logo](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)
+![green neighbourhood logo](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)
 </div>
 
 # Green Neighbourhood Community Center
