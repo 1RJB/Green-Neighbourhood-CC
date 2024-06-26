@@ -1,3 +1,5 @@
+![alt text](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)
+
 # Green Neighbourhood Community Center
 
 ## Welcome!
