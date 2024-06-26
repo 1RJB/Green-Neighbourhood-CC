@@ -1,4 +1,4 @@
-<p align="center">
+<p align="center" width="100%">
 <img src="[http://some_place.com/image.png](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)" />
 </p>
 
