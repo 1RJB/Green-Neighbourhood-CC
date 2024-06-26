@@ -1,8 +1,4 @@
-<img  align="center" src="[http://some_place.com/image.png](https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true)" />
-
-<p align="center">
-  <img width="460" height="300" src="https://picsum.photos/460/300">
-</p>
+<img  align="center" src="[https://github.com/1RJB/Green-Neighbourhood-CC/blob/main/greenhood.jpg?raw=true]" />
 
 # Green Neighbourhood Community Center
 
