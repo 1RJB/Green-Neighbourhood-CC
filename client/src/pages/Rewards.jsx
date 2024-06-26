@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Grain } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, LightbulbCircle } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import StaffContext from '../contexts/StaffContext';
@@ -121,20 +121,20 @@ function Rewards() {
                                                 {dayjs(reward.createdAt).format(global.datetimeFormat)}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                        <Box sx={{ display: 'flex', alignItems: 'left', mb: 1 }}
                                             color="text.secondary">
                                             <CalendarMonth sx={{ mr: 1 }} />
-                                            <Typography>
+                                            <Typography sx={{ mr: 1 }}>
                                                 Start Date: {dayjs(reward.startDate).format("DD/MM/YYYY")}
                                             </Typography>
-                                            <CalendarMonth sx={{ mr: 1 }} />
+
                                             <Typography>
                                                 End Date: {dayjs(reward.endDate).format("DD/MM/YYYY")}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                                             color="text.secondary">
-                                            <Grain sx={{ mr: 1 }} />
+                                            <LightbulbCircle sx={{ mr: 1 }} />
                                             <Typography>
                                                 Points: {reward.points}
                                             </Typography>

@@ -27,13 +27,17 @@ function Register() {
             email: yup.string().trim()
                 .email('Enter a valid email')
                 .max(50, 'Email must be at most 50 characters')
-                .required('Email is required'),
+                .required('Email is required')
+                .matches(/^[A-Za-z0-9._%+-]+@greenneighbourhoodcc\.gov.sg$/,
+                                    "Email must be from Green Neighbourhood CC"),
+                
+                                
             password: yup.string().trim()
                 .min(8, 'Password must be at least 8 characters')
                 .max(50, 'Password must be at most 50 characters')
                 .required('Password is required')
-                .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-                    "Password at least 1 letter and 1 number"),
+                .matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/,
+                    "Password needs at least 1 letter, 1 number, and 1 special character"),
             confirmPassword: yup.string().trim()
                 .required('Confirm password is required')
                 .oneOf([yup.ref('password')], 'Passwords must match')

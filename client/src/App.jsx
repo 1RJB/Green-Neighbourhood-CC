@@ -39,7 +39,9 @@ function App() {
                 <Link to="/">
                 <img src="greenhood.jpg" alt="Green Neighbourhood" width='80'/> 
                 </Link>
-                <Link to="/rewards" ><Typography>Rewards</Typography></Link>
+                <Link to="/events" class='pages'><Typography>Events</Typography></Link>
+                <Link to="/volunteer" class='pages'><Typography>Volunteering</Typography></Link>
+                <Link to="/aboutus"  class='pages'><Typography>About Us</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
                 {staff && (
                   <>
