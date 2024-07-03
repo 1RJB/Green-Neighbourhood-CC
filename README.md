@@ -22,8 +22,11 @@ Motivate: Find inspiration, celebrate achievements, and support others on their 
 This project leverages a robust and scalable technology stack to deliver a dynamic and user-friendly experience:
 
 Frontend: React (https://react.dev/) for a responsive and interactive user interface.
+
 Backend: Node.js (https://nodejs.org/en) and Express (https://expressjs.com/) for server-side rendering and API development.
+
 Database: MongoDB (https://www.mysql.com/) for flexible and efficient data storage.
+
 Deployment: Not deployed/hosted. Might consider platforms like Heroku (https://www.heroku.com/), AWS (https://aws.amazon.com/), or Google Cloud Platform (https://cloud.google.com/) to host the application.
 
 ### Considerations
