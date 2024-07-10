@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../http';
@@ -16,7 +16,8 @@ function AddEvent() {
             title: "",
             description: "",
             eventDate: "",
-            eventTime: ""
+            eventTime: "",
+            category: ""  // Initialize category field
         },
         validationSchema: yup.object({
             title: yup.string().trim()
@@ -28,7 +29,8 @@ function AddEvent() {
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required'),
-            eventTime: yup.string().required('Event time is required')
+            eventTime: yup.string().required('Event time is required'),
+            category: yup.string().required('Category is required')  // Add validation for category
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -127,6 +129,29 @@ function AddEvent() {
                             error={formik.touched.eventTime && Boolean(formik.errors.eventTime)}
                             helperText={formik.touched.eventTime && formik.errors.eventTime}
                         />
+                        <FormControl fullWidth margin="dense" error={formik.touched.category && Boolean(formik.errors.category)}>
+                            <InputLabel id="category-label">Category</InputLabel>
+                            <Select
+                                labelId="category-label"
+                                id="category"
+                                name="category"
+                                value={formik.values.category}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                            >
+                                <MenuItem value="">Select a category</MenuItem>
+                                <MenuItem value="Sustainable">Sustainable</MenuItem>
+                                <MenuItem value="Sports">Sports</MenuItem>
+                                <MenuItem value="Community">Community</MenuItem>
+                                <MenuItem value="Workshop">Workshop</MenuItem>
+                                <MenuItem value="Other">Other</MenuItem>
+                            </Select>
+                            {formik.touched.category && formik.errors.category && (
+                                <Typography variant="caption" color="error">
+                                    {formik.errors.category}
+                                </Typography>
+                            )}
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
                         <Box sx={{ textAlign: 'center', mt: 2 }} >

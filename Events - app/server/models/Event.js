@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         eventTime: {
             type: DataTypes.TIME // Time without date
+        }, 
+        category: {
+            type: DataTypes.ENUM('Sustainable', 'Sports', 'Community', 'Workshop', 'Other'),
+            allowNull: false
         }
     }, {
         tableName: 'events'

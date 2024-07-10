@@ -5,50 +5,6 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/StaffAuth');
 
-// router.post("/", validateToken, async (req, res) => {
-//     let data = req.body;
-//     data.staffId = req.staff.id;
-//     // Validate request body
-//     let validationSchema = yup.object({
-//         title: yup.string().trim().min(3).max(100).required(),
-//         description: yup.string().trim().min(3).max(500).required(),
-
-//     });
-//     try {
-//         data = await validationSchema.validate(data,
-//             { abortEarly: false });
-//         // Process valid data   
-//         let result = await Event.create(data);
-//         res.json(result);
-//     }
-//     catch (err) {
-//         res.status(400).json({ errors: err.errors });
-//     }
-// });
-// Update your POST endpoint to handle eventDate and eventTime (event.js)
-
-// router.post("/", validateToken, async (req, res) => {
-//     let data = req.body;
-//     data.staffId = req.staff.id;
-//     // Validate request body
-//     let validationSchema = yup.object({
-//         title: yup.string().trim().min(3).max(100).required(),
-//         description: yup.string().trim().min(3).max(500).required(),
-//         eventDate: yup.date().required(),
-//         eventTime: yup.string().required()
-//     });
-//     try {
-//         data = await validationSchema.validate(data, { abortEarly: false });
-//         // Combine eventDate and eventTime into createdAt
-//         data.createdAt = new Date(data.eventDate + 'T' + data.eventTime + ':00');
-//         // Process valid data   
-//         let result = await Event.create(data);
-//         res.json(result);
-//     } catch (err) {
-//         res.status(400).json({ errors: err.errors });
-//     }
-// });
-
 router.post("/", validateToken, async (req, res) => {
     let data = req.body;
     console.log('Received data:', data); // Log received data from frontend

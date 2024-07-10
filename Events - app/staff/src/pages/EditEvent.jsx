@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import http from '../http';
 import { useFormik } from 'formik';
@@ -14,7 +14,8 @@ function EditEvent() {
         title: "",
         description: "",
         eventDate: "",
-        eventTime: ""
+        eventTime: "",
+        category: ""  // Initialize category field
     });
     const [loading, setLoading] = useState(true);
     const [imageFile, setImageFile] = useState("");
@@ -42,7 +43,8 @@ function EditEvent() {
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required'),
-            eventTime: yup.string().required('Event time is required')
+            eventTime: yup.string().required('Event time is required'),
+            category: yup.string().required('Category is required')  // Add validation for category
         }),
         onSubmit: (data) => {
             data.title = data.title.trim();
@@ -164,6 +166,29 @@ function EditEvent() {
                                     helperText={formik.touched.eventTime && formik.errors.eventTime}
                                     InputLabelProps={{ shrink: true }}
                                 />
+                                <FormControl fullWidth margin="dense" error={formik.touched.category && Boolean(formik.errors.category)}>
+                                    <InputLabel id="category-label">Category</InputLabel>
+                                    <Select
+                                        labelId="category-label"
+                                        id="category"
+                                        name="category"
+                                        value={formik.values.category}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                    >
+                                        <MenuItem value="">Select a category</MenuItem>
+                                        <MenuItem value="Sustainable">Sustainable</MenuItem>
+                                        <MenuItem value="Sports">Sports</MenuItem>
+                                        <MenuItem value="Community">Community</MenuItem>
+                                        <MenuItem value="Workshop">Workshop</MenuItem>
+                                        <MenuItem value="Other">Other</MenuItem>
+                                    </Select>
+                                    {formik.touched.category && formik.errors.category && (
+                                        <Typography variant="caption" color="error">
+                                            {formik.errors.category}
+                                        </Typography>
+                                    )}
+                                </FormControl>
                             </Grid>
                             <Grid item xs={12} md={6} lg={4}>
                                 <Box sx={{ textAlign: 'center', mt: 2 }} >
