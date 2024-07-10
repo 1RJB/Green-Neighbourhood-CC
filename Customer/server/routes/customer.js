@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { Staff } = require('../models');
+const { Customer } = require('../models');
 const yup = require("yup");
 const { sign } = require('jsonwebtoken');
 const { validateToken } = require('../middlewares/auth');
@@ -24,18 +24,18 @@ router.post("/register", async (req, res) => {
             { abortEarly: false });
 
         // Check email
-        let staff = await Staff.findOne({
+        let customer = await Customer.findOne({
             where: { email: data.email }
         });
-        if (staff) {
+        if (customer) {
             res.status(400).json({ message: "Email already exists." });
             return;
         }
 
         // Hash passowrd
         data.password = await bcrypt.hash(data.password, 10);
-        // Create staff
-        let result = await Staff.create(data);
+        // Create customer
+        let result = await Customer.create(data);
         res.json({
             message: `Email ${result.email} was registered successfully.`
         });
@@ -58,30 +58,30 @@ router.post("/login", async (req, res) => {
 
         // Check email and password
         let errorMsg = "Email or password is not correct.";
-        let staff = await Staff.findOne({
+        let customer = await Customer.findOne({
             where: { email: data.email }
         });
-        if (!staff) {
+        if (!customer) {
             res.status(400).json({ message: errorMsg });
             return;
         }
-        let match = await bcrypt.compare(data.password, staff.password);
+        let match = await bcrypt.compare(data.password, customer.password);
         if (!match) {
             res.status(400).json({ message: errorMsg });
             return;
         }
 
-        // Return staff info
-        let staffInfo = {
-            id: staff.id,
-            email: staff.email,
-            name: staff.name
+        // Return customer info
+        let customerInfo = {
+            id: customer.id,
+            email: customer.email,
+            name: customer.name
         };
-        let accessToken = sign(staffInfo, process.env.APP_SECRET,
+        let accessToken = sign(customerInfo, process.env.APP_SECRET,
             { expiresIn: process.env.TOKEN_EXPIRES_IN });
         res.json({
             accessToken: accessToken,
-            staff: staffInfo
+            customer: customerInfo
         });
     }
     catch (err) {
@@ -91,13 +91,13 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/auth", validateToken, (req, res) => {
-    let staffInfo = {
-        id: req.staff.id,
-        email: req.staff.email,
-        name: req.staff.name
+    let customerInfo = {
+        id: req.customer.id,
+        email: req.customer.email,
+        name: req.customer.name
     };
     res.json({
-        staff: staffInfo
+        customer: customerInfo
     });
 });
 

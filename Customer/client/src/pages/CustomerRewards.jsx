@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardActions, Button } from '@mui/material';
 import http from '../http';
 
-function UserRewards() {
+function CustomerRewards() {
     const [rewards, setRewards] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -41,4 +41,4 @@ function UserRewards() {
     );
 }
 
-export default UserRewards;
+export default CustomerRewards;

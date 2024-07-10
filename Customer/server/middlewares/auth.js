@@ -9,7 +9,7 @@ const validateToken = (req, res, next) => {
         }
 
         const payload = verify(accessToken, process.env.APP_SECRET);
-        req.staff = payload;
+        req.customer = payload;
         return next();
     }
     catch (err) {

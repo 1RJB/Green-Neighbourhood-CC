@@ -7,7 +7,7 @@ import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function UserLogin() {
+function CustomerLogin() {
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -26,7 +26,7 @@ function UserLogin() {
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/user/login", data)
+            http.post("/customer/login", data)
                 .then((res) => {
                     console.log(res.data);
                     navigate("/rewards");
@@ -45,7 +45,7 @@ function UserLogin() {
             alignItems: 'center'
         }}>
             <Typography variant="h5" sx={{ my: 2 }}>
-                User Login
+                Customer Login
             </Typography>
             <Box component="form" sx={{ maxWidth: '500px' }}
                 onSubmit={formik.handleSubmit}>
@@ -80,4 +80,4 @@ function UserLogin() {
     );
 }
 
-export default UserLogin;
+export default CustomerLogin;

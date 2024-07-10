@@ -4,20 +4,20 @@ import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/materi
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import UserRewards from './pages/UserRewards';
+import CustomerRewards from './pages/CustomerRewards';
 import RedeemReward from './pages/RedeemReward';
 import Register from './pages/Register';
-import UserLogin from './pages/UserLogin';
+import CustomerLogin from './pages/CustomerLogin';
 import http from './http';
-import StaffContext from './contexts/StaffContext';
+import CustomerContext from './contexts/CustomerContext';
 
 function App() {
-  const [staff, setStaff] = useState(null);
+  const [customer, setCustomer] = useState(null);
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      http.get('/staff/auth').then((res) => {
-        setStaff(res.data.staff);
+      http.get('/customer/auth').then((res) => {
+        setCustomer(res.data.customer);
       });
     }
   }, []);
@@ -28,7 +28,7 @@ function App() {
   };
 
   return (
-    <StaffContext.Provider value={{ staff, setStaff }}>
+    <CustomerContext.Provider value={{ customer, setCustomer }}>
       <Router>
         <ThemeProvider theme={MyTheme}>
           <AppBar position="static" className="AppBar">
@@ -39,14 +39,14 @@ function App() {
                 </Link>
                 <Link to="/rewards" ><Typography>Rewards</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
-                {staff && (
+                {customer && (
                   <>
-                    <Typography>{staff.name}</Typography>
+                    <Typography>{customer.name}</Typography>
                     <Button onClick={logout}>Logout</Button>
                   </>
                 )
                 }
-                {!staff && (
+                {!customer && (
                   <>
                     <Link to="/register" ><Typography>Register</Typography></Link>
                     <Link to="/login" ><Typography>Login</Typography></Link>
@@ -58,16 +58,16 @@ function App() {
 
           <Container>
             <Routes>
-              <Route path={"/"} element={<UserRewards />} />
-              <Route path={"/rewards"} element={<UserRewards />} />
+              <Route path={"/"} element={<CustomerRewards />} />
+              <Route path={"/rewards"} element={<CustomerRewards />} />
               <Route path={"/reward/redeem"} element={<RedeemReward />} />
               <Route path={"/register"} element={<Register />} />
-              <Route path={"/user/login"} element={<UserLogin />} />
+              <Route path={"/customer/login"} element={<CustomerLogin />} />
             </Routes>
           </Container>
         </ThemeProvider>
       </Router>
-    </StaffContext.Provider>
+    </CustomerContext.Provider>
   );
 }
 

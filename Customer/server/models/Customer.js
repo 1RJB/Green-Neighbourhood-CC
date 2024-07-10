@@ -1,27 +1,28 @@
 module.exports = (sequelize, DataTypes) => {
-    const Staff = sequelize.define("Staff", {
+    const Customer = sequelize.define("Customer", {
         name: {
             type: DataTypes.STRING(50),
             allowNull: false
         },
         email: {
             type: DataTypes.STRING(50),
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         password: {
             type: DataTypes.STRING(100),
             allowNull: false
         }
     }, {
-        tableName: 'staffs'
+        tableName: 'customers'
     });
 
-    Staff.associate = (models) => {
-        Staff.hasMany(models.Reward, {
-            foreignKey: "staffId",
+    Customer.associate = (models) => {
+        Customer.hasMany(models.Reward, {
+            foreignKey: "customerId",
             onDelete: "cascade"
         });
     };
 
-    return Staff;
+    return Customer;
 }

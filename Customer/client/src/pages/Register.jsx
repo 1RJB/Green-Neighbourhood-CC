@@ -42,7 +42,7 @@ function Register() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/staff/register", data)
+            http.post("/customer/register", data)
                 .then((res) => {
                     console.log(res.data);
                     navigate("/login");
