@@ -125,11 +125,11 @@ function Rewards() {
                                             color="text.secondary">
                                             <CalendarMonth sx={{ mr: 1 }} />
                                             <Typography sx={{ mr: 1 }}>
-                                                Start Date: {dayjs(reward.startDate).format("DD/MM/YYYY")}
+                                                Start Date: {dayjs(reward.startDate).format("DD-MM-YYYY")}
                                             </Typography>
 
                                             <Typography>
-                                                End Date: {dayjs(reward.endDate).format("DD/MM/YYYY")}
+                                                End Date: {dayjs(reward.endDate).format("DD-MM-YYYY")}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}

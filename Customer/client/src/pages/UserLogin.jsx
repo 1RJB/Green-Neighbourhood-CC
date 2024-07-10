@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -6,11 +6,9 @@ import * as yup from 'yup';
 import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import StaffContext from '../contexts/StaffContext';
 
-function Login() {
+function UserLogin() {
     const navigate = useNavigate();
-    const { setStaff } = useContext(StaffContext);
 
     const formik = useFormik({
         initialValues: {
@@ -20,24 +18,21 @@ function Login() {
         validationSchema: yup.object({
             email: yup.string().trim()
                 .email('Enter a valid email')
-                .max(50, 'Email must be at most 50 characters')
                 .required('Email is required'),
             password: yup.string().trim()
                 .min(8, 'Password must be at least 8 characters')
-                .max(50, 'Password must be at most 50 characters')
                 .required('Password is required')
         }),
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/staff/login", data)
+            http.post("/user/login", data)
                 .then((res) => {
-                    localStorage.setItem("accessToken", res.data.accessToken);
-                    setStaff(res.data.staff);
-                    navigate("/");
+                    console.log(res.data);
+                    navigate("/rewards");
                 })
                 .catch(function (err) {
-                    toast.error(`${err.response.data.message}`);
+                    toast.error('Invalid email or password');
                 });
         }
     });
@@ -50,7 +45,7 @@ function Login() {
             alignItems: 'center'
         }}>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Login
+                User Login
             </Typography>
             <Box component="form" sx={{ maxWidth: '500px' }}
                 onSubmit={formik.handleSubmit}>
@@ -85,4 +80,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default UserLogin;

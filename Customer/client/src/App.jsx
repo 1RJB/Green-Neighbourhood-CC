@@ -4,12 +4,10 @@ import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/materi
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
-import Rewards from './pages/Rewards';
-import AddReward from './pages/AddReward';
-import EditReward from './pages/EditReward';
-import MyForm from './pages/MyForm';
+import UserRewards from './pages/UserRewards';
+import RedeemReward from './pages/RedeemReward';
 import Register from './pages/Register';
-import Login from './pages/Login';
+import UserLogin from './pages/UserLogin';
 import http from './http';
 import StaffContext from './contexts/StaffContext';
 
@@ -60,13 +58,11 @@ function App() {
 
           <Container>
             <Routes>
-              <Route path={"/"} element={<Rewards />} />
-              <Route path={"/rewards"} element={<Rewards />} />
-              <Route path={"/addreward"} element={<AddReward />} />
-              <Route path={"/editreward/:id"} element={<EditReward />} />
+              <Route path={"/"} element={<UserRewards />} />
+              <Route path={"/rewards"} element={<UserRewards />} />
+              <Route path={"/reward/redeem"} element={<RedeemReward />} />
               <Route path={"/register"} element={<Register />} />
-              <Route path={"/login"} element={<Login />} />
-              <Route path={"/form"} element={<MyForm />} />
+              <Route path={"/user/login"} element={<UserLogin />} />
             </Routes>
           </Container>
         </ThemeProvider>
