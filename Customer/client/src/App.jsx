@@ -48,8 +48,8 @@ function App() {
                 }
                 {!customer && (
                   <>
-                    <Link to="/register" ><Typography>Register</Typography></Link>
-                    <Link to="/login" ><Typography>Login</Typography></Link>
+                    <Link to="/customer/register" ><Typography>Register</Typography></Link>
+                    <Link to="/customer/login" ><Typography>Login</Typography></Link>
                   </>
                 )}
               </Toolbar>
@@ -61,7 +61,7 @@ function App() {
               <Route path={"/"} element={<CustomerRewards />} />
               <Route path={"/rewards"} element={<CustomerRewards />} />
               <Route path={"/reward/redeem"} element={<RedeemReward />} />
-              <Route path={"/register"} element={<Register />} />
+              <Route path={"customer/register"} element={<Register />} />
               <Route path={"/customer/login"} element={<CustomerLogin />} />
             </Routes>
           </Container>

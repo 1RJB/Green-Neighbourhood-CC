@@ -45,7 +45,7 @@ function Register() {
             http.post("/customer/register", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/login");
+                    navigate("/customer/login");
                 })
                 .catch(function (err) {
                     toast.error(`${err.response.data.message}`);
