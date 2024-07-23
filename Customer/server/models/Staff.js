@@ -26,9 +26,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      usertype: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: "staff",
+      },
     },
     {
-      tableName: "staffs",
+      tableName: "users",
+      timestamps: true, // Example: to include timestamps for createdAt and updatedAt
     }
   );
   return Staff;

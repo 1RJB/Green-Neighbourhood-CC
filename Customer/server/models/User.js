@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      usertype: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: "user",
+      },
     },
     {
       tableName: "users",
