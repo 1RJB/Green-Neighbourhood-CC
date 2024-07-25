@@ -104,6 +104,7 @@ router.post("/login", async (req, res) => {
     id: user.id,
     email: user.email,
     name: user.firstName,
+    usertype: user.usertype // Include usertype
   };
   let accessToken = sign(userInfo, process.env.APP_SECRET, {
     expiresIn: process.env.TOKEN_EXPIRES_IN,
@@ -119,6 +120,7 @@ router.get("/auth", validateToken, (req, res) => {
     id: req.user.id,
     email: req.user.email,
     name: req.user.firstName,
+    usertype: req.user.usertype // Include usertype
   };
   res.json({
     user: userInfo,

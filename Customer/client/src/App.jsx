@@ -6,7 +6,7 @@ import { Container } from "react-bootstrap";
 import Header from "./header";
 import Register from './pages/Register';
 import Login from './pages/Login';
-import StaffRegister from './pages/staffRegister'; // Ensure the component name starts with an uppercase letter
+import StaffRegister from './pages/staffRegister';
 import UserContext from './contexts/UserContext';
 import http from './http';
 
@@ -18,7 +18,9 @@ function App() {
     if (localStorage.getItem("accessToken")) {
       http.get('/user/auth').then((res) => {
         setUser(res.data.user);
-        setUserType(res.data.userType);
+        setUserType(res.data.user.usertype); // Ensure usertype is fetched correctly
+      }).catch(error => {
+        console.error("Failed to fetch user data:", error);
       });
     }
   }, []);

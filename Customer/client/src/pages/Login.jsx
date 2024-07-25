@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useContext } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,7 @@ import UserContext from '../contexts/UserContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { setUser } = useContext(UserContext);
+    const { setUser, setUserType } = useContext(UserContext); // Add setUserType here
 
     const formik = useFormik({
         initialValues: {
@@ -34,6 +35,7 @@ function Login() {
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
                     setUser(res.data.user);
+                    setUserType(res.data.user.usertype); // Set userType here
                     navigate("/");
                 })
                 .catch(function (err) {
