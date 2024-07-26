@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -6,9 +6,11 @@ import * as yup from 'yup';
 import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CustomerContext from '../contexts/CustomerContext';
 
 function CustomerLogin() {
     const navigate = useNavigate();
+    const { setCustomer } = useContext(CustomerContext);
 
     const formik = useFormik({
         initialValues: {
@@ -28,11 +30,12 @@ function CustomerLogin() {
             data.password = data.password.trim();
             http.post("/customer/login", data)
                 .then((res) => {
-                    console.log(res.data);
-                    navigate("/rewards");
+                    localStorage.setItem("accessToken", res.data.accessToken);
+                    setCustomer(res.data.customer);
+                    navigate("/");
                 })
                 .catch(function (err) {
-                    toast.error('Invalid email or password');
+                    toast.error(`${err.response.data.message}`);
                 });
         }
     });
@@ -45,7 +48,7 @@ function CustomerLogin() {
             alignItems: 'center'
         }}>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Customer Login
+                Login
             </Typography>
             <Box component="form" sx={{ maxWidth: '500px' }}
                 onSubmit={formik.handleSubmit}>

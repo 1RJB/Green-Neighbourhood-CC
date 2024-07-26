@@ -1,16 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, LightbulbCircle } from '@mui/icons-material';
+import { Search, Clear, CalendarMonth, Star } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
-import StaffContext from '../contexts/CustomerContext';
-import global from '../global';
+import CustomerContext from '../contexts/CustomerContext';
 
 function Rewards() {
     const [rewardList, setRewardList] = useState([]);
     const [search, setSearch] = useState('');
-    const { staff } = useContext(StaffContext);
+    const { customer } = useContext(CustomerContext);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -67,10 +66,10 @@ function Rewards() {
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
                 {
-                    staff && (
-                        <Link to="/addreward">
+                    customer && (
+                        <Link to="/points-info">
                             <Button variant='contained'>
-                                Add
+                            My Points: {customer.points}
                             </Button>
                         </Link>
                     )
@@ -97,7 +96,7 @@ function Rewards() {
                                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                                 {reward.title}
                                             </Typography>
-                                            <LightbulbCircle sx={{ mr: 1 }}/>
+                                            <Star sx={{ mr: 1 }} color="primary" />
                                             <Typography>
                                                 Points: {reward.points}
                                             </Typography>

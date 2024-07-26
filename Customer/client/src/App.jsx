@@ -6,8 +6,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import CustomerRewards from './pages/CustomerRewards';
 import RedeemReward from './pages/RedeemReward';
-import Register from './pages/Register';
+import CustomerRegister from './pages/CustomerRegister';
 import CustomerLogin from './pages/CustomerLogin';
+import Points from './pages/PointsInfo';
 import http from './http';
 import CustomerContext from './contexts/CustomerContext';
 
@@ -61,8 +62,9 @@ function App() {
               <Route path={"/"} element={<CustomerRewards />} />
               <Route path={"/rewards"} element={<CustomerRewards />} />
               <Route path={"/reward/redeem"} element={<RedeemReward />} />
-              <Route path={"customer/register"} element={<Register />} />
+              <Route path={"/customer/register"} element={<CustomerRegister />} />
               <Route path={"/customer/login"} element={<CustomerLogin />} />
+              <Route path={"/points-info"} element={<Points />} />
             </Routes>
           </Container>
         </ThemeProvider>

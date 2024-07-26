@@ -30,8 +30,6 @@ function Register() {
                 .required('Email is required')
                 .matches(/^[A-Za-z0-9._%+-]+@greenneighbourhoodcc\.gov.sg$/,
                     "Email must be from Green Neighbourhood CC"),
-
-
             password: yup.string().trim()
                 .min(8, 'Password must be at least 8 characters')
                 .max(50, 'Password must be at most 50 characters')
@@ -46,7 +44,7 @@ function Register() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/staff/register", data)
+            http.post("/register", data)
                 .then((res) => {
                     console.log(res.data);
                     navigate("/login");

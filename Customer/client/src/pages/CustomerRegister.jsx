@@ -7,7 +7,7 @@ import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function Register() {
+function CustomerRegister() {
     const navigate = useNavigate();
 
     const formik = useFormik({
@@ -32,8 +32,8 @@ function Register() {
                 .min(8, 'Password must be at least 8 characters')
                 .max(50, 'Password must be at most 50 characters')
                 .required('Password is required')
-                .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-                    "Password at least 1 letter and 1 number"),
+                .matches(/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/,
+                    "Password needs at least 1 letter, 1 number, and 1 special character"),
             confirmPassword: yup.string().trim()
                 .required('Confirm password is required')
                 .oneOf([yup.ref('password')], 'Passwords must match')
@@ -116,4 +116,4 @@ function Register() {
     );
 }
 
-export default Register;
+export default CustomerRegister;

@@ -75,7 +75,8 @@ router.post("/login", async (req, res) => {
         let customerInfo = {
             id: customer.id,
             email: customer.email,
-            name: customer.name
+            name: customer.name,
+            points: customer.points
         };
         let accessToken = sign(customerInfo, process.env.APP_SECRET,
             { expiresIn: process.env.TOKEN_EXPIRES_IN });
@@ -94,7 +95,8 @@ router.get("/auth", validateToken, (req, res) => {
     let customerInfo = {
         id: req.customer.id,
         email: req.customer.email,
-        name: req.customer.name
+        name: req.customer.name,
+        points: req.customer.points
     };
     res.json({
         customer: customerInfo

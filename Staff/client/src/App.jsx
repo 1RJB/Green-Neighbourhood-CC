@@ -7,7 +7,6 @@ import MyTheme from './themes/MyTheme';
 import Rewards from './pages/Rewards';
 import AddReward from './pages/AddReward';
 import EditReward from './pages/EditReward';
-import MyForm from './pages/MyForm';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import http from './http';
@@ -18,7 +17,7 @@ function App() {
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      http.get('/staff/auth').then((res) => {
+      http.get('/auth').then((res) => {
         setStaff(res.data.staff);
       });
     }
@@ -39,9 +38,9 @@ function App() {
                 <Link to="/">
                   <img src="greenhood.jpg" alt="Green Neighbourhood" width='80' />
                 </Link>
-                <Link to="/events" class='pages'><Typography>Events</Typography></Link>
-                <Link to="/volunteer" class='pages'><Typography>Volunteering</Typography></Link>
-                <Link to="/aboutus" class='pages'><Typography>About Us</Typography></Link>
+                <Link to="/events" className='pages'><Typography>Events</Typography></Link>
+                <Link to="/volunteer" className='pages'><Typography>Volunteering</Typography></Link>
+                <Link to="/aboutus" className='pages'><Typography>About Us</Typography></Link>
                 <Box sx={{ flexGrow: 1 }}></Box>
                 {staff && (
                   <>
@@ -68,7 +67,6 @@ function App() {
               <Route path={"/editreward/:id"} element={<EditReward />} />
               <Route path={"/register"} element={<Register />} />
               <Route path={"/login"} element={<Login />} />
-              <Route path={"/form"} element={<MyForm />} />
             </Routes>
           </Container>
         </ThemeProvider>

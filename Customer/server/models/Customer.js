@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING(100),
             allowNull: false
+        },
+        points: {
+            type: DataTypes.INTEGER(),
+            allowNull: false
         }
     }, {
         tableName: 'customers'
