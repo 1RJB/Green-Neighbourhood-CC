@@ -1,7 +1,6 @@
-// src/Header.jsx
 import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Navbar, Nav, Button } from 'react-bootstrap';
+import { Container, Navbar, Nav, Dropdown } from 'react-bootstrap';
 import logo from './assets/logo.png';
 import './header.css';
 import UserContext from './contexts/UserContext';
@@ -22,34 +21,34 @@ const Header = () => {
   };
 
   const renderUserLinks = () => {
-    if (!user) {
-      return <Nav.Link as={Link} to="/login">Login</Nav.Link>;
-    }
+    if (user) {
+      if (userType === 'admin') {
+        return (
+          <>
+            <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
+          </>
+        );
+      }
 
-    if (userType === 'admin') {
+      if (userType === 'staff') {
+        return (
+          <>
+            <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
+            <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
+          </>
+        );
+      }
+
       return (
         <>
-          <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
-          <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
+          <Nav.Link as={Link} to="/user/profile">Profile</Nav.Link>
+          <Nav.Link as={Link} to="/user/settings">Settings</Nav.Link>
         </>
       );
     }
 
-    if (userType === 'staff') {
-      return (
-        <>
-          <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
-          <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <Nav.Link as={Link} to="/user/profile">Profile</Nav.Link>
-        <Nav.Link as={Link} to="/user/settings">Settings</Nav.Link>
-      </>
-    );
+    return <Nav.Link as={Link} to="/login">Login</Nav.Link>;
   };
 
   return (
@@ -75,14 +74,15 @@ const Header = () => {
             {renderUserLinks()}
           </Nav>
           {user && (
-            <Nav>
-              <Navbar.Text>
-                Signed in as: <span>{user.name} ({userType})</span>
-              </Navbar.Text>
-              <Button variant="outline-light" onClick={handleLogout}>
-                Logout
-              </Button>
-            </Nav>
+            <Dropdown alignRight>
+              <Dropdown.Toggle as="a" className="user-dropdown-toggle">
+                {user.name}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item>Settings</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           )}
         </Navbar.Collapse>
       </Container>
