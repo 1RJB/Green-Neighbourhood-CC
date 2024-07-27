@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "staff",
       },
+      pfp: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "../public/uploads/output.png",
+      },
     },
     {
       tableName: "users",

@@ -115,7 +115,7 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.get("/auth", validateToken, (req, res) => {
+router.get("/userauth", validateToken, (req, res) => {
   let userInfo = {
     id: req.user.id,
     email: req.user.email,

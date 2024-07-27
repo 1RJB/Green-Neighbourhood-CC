@@ -77,48 +77,12 @@ router.post("/staffregister", async (req, res) => {
   }
 });
 
-// router.post("/stafflogin", async (req, res) => {
-//   let data = req.body;
-//   // Validate request body
-//   let validationSchema = yup.object({
-//     email: yup.string().trim().lowercase().email().max(50).required(),
-//     password: yup.string().trim().min(8).max(50).required(),
-//   });
-//   // Check email and password
-//   let errorMsg = "Email or password is not correct.";
-//   let staff = await Staff.findOne({
-//     where: { email: data.email },
-//   });
-//   if (!staff) {
-//     res.status(400).json({ message: errorMsg });
-//     return;
-//   }
-//   let match = await bcrypt.compare(data.password, staff.password);
-//   if (!match) {
-//     res.status(400).json({ message: errorMsg });
-//     return;
-//   }
-
-//   // Return user info
-//   let staffInfo = {
-//     id: staff.id,
-//     email: staff.email,
-//     name: staff.firstName,
-//   };
-//   let accessToken = sign(staffInfo, process.env.APP_SECRET, {
-//     expiresIn: process.env.TOKEN_EXPIRES_IN,
-//   });
-//   res.json({
-//     accessToken: accessToken,
-//     staff: staffInfo,
-//   });
-// });
-
-router.get("/auth", validateToken, (req, res) => {
+router.get("/staffauth", validateToken, (req, res) => {
   let staffInfo = {
     id: req.staff.id,
     email: req.staff.email,
     name: req.staff.firstName,
+    usertype: user.usertype // Include usertype
   };
   res.json({
     staff: staffInfo,

@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import StaffRegister from './pages/staffRegister';
 import UserContext from './contexts/UserContext';
+import AdminRegister from "./pages/adminRegister";
 import http from './http';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/staffregister" element={<StaffRegister />} />
+            <Route path="/adminregister" element={<AdminRegister />} />
           </Routes>
         </Container>
       </Router>
