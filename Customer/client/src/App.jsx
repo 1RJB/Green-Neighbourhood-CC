@@ -10,6 +10,7 @@ import StaffRegister from './pages/staffRegister';
 import UserContext from './contexts/UserContext';
 import AdminRegister from "./pages/adminRegister";
 import http from './http';
+import ContactUs from "./pages/contactUs";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/staffregister" element={<StaffRegister />} />
             <Route path="/adminregister" element={<AdminRegister />} />
+            <Route path="/contactus" element={<ContactUs />} /> {/* Correct component usage */}
           </Routes>
         </Container>
       </Router>

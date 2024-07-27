@@ -72,6 +72,7 @@ const Header = () => {
             <Nav.Link as={Link} to="/register">Register</Nav.Link>
             <Nav.Link as={Link} to="/staffregister">Staff Register</Nav.Link>
             <Nav.Link as={Link} to="/adminregister">Admin Register</Nav.Link>
+            <Nav.Link as={Link} to="/contactUs">Contact Us</Nav.Link>
             {renderUserLinks()}
           </Nav>
           {user && (
