@@ -64,6 +64,31 @@ const ContactUs = () => {
   return (
     <Container>
       <Row className="justify-content-center">
+        <Col xs={12}>
+          <Box sx={{ marginBottom: 2 }}>
+            <Typography variant="h6">Grid 1 - Span 12</Typography>
+          </Box>
+        </Col>
+        <Col xs={6}>
+          <Box sx={{ marginBottom: 2 }}>
+            <Typography variant="h6">Grid 2 - Span 6</Typography>
+          </Box>
+        </Col>
+        <Col xs={6}>
+          <Box sx={{ marginBottom: 2 }}>
+            <Typography variant="h6">Grid 3 - Span 6</Typography>
+          </Box>
+        </Col>
+        <Col xs={12}>
+          <Box sx={{ marginBottom: 2 }}>
+            <Typography variant="h6">Grid 4 - Span 12</Typography>
+          </Box>
+        </Col>
+        <Col xs={12}>
+          <Box sx={{ marginBottom: 2 }}>
+            <Typography variant="h6">Grid 5 - Span 12</Typography>
+          </Box>
+        </Col>
         <Col xs={12} md={8}>
           <Box sx={{
             marginTop: 8,
