@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import emailjs from 'emailjs-com';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -30,30 +31,67 @@ const ContactUs = () => {
         .min(10, 'Message must be at least 10 characters')
         .required('Message is required')
     }),
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       if (!recaptchaToken) {
         toast.error('Please complete the reCAPTCHA');
         return;
       }
 
-      const templateParams = {
-        from_name: values.from_name,
-        to_name: 'Greenhood Support Team', // Replace with the actual recipient name
-        message: values.message,
-        reply_to: values.email,
-        'g-recaptcha-response': recaptchaToken,
-      };
-
-      emailjs.send('service_atajjxp', 'template_3b0ufsn', templateParams, 'YNOWo8S4upqxTO_Tk')
-        .then((response) => {
-          console.log('SUCCESS!', response.status, response.text);
-          toast.success('Message sent successfully!');
-          resetForm();
-          setRecaptchaToken(null); // Reset reCAPTCHA token
-        }, (error) => {
-          console.log('FAILED...', error);
-          toast.error('Failed to send message. Please try again later.');
+      try {
+        const verificationResponse = await axios.get('https://emailvalidation.abstractapi.com/v1/', {
+          params: {
+            api_key: '65d044f6de87409098723f0a50c4e123',  // Replace with your actual Abstract API key
+            email: values.email
+          }
         });
+        
+        const verificationData = verificationResponse.data;
+
+        console.log('Verification Data:', verificationData); // Debug log
+
+        if (!verificationData.is_valid_format.value) {
+          toast.error('Invalid email format');
+          return;
+        }
+
+        if (verificationData.is_disposable_email.value) {
+          toast.error('Disposable email addresses are not allowed');
+          return;
+        }
+
+        if (!verificationData.is_mx_found.value) {
+          toast.error('Email domain has no MX records');
+          return;
+        }
+
+        if (!verificationData.is_smtp_valid.value) {
+          toast.error('Please enter a valid email.');
+          return;
+        }
+
+        const templateParams = {
+          from_name: values.from_name,
+          to_name: 'Greenhood Support Team', // Replace with the actual recipient name
+          message: values.message,
+          reply_to: values.email,
+          'g-recaptcha-response': recaptchaToken,
+        };
+
+        emailjs.send('service_atajjxp', 'template_3b0ufsn', templateParams, 'YNOWo8S4upqxTO_Tk')
+          .then((response) => {
+            console.log('SUCCESS!', response.status, response.text);
+            toast.success('Message sent successfully!');
+            resetForm();
+            setRecaptchaToken(null); // Reset reCAPTCHA token
+          }, (error) => {
+            console.log('FAILED...', error);
+            toast.error('Failed to send message. Please try again later.');
+          });
+
+      } catch (error) {
+        console.error('Email verification failed', error);
+        toast.error('Email verification failed. Please try again later.');
+      }
     }
   });
 
