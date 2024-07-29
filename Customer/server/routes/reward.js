@@ -142,4 +142,36 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
 });
 
+router.post("/redeem/:id", validateToken, async (req, res) => {
+    const rewardId = req.params.id;
+    const customerId = req.customer.id;
+
+    try {
+        // Fetch reward details
+        const reward = await Reward.findByPk(rewardId);
+        if (!reward) {
+            return res.status(404).json({ error: "Reward not found" });
+        }
+
+        // Check if customer has enough points
+        const customer = await Customer.findByPk(customerId);
+        if (customer.points < reward.points) {
+            return res.status(400).json({ error: "Insufficient points" });
+        }
+
+        // Deduct points and record redemption
+        customer.points -= reward.points;
+        await customer.save();
+
+        const redemption = await Redemption.create({
+            customerId,
+            rewardId
+        });
+
+        res.json({ message: "Reward redeemed successfully", redemption });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to redeem reward", details: err.message });
+    }
+});
+
 module.exports = router;

@@ -30,7 +30,7 @@ instance.interceptors.response.use(function (response) {
     // Do something with response error
     if (error.response.status === 401 || error.response.status === 403) {
         localStorage.clear();
-        window.location = "/login";
+        window.location = "/staff/login";
     }
     return Promise.reject(error);
 });

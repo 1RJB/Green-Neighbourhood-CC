@@ -61,7 +61,7 @@ function App() {
             <Routes>
               <Route path={"/"} element={<CustomerRewards />} />
               <Route path={"/rewards"} element={<CustomerRewards />} />
-              <Route path={"/reward/redeem"} element={<RedeemReward />} />
+              <Route path={"/reward/redeem/:id"} element={<RedeemReward />} />
               <Route path={"/customer/register"} element={<CustomerRegister />} />
               <Route path={"/customer/login"} element={<CustomerLogin />} />
               <Route path={"/points-info"} element={<Points />} />

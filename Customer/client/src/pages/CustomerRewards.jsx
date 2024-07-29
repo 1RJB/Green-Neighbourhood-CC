@@ -81,6 +81,7 @@ function Rewards() {
                     rewardList.map((reward, i) => {
                         return (
                             <Grid item xs={12} md={6} lg={4} key={reward.id}>
+                                <Link to={`/reward/redeem/${reward.id}`} style={{ textDecoration: 'none' }}>
                                 <Card>
                                     {
                                         reward.imageFile && (
@@ -123,6 +124,7 @@ function Rewards() {
                                         </Typography>
                                     </CardContent>
                                 </Card>
+                                </Link>
                             </Grid>
                         );
                     })

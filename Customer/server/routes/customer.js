@@ -103,4 +103,14 @@ router.get("/auth", validateToken, (req, res) => {
     });
 });
 
+router.get('/points-info', async (req, res) => {
+    try {
+        const pointsInfoList = await PointsInfo.findAll();
+        res.json(pointsInfoList);
+    } catch (err) {
+        console.error("Error fetching points info:", err);
+        res.status(500).json({ error: "Failed to fetch points info" });
+    }
+});
+
 module.exports = router;

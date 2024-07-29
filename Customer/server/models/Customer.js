@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         points: {
-            type: DataTypes.INTEGER(),
+            type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
@@ -25,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
         Customer.hasMany(models.Reward, {
             foreignKey: "customerId",
             onDelete: "cascade"
+        });
+        Customer.hasMany(models.Redemption, { 
+            foreignKey: 'customerId' 
         });
     };
 

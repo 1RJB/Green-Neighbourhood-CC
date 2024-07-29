@@ -24,6 +24,8 @@ const customerRoute = require('./routes/customer');
 app.use("/customer", customerRoute);
 const fileRoute = require('./routes/file');
 app.use("/file", fileRoute);
+const pointsRouter = require('./routes/points');
+app.use("/points", pointsRouter);
 
 const db = require('./models');
 db.sequelize.sync({ alter: true })

@@ -10,8 +10,10 @@ function Points() {
     const { customer } = useContext(CustomerContext);
 
     const getPointsInfo = () => {
-        http.get('/points-info').then((res) => {
+        http.get('/points/points-info').then((res) => {
             setPointsInfo(res.data);
+        }).catch(err => {
+            console.error("Failed to fetch points info:", err.response.data);
         });
     };
 

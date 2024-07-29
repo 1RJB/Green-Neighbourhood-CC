@@ -17,7 +17,7 @@ function App() {
 
   useEffect(() => {
     if (localStorage.getItem("accessToken")) {
-      http.get('/auth').then((res) => {
+      http.get('/staff/auth').then((res) => {
         setStaff(res.data.staff);
       });
     }
@@ -51,8 +51,8 @@ function App() {
                 }
                 {!staff && (
                   <>
-                    <Link to="/register" ><Typography>Register</Typography></Link>
-                    <Link to="/login" ><Typography>Login</Typography></Link>
+                    <Link to="/staff/register" ><Typography>Register</Typography></Link>
+                    <Link to="/staff/login" ><Typography>Login</Typography></Link>
                   </>
                 )}
               </Toolbar>
@@ -65,8 +65,8 @@ function App() {
               <Route path={"/rewards"} element={<Rewards />} />
               <Route path={"/addreward"} element={<AddReward />} />
               <Route path={"/editreward/:id"} element={<EditReward />} />
-              <Route path={"/register"} element={<Register />} />
-              <Route path={"/login"} element={<Login />} />
+              <Route path={"/staff/register"} element={<Register />} />
+              <Route path={"/staff/login"} element={<Login />} />
             </Routes>
           </Container>
         </ThemeProvider>

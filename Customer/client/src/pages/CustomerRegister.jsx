@@ -42,6 +42,7 @@ function CustomerRegister() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
+            data.points = 0;
             http.post("/customer/register", data)
                 .then((res) => {
                     console.log(res.data);

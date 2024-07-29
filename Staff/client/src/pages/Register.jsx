@@ -44,10 +44,10 @@ function Register() {
             data.name = data.name.trim();
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-            http.post("/register", data)
+            http.post("/staff/register", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/login");
+                    navigate("/staff/login");
                 })
                 .catch(function (err) {
                     toast.error(`${err.response.data.message}`);

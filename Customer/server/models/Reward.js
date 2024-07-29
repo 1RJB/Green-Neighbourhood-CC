@@ -1,6 +1,3 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('./index');
-
 module.exports = (sequelize, DataTypes) => {
     const Reward = sequelize.define("Reward", {
         title: {
@@ -34,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
         Reward.belongsTo(models.Customer, {
             foreignKey: "customerId",
             as: 'customer'
+        });
+        Reward.hasMany(models.Redemption, {
+            foreignKey: 'rewardId'
         });
     };
 
