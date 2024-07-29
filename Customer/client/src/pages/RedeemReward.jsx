@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Card, CardContent, CardMedia, CircularProgress } from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CustomerContext from '../contexts/CustomerContext';
 
 function RedeemReward() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { customer, fetchCustomerData } = useContext(CustomerContext);
     const [reward, setReward] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -19,15 +21,14 @@ function RedeemReward() {
         });
     }, [id]);
 
-    const handleRedeem = () => {
-        http.post(`/reward/redeem/${id}`)
-            .then(() => {
-                toast.success('Reward redeemed successfully!');
-                navigate('/rewards');
-            })
-            .catch((err) => {
-                toast.error('Failed to redeem reward.');
-            });
+    const handleRedeem = async () => {
+        try {
+            await http.post(`/reward/redeem/${id}`, { customerId: customer.id });
+            toast.success('Reward redeemed successfully!');
+            fetchCustomerData(); // Refresh customer data after redeeming the reward
+        } catch (error) {
+            toast.error('Failed to redeem reward.');
+        }
     };
 
     if (loading) {

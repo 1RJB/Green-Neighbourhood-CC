@@ -69,7 +69,7 @@ function Rewards() {
                     customer && (
                         <Link to="/points-info">
                             <Button variant='contained'>
-                            My Points: {customer.points}
+                                My Points: {customer.points}
                             </Button>
                         </Link>
                     )
@@ -82,48 +82,48 @@ function Rewards() {
                         return (
                             <Grid item xs={12} md={6} lg={4} key={reward.id}>
                                 <Link to={`/reward/redeem/${reward.id}`} style={{ textDecoration: 'none' }}>
-                                <Card>
-                                    {
-                                        reward.imageFile && (
-                                            <Box className="aspect-ratio-container">
-                                                <img alt="reward"
-                                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${reward.imageFile}`}>
-                                                </img>
+                                    <Card>
+                                        {
+                                            reward.imageFile && (
+                                                <Box className="aspect-ratio-container">
+                                                    <img alt="reward"
+                                                        src={`${import.meta.env.VITE_FILE_BASE_URL}${reward.imageFile}`}>
+                                                    </img>
+                                                </Box>
+                                            )
+                                        }
+                                        <CardContent>
+                                            <Box sx={{ display: 'flex', mb: 1 }}>
+                                                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                                                    {reward.title}
+                                                </Typography>
+                                                <Star sx={{ mr: 1 }} color="primary" />
+                                                <Typography>
+                                                    Points: {reward.points}
+                                                </Typography>
                                             </Box>
-                                        )
-                                    }
-                                    <CardContent>
-                                        <Box sx={{ display: 'flex', mb: 1 }}>
-                                            <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                                                {reward.title}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                                color="text.secondary">
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'left', mb: 1 }}
+                                                color="text.secondary">
+                                                <CalendarMonth sx={{ mr: 1 }} />
+                                                <Typography sx={{ mr: 1 }}>
+                                                    Start Date: {dayjs(reward.startDate).format("D MMMM YYYY")}
+                                                </Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'left', mb: 1 }}
+                                                color="text.secondary">
+                                                <CalendarMonth sx={{ mr: 1 }} />
+                                                <Typography>
+                                                    End Date: {dayjs(reward.endDate).format("D MMMM YYYY")}
+                                                </Typography>
+                                            </Box>
+                                            <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+                                                {reward.description}
                                             </Typography>
-                                            <Star sx={{ mr: 1 }} color="primary" />
-                                            <Typography>
-                                                Points: {reward.points}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                                            color="text.secondary">
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'left', mb: 1 }}
-                                            color="text.secondary">
-                                            <CalendarMonth sx={{ mr: 1 }} />
-                                            <Typography sx={{ mr: 1 }}>
-                                                Start Date: {dayjs(reward.startDate).format("D MMMM YYYY")}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'left', mb: 1 }}
-                                            color="text.secondary">
-                                            <CalendarMonth sx={{ mr: 1 }} />
-                                            <Typography>
-                                                End Date: {dayjs(reward.endDate).format("D MMMM YYYY")}
-                                            </Typography>
-                                        </Box>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                                            {reward.description}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
                                 </Link>
                             </Grid>
                         );
