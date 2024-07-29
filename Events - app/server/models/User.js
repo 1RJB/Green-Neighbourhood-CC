@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const Staff = sequelize.define(
-    "Staff",
+  const User = sequelize.define(
+    "User",
     {
       firstName: {
         type: DataTypes.STRING(25),
@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       usertype: {
         type: DataTypes.STRING(10),
         allowNull: false,
-        defaultValue: "staff",
+        defaultValue: "user",
       },
     },
     {
@@ -37,5 +37,5 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true, // Example: to include timestamps for createdAt and updatedAt
     }
   );
-  return Staff;
+  return User;
 };

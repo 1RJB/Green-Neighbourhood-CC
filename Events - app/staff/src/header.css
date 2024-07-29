@@ -1,0 +1,58 @@
+/* header.css */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Navbar styles */
+.custom-navbar {
+  background-color: #228B22; /* Forest Green */
+  color: white;
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem; /* Adjust the font size as needed */
+}
+
+.custom-navbar .navbar-brand:hover,
+.custom-navbar .nav-link:hover {
+  color: #ddd; /* Light grey on hover */
+}
+
+.custom-navbar .navbar-nav {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; /* Align nav items to the right */
+}
+
+.custom-navbar .navbar-nav .nav-link {
+  text-align: center;
+  padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+}
+
+.custom-navbar .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5); /* Light grey border for toggler */
+}
+
+.custom-navbar .navbar-toggler-icon {
+  /* Custom background image for toggler */
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Login button styles */
+.login-button {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  background-color: #4CAF50; /* Green Button */
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem; /* Adjust padding for button size */
+  border-radius: 0.25rem; /* Rounded corners */
+}
+
+.login-button:hover {
+  background-color: #45A049; /* Darker shade of green on hover */
+}
+

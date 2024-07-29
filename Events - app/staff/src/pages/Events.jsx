@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import StaffContext from '../contexts/StaffContext';
+import UserContext from '../contexts/UserContext';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
 import { AccountCircle, CalendarToday, Search, Clear, Edit } from '@mui/icons-material';
@@ -20,7 +20,7 @@ const categoryColors = {
 function Events() {
     const [eventList, setEventList] = useState([]);
     const [search, setSearch] = useState('');
-    const { staff } = useContext(StaffContext);
+    const { user } = useContext(UserContext);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -76,7 +76,7 @@ function Events() {
                     <Clear />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
-                {staff && (
+                {user && (
                     <Link to="/addevent" style={{ textDecoration: 'none' }}>
                         <Button variant="contained">
                             Add
@@ -109,18 +109,16 @@ function Events() {
                                         <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                             {event.title}
                                         </Typography>
-                                        {staff && staff.id === event.staffId && (
                                             <Link to={`/editevent/${event.id}`}>
-                                                <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <IconButton color="primary" sx={{ padding: '20px' }}>
                                                     <Edit />
                                                 </IconButton>
                                             </Link>
-                                        )}
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <AccountCircle sx={{ mr: 1 }} />
                                         <Typography>
-                                            {event.staff?.name}
+                                            {event.user?.name}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">

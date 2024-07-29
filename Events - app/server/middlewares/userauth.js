@@ -7,7 +7,7 @@ const validateToken = (req, res, next) => {
       return res.sendStatus(401);
     }
     const payload = verify(accessToken, process.env.APP_SECRET);
-    req.staff = payload;
+    req.user = payload;
     return next();
   } catch (err) {
     return res.sendStatus(401);

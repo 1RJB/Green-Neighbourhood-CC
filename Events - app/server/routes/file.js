@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { validateToken } = require('../middlewares/StaffAuth');
+const { validateToken } = require('../middlewares/staffauth');
 const { upload } = require('../middlewares/upload');
 router.post('/upload', validateToken, (req, res) => {
     upload(req, res, (err) => {

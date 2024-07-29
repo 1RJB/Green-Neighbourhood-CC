@@ -1,5 +1,5 @@
+// src/pages/Login.jsx
 import React, { useContext } from 'react';
-import StaffContext from '../contexts/StaffContext';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -7,10 +7,11 @@ import * as yup from 'yup';
 import http from '../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserContext from '../contexts/UserContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { setStaff } = useContext(StaffContext);
+    const { setUser, setUserType } = useContext(UserContext); // Add setUserType here
 
     const formik = useFormik({
         initialValues: {
@@ -26,23 +27,18 @@ function Login() {
                 .min(8, 'Password must be at least 8 characters')
                 .max(50, 'Password must be at most 50 characters')
                 .required('Password is required')
-                .matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-                    "Password must have at least 1 letter and 1 number")
         }),
         onSubmit: (data) => {
             data.email = data.email.trim().toLowerCase();
             data.password = data.password.trim();
-
-            http.post("/staff/login", data)
+            http.post("/user/login", data)
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
-                    setStaff(res.data.staff);
+                    setUser(res.data.user);
+                    setUserType(res.data.user.usertype); // Set userType here
                     navigate("/");
-                    // console.log("Login successful:", res.data);
-                    window.location.reload();
                 })
-                .catch((err) => {
-                    // console.error("Login error:", err.response.data.message);
+                .catch(function (err) {
                     toast.error(`${err.response.data.message}`);
                 });
         }
@@ -80,10 +76,12 @@ function Login() {
                     error={formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password}
                 />
-                <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
+                <Button fullWidth variant="contained" sx={{ mt: 2 }}
+                    type="submit">
                     Login
                 </Button>
             </Box>
+
             <ToastContainer />
         </Box>
     );

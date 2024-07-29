@@ -3,7 +3,7 @@ const router = express.Router();
 const { Staff, Event } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
-const { validateToken } = require('../middlewares/StaffAuth');
+const { validateToken } = require('../middlewares/staffauth');
 
 router.post("/", validateToken, async (req, res) => {
     let data = req.body;
@@ -33,17 +33,17 @@ router.get("/", async (req, res) => {
         condition[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
             { description: { [Op.like]: `%${search}%` } }
-
         ];
-
-
     }
-    // You can add condition for other columns here
-    // e.g. condition.columnName = value;
+    // Add condition for other columns here if necessary
     let list = await Event.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
-        include: { model: Staff, as: "staff", attributes: ['name'] }
+        include: { 
+            model: Staff, 
+            as: "staff", 
+            attributes: ['firstName', 'lastName'] 
+        }
     });
     res.json(list);
 });
@@ -51,17 +51,20 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let event = await Event.findByPk(id, {
-        include: { model: Staff, as: "staff", attributes: ['name'] }
+        include: { 
+            model: Staff, 
+            as: "staff", 
+            attributes: ['firstName', 'lastName'] 
+        }
     });
 
-    // Check id not found
+    // Check if id not found
     if (!event) {
         res.sendStatus(404);
         return;
     }
     res.json(event);
-});
-
+})
 
 router.put("/:id", validateToken, async (req, res) => {
     let id = req.params.id;

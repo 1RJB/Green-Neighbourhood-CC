@@ -18,7 +18,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function Register() {
+function staffRegister() {
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -83,7 +83,7 @@ function Register() {
     }),
     onSubmit: async (values) => {
       try {
-        const response = await http.post("/user/register", {
+        const response = await http.post("/staff/staffregister", {
           firstName: values.firstName.trim(),
           lastName: values.lastName.trim(),
           email: values.email.trim().toLowerCase(),
@@ -235,4 +235,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default staffRegister;
