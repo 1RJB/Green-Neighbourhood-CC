@@ -1,14 +1,14 @@
-const { validateToken } = require("../middlewares/staffauth");
+const { validateToken } = require("../middlewares/adminauth");
 const { sign } = require("jsonwebtoken");
 require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { Staff } = require("../models");
+const { Admin } = require("../models");
 
 const yup = require("yup");
 
-router.post("/staffregister", async (req, res) => {
+router.post("/adminregister", async (req, res) => {
   let data = req.body;
   let validationSchema = yup.object({
     firstName: yup
@@ -56,10 +56,10 @@ router.post("/staffregister", async (req, res) => {
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
     // Check email
-    let staff = await Staff.findOne({
+    let admin = await Admin.findOne({
       where: { email: data.email },
     });
-    if (staff) {
+    if (admin) {
       res.status(400).json({ message: "Email already exists." });
       return;
     }
@@ -68,7 +68,7 @@ router.post("/staffregister", async (req, res) => {
     // Remove confirmPassword from data to avoid storing it
     delete data.confirmPassword;
     // Create user
-    let result = await Staff.create(data);
+    let result = await Admin.create(data);
     res.json({
       message: `Email ${result.email} was registered successfully.`,
     });
@@ -77,15 +77,15 @@ router.post("/staffregister", async (req, res) => {
   }
 });
 
-router.get("/staffauth", validateToken, (req, res) => {
-  let staffInfo = {
-    id: req.staff.id,
-    email: req.staff.email,
-    name: req.staff.firstName,
+router.get("/adminauth", validateToken, (req, res) => {
+  let adminInfo = {
+    id: req.admin.id,
+    email: req.admin.email,
+    name: req.admin.firstName,
     usertype: user.usertype // Include usertype
   };
   res.json({
-    staff: staffInfo,
+    admin: adminInfo,
   });
 });
 

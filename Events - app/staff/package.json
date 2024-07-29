@@ -20,10 +20,12 @@
     "bootstrap": "^5.3.3",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
+    "emailjs-com": "^3.2.0",
     "formik": "^2.4.6",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.2.0",
+    "react-google-recaptcha": "^3.1.0",
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
     "yup": "^1.4.0"

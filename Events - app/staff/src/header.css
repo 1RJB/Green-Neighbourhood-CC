@@ -56,3 +56,16 @@
   background-color: #45A049; /* Darker shade of green on hover */
 }
 
+/* User Dropdown styles */
+.user-dropdown-toggle {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+}
+
+.user-dropdown-toggle:hover {
+  color: #ddd; /* Light grey on hover */
+}
