@@ -21,6 +21,9 @@ function Events() {
     const [eventList, setEventList] = useState([]);
     const [search, setSearch] = useState('');
     const { user } = useContext(UserContext);
+    // Log the user and userType to the console for debugging
+    console.log("User Object:", user);
+    console.log("User Type:", user ? user.usertype : "No user object");
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -76,7 +79,7 @@ function Events() {
                     <Clear />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
-                {user && (
+                {user && user.usertype === "staff" && (
                     <Link to="/addevent" style={{ textDecoration: 'none' }}>
                         <Button variant="contained">
                             Add
@@ -109,11 +112,13 @@ function Events() {
                                         <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                             {event.title}
                                         </Typography>
+                                        {user && user.usertype === "staff" && user.id === event.staffId && (
                                             <Link to={`/editevent/${event.id}`}>
                                                 <IconButton color="primary" sx={{ padding: '20px' }}>
                                                     <Edit />
                                                 </IconButton>
                                             </Link>
+                                        )}
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <AccountCircle sx={{ mr: 1 }} />
