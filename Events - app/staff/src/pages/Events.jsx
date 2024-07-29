@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../contexts/UserContext';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem } from '@mui/material';
 import { AccountCircle, CalendarToday, Search, Clear, Edit } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
@@ -20,7 +20,9 @@ const categoryColors = {
 function Events() {
     const [eventList, setEventList] = useState([]);
     const [search, setSearch] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const { user } = useContext(UserContext);
+
     // Log the user and userType to the console for debugging
     console.log("User Object:", user);
     console.log("User Type:", user ? user.usertype : "No user object");
@@ -29,37 +31,47 @@ function Events() {
         setSearch(e.target.value);
     };
 
-    const getEvents = () => {
-        http.get('/event').then((res) => {
-            setEventList(res.data);
-        });
+    const onCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
     };
 
-    const searchEvents = () => {
-        http.get(`/event?search=${search}`).then((res) => {
+    const getEvents = () => {
+        let url = '/event';
+        if (search || selectedCategory !== 'All') {
+            url += `?search=${search}`;
+            if (selectedCategory !== 'All') {
+                url += `&category=${selectedCategory}`;
+            }
+        }
+        console.log("Fetching events with URL:", url); // Log the URL for debugging
+        http.get(url).then((res) => {
+            console.log("Events data:", res.data); // Log the response data
             setEventList(res.data);
+        }).catch((error) => {
+            console.error("Error fetching events:", error); // Log any errors
         });
     };
 
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
-            searchEvents();
+            getEvents();
         }
     };
 
     const onClickSearch = () => {
-        searchEvents();
+        getEvents();
     };
 
     const onClickClear = () => {
         setSearch('');
+        setSelectedCategory('All');
         getEvents();
     };
 
     useEffect(() => {
         getEvents();
-    }, []);
-
+    }, [search, selectedCategory]); // Re-fetch events when search or category changes
+    
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
@@ -78,6 +90,18 @@ function Events() {
                 <IconButton color="primary" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
+                <Select
+                    value={selectedCategory}
+                    onChange={onCategoryChange}
+                    sx={{ mx: 2 }}
+                >
+                    <MenuItem value="All">All Categories</MenuItem>
+                    {Object.keys(categoryColors).map((category) => (
+                        <MenuItem key={category} value={category}>
+                            {category}
+                        </MenuItem>
+                    ))}
+                </Select>
                 <Box sx={{ flexGrow: 1 }} />
                 {user && user.usertype === "staff" && (
                     <Link to="/addevent" style={{ textDecoration: 'none' }}>
@@ -123,7 +147,7 @@ function Events() {
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <AccountCircle sx={{ mr: 1 }} />
                                         <Typography>
-                                            {event.user?.name}
+                                            {event.staff ? `${event.staff.firstName} ${event.staff.lastName}` : "Unknown Staff"}{event.user?.name}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
