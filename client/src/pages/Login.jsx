@@ -1,7 +1,6 @@
-// src/pages/Login.jsx
 import React, { useContext } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../http';
@@ -11,7 +10,7 @@ import UserContext from '../contexts/UserContext';
 
 function Login() {
     const navigate = useNavigate();
-    const { setUser, setUserType } = useContext(UserContext); // Add setUserType here
+    const { setUser, setUserType } = useContext(UserContext);
 
     const formik = useFormik({
         initialValues: {
@@ -35,7 +34,7 @@ function Login() {
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
                     setUser(res.data.user);
-                    setUserType(res.data.user.usertype); // Set userType here
+                    setUserType(res.data.user.usertype);
                     navigate("/");
                 })
                 .catch(function (err) {
@@ -81,6 +80,14 @@ function Login() {
                     Login
                 </Button>
             </Box>
+
+            {/* Registration link */}
+            <Typography variant="body2" sx={{ mt: 2 }}>
+                Don't have an account yet? 
+                <Link to="/register" style={{ color: '#1976d2', textDecoration: 'underline', marginLeft: '5px' }}>
+                    Sign up here 
+                </Link>
+            </Typography>
 
             <ToastContainer />
         </Box>

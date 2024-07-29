@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-    Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel
-} from '@mui/material';
+import {Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel} from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import http from '../http';
 import { useFormik } from 'formik';
@@ -62,7 +60,7 @@ function EditParticipant() {
                 .max(100, 'Email must be at most 100 characters')
                 .required('Email is required'),
             gender: yup.string().trim()
-                .oneOf(['male', 'female'], 'Gender must be either male or female')
+                .oneOf(['Male', 'Female'], 'Gender must be either male or female')
                 .required('Gender is required'),
             birthday: yup.date()
                 .required('Birthday is required'),
@@ -155,8 +153,8 @@ function EditParticipant() {
                                     autoComplete="off"
                                 >
                                     <MenuItem value="">Select Gender</MenuItem>
-                                    <MenuItem value="male">Male</MenuItem>
-                                    <MenuItem value="female">Female</MenuItem>
+                                    <MenuItem value="Male">Male</MenuItem>
+                                    <MenuItem value="Female">Female</MenuItem>
                                 </Select>
                                 {formik.touched.gender && <Typography color="error">{formik.errors.gender}</Typography>}
                             </FormControl>
@@ -195,31 +193,9 @@ function EditParticipant() {
                         <Button variant="contained" type="submit">
                             Update
                         </Button>
-                        <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
-                            Delete
-                        </Button>
                     </Box>
                 </Box>
             )}
-
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>
-                    Delete Participant
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete this participant?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" color="inherit" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" color="error" onClick={deleteParticipant}>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
             <ToastContainer />
         </Box>

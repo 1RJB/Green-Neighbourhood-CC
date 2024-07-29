@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Input, IconButton, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Search, Clear, AccountCircle, AccessTime, Edit, Delete } from '@mui/icons-material'; // Import the Delete icon
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 
@@ -19,18 +20,21 @@ function Participants() {
                 console.log('Participants fetched:', res.data);
                 setParticipantList(res.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching participants:', error);
             });
     };
 
     const searchParticipants = () => {
-        http.get(`/participant?search=${search}`)
+        if (search.trim() === '') {
+            return; // Avoid searching when the search field is empty
+        }
+        http.get(`/participant?search=${encodeURIComponent(search)}`)
             .then((res) => {
                 console.log('Participants searched:', res.data);
                 setParticipantList(res.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error searching participants:', error);
             });
     };
@@ -54,6 +58,19 @@ function Participants() {
         getParticipants();
     };
 
+    const deleteParticipant = (id) => {
+        if (window.confirm('Are you sure you want to delete this participant?')) {
+            http.delete(`/participant/${id}`)
+                .then(() => {
+                    setParticipantList(participantList.filter(participant => participant.id !== id)); // Remove deleted participant from the state
+                    console.log(`Participant with ID ${id} deleted successfully.`);
+                })
+                .catch((error) => {
+                    console.error('Error deleting participant:', error);
+                });
+        }
+    };
+
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
@@ -61,15 +78,16 @@ function Participants() {
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input value={search} placeholder="Search"
+                <Input
+                    value={search}
+                    placeholder="Search"
                     onChange={onSearchChange}
-                    onKeyDown={onSearchKeyDown} />
-                <IconButton color="primary"
-                    onClick={onClickSearch}>
+                    onKeyDown={onSearchKeyDown}
+                />
+                <IconButton color="primary" onClick={onClickSearch}>
                     <Search />
                 </IconButton>
-                <IconButton color="primary"
-                    onClick={onClickClear}>
+                <IconButton color="primary" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
@@ -97,6 +115,7 @@ function Participants() {
                             <TableCell style={{ minWidth: 120 }}>Event</TableCell>
                             <TableCell style={{ minWidth: 120 }}>Created By</TableCell>
                             <TableCell style={{ minWidth: 150 }}>Created At</TableCell>
+                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell> {/* New Column */}
                             <TableCell style={{ minWidth: 100 }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -124,15 +143,20 @@ function Participants() {
                                         </Box>
                                     </TableCell>
                                     <TableCell>
-                                        {
-                                            user && user.id === participant.userId && (
-                                                <Link to={`/editparticipant/${participant.id}`}>
-                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                        <Edit />
-                                                    </IconButton>
-                                                </Link>
-                                            )
-                                        }
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
+                                            <AccessTime sx={{ mr: 1 }} />
+                                            <Typography>{new Date(participant.updatedAt).toLocaleString()}</Typography> {/* Display updatedAt */}
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Link to={`/editparticipant/${participant.id}`}>
+                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Link>
+                                        <IconButton color="error" sx={{ padding: '4px' }} onClick={() => deleteParticipant(participant.id)}>
+                                            <Delete />
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>
                             ))
