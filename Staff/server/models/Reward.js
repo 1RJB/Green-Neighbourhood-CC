@@ -22,8 +22,19 @@ module.exports = (sequelize, DataTypes) => {
         },
         imageFile: {
             type: DataTypes.STRING(20)
+        },
+        maxEachRedeem: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1
+        },
+        maxTotalRedeem: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1000
         }
-    }, {
+    }, 
+    {
         tableName: 'rewards'
     });
 

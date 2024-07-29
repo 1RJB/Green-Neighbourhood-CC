@@ -10,7 +10,7 @@ import CustomerContext from '../contexts/CustomerContext';
 function RedeemReward() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { customer, fetchCustomerData } = useContext(CustomerContext);
+    const { customer, setCustomer } = useContext(CustomerContext);
     const [reward, setReward] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -23,13 +23,28 @@ function RedeemReward() {
 
     const handleRedeem = async () => {
         try {
-            await http.post(`/reward/redeem/${id}`, { customerId: customer.id });
-            toast.success('Reward redeemed successfully!');
-            fetchCustomerData(); // Refresh customer data after redeeming the reward
+            const response = await http.post(`/reward/redeem/${id}`, { customerId: customer.id });
+            toast.success(response.data.message);
+    
+            // Clear local storage or session storage if needed
+            localStorage.removeItem('customer'); // Or update accordingly
+    
+            // Use the updated customer data returned from the server
+            const updatedCustomer = response.data.customer;
+            console.log('Updated customer data from server');
+    
+            // Update the context with the latest customer data
+            setCustomer(updatedCustomer);
+    
         } catch (error) {
-            toast.error('Failed to redeem reward.');
+            if (error.response && error.response.data && error.response.data.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error('Failed to redeem reward.');
+            }
         }
     };
+    
 
     if (loading) {
         return (

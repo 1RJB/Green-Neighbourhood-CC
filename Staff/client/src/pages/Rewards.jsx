@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, LightbulbCircle } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, LightbulbCircle, Numbers } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import StaffContext from '../contexts/StaffContext';
@@ -137,6 +137,20 @@ function Rewards() {
                                             <LightbulbCircle sx={{ mr: 1 }} />
                                             <Typography>
                                                 Points: {reward.points}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                            color="text.secondary">
+                                            <Numbers sx={{ mr: 1 }} />
+                                            <Typography>
+                                                Max Redemptions Per User: {reward.maxEachRedeem}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                            color="text.secondary">
+                                            <Numbers sx={{ mr: 1 }} />
+                                            <Typography>
+                                                Max Total Redemptions: {reward.maxTotalRedeem}
                                             </Typography>
                                         </Box>
                                         <Typography sx={{ whiteSpace: 'pre-wrap' }}>

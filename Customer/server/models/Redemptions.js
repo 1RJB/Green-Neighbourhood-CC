@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         redeemedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
-        },
+        }
     }, {
         tableName: 'redemptions',
     });

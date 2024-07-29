@@ -36,7 +36,11 @@ function AddReward() {
                 .required('End date is required'),
             points: yup.number()
                 .min(1, 'Points must be at least 1')
-                .required('Points are required')
+                .required('Points are required'),
+            maxEachRedeem: yup.number()
+                .min(1, 'Maximum redeemable per user must be at least 1'),
+            maxTotalRedeem: yup.number()
+                .min(1, 'Maximum total redeemable must be at least 1')
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -44,6 +48,7 @@ function AddReward() {
             }
             data.title = data.title.trim();
             data.description = data.description.trim();
+
             http.post("/reward", data)
                 .then((res) => {
                     console.log(res.data);
@@ -143,6 +148,28 @@ function AddReward() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.points && Boolean(formik.errors.points)}
                             helperText={formik.touched.points && formik.errors.points}
+                        />
+                        <TextField
+                            fullWidth margin="dense" autoComplete="off"
+                            label="Max Number of Times Each User Can Redeem Reward"
+                            name="maxEachRedeem"
+                            type="number"
+                            value={formik.values.maxEachRedeem}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.maxEachRedeem && Boolean(formik.errors.maxEachRedeem)}
+                            helperText={formik.touched.maxEachRedeem && formik.errors.maxEachRedeem}
+                        />
+                        <TextField
+                            fullWidth margin="dense" autoComplete="off"
+                            label="Max Total Number of Redemptions for this Reward"
+                            name="maxTotalRedeem"
+                            type="number"
+                            value={formik.values.maxTotalRedeem}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.maxTotalRedeem && Boolean(formik.errors.maxTotalRedeem)}
+                            helperText={formik.touched.maxTotalRedeem && formik.errors.maxTotalRedeem}
                         />
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>

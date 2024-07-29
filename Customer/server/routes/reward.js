@@ -143,9 +143,9 @@ router.delete("/:id", validateToken, async (req, res) => {
 });
 
 // Endpoint to redeem a reward
-router.post('/redeem/:rewardId', async (req, res) => {
+router.post('/redeem/:rewardId', validateToken, async (req, res) => {
     const rewardId = req.params.rewardId;
-    const { customerId } = req.body; // Assuming customerId is passed in the body
+    const customerId = req.customer.id;
 
     try {
         // Find the reward and customer
@@ -153,16 +153,46 @@ router.post('/redeem/:rewardId', async (req, res) => {
         const customer = await Customer.findByPk(customerId);
 
         if (!reward) {
+            console.log(`Reward not found for ID: ${rewardId}`);
             return res.status(404).json({ error: 'Reward not found' });
         }
 
         if (!customer) {
+            console.log(`Customer not found for ID: ${customerId}`);
             return res.status(404).json({ error: 'Customer not found' });
         }
 
         // Check if the customer has enough points
         if (customer.points < reward.points) {
+            console.log(`Not enough points to redeem reward. Customer points: ${customer.points}, Reward points: ${reward.points}`);
             return res.status(400).json({ error: 'Not enough points to redeem the reward' });
+        }
+
+        // Check if the customer has already redeemed this reward too many times
+        const customerRedemptionCount = await Redemption.count({
+            where: {
+                rewardId: rewardId,
+                customerId: customerId
+            }
+        });
+
+        console.log(`Customer redemption count: ${customerRedemptionCount}, Max each redeem: ${reward.maxEachRedeem}`);
+
+        if (reward.maxEachRedeem !== null && customerRedemptionCount >= reward.maxEachRedeem) {
+            return res.status(400).json({ error: 'You have already redeemed this reward the maximum allowed number of times.' });
+        }
+
+        // Check if the total number of redemptions has reached the limit
+        const totalRedemptionCount = await Redemption.count({
+            where: {
+                rewardId: rewardId
+            }
+        });
+
+        console.log(`Total redemption count: ${totalRedemptionCount}, Max total redeem: ${reward.maxTotalRedeem}`);
+
+        if (reward.maxTotalRedeem !== null && totalRedemptionCount >= reward.maxTotalRedeem) {
+            return res.status(400).json({ error: 'This reward has already been redeemed the maximum allowed number of times.' });
         }
 
         // Reduce customer points
@@ -176,13 +206,17 @@ router.post('/redeem/:rewardId', async (req, res) => {
             redeemedAt: new Date()
         });
 
-        res.json({ message: 'Reward redeemed successfully', customer });
+        // Fetch the updated customer data to return
+        const updatedCustomer = await Customer.findByPk(customerId);
+
+        res.json({ message: 'Reward redeemed successfully', redemption, customer: updatedCustomer });
 
     } catch (error) {
         console.error('Error redeeming reward:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 module.exports = router;
