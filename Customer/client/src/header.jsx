@@ -27,6 +27,7 @@ const Header = () => {
           <>
             <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
+            <Nav.Link as={Link} to="/adminregister">Admin Register</Nav.Link>
           </>
         );
       }
@@ -70,7 +71,6 @@ const Header = () => {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/register">Register</Nav.Link>
             <Nav.Link as={Link} to="/staffregister">Staff Register</Nav.Link>
-            <Nav.Link as={Link} to="/adminregister">Admin Register</Nav.Link>
             <Nav.Link as={Link} to="/contactUs">Contact Us</Nav.Link>
             {renderUserLinks()}
           </Nav>

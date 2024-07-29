@@ -115,7 +115,7 @@ const ContactUs = () => {
         </Col>
         <Col xs={6}>  
           <Box sx={{ marginBottom: 5 }} className="d-flex justify-content-center align-items-center">
-            <Typography variant="h5">The People’s Association (PA) was established on 17 April 2024 as a statutory board to promote racial harmony and social cohesion in Singapore. Our mission is to build and bridge communities in achieving one people, one Singapore. PA offers a wide range of programmes to cater to Singaporeans from all walks of life - connecting people to people, and people and government. We do this through our network of over 2,000 grassroots organisations (GROs), over 100 Community Clubs, five Community Development Councils, National Community Leadership Institute and PAssion WaVe.</Typography>
+            <Typography variant="h6">The People’s Association (PA) was established on 17 April 2024 as a statutory board to promote racial harmony and social cohesion in Singapore. Our mission is to build and bridge communities in achieving one people, one Singapore. PA offers a wide range of programmes to cater to Singaporeans from all walks of life - connecting people to people, and people and government. We do this through our network of over 2,000 grassroots organisations (GROs), over 100 Community Clubs, five Community Development Councils, National Community Leadership Institute and PAssion WaVe.</Typography>
           </Box>
         </Col>
         <Col xs={12}>
@@ -125,7 +125,7 @@ const ContactUs = () => {
         </Col>
         <Col xs={12}>
           <Box sx={{ marginBottom: 2 }} className="d-flex justify-content-center align-items-center">
-            <Typography variant="h5">A Great Home and A Caring Community, where we <ul><li>Share our ValuesPursue our Passions</li><li>Fulfil our Hopes</li><li>Treasure our Memories</li></ul></Typography>
+            <Typography variant="h6">A Great Home and A Caring Community, where we <ul><li>Share our ValuesPursue our Passions</li><li>Fulfil our Hopes</li><li>Treasure our Memories</li></ul></Typography>
           </Box>
         </Col>
         <Col xs={12} md={8}>

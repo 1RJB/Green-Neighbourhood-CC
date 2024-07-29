@@ -1,25 +1,39 @@
 import React, { useContext } from 'react';
-import { Container, Row, Col, Image } from 'react-bootstrap';
+import { Box, Typography, Avatar } from '@mui/material';
 import UserContext from '../contexts/UserContext';
 
 function UserProfile() {
     const { user } = useContext(UserContext);
 
     return (
-        <Container style={{ marginTop: '50px' }}>
-            <Row className="justify-content-center">
-                <Col md={6} className="text-center">
-                    <Image src={user.pfp} alt={user.firstName} roundedCircle style={{ width: '150px', height: '150px' }} />
-                </Col>
-                <Col md={6}>
-                    <h5 className="my-3">{user.firstName} {user.lastName}</h5>
-                    <p className="my-2"><strong>Email:</strong> {user.email}</p>
-                    <p className="my-2"><strong>Gender:</strong> {user.gender}</p>
-                    <p className="my-2"><strong>Birthday:</strong> {user.birthday}</p>
-                    <p className="my-2"><strong>User Type:</strong> {user.usertype}</p>
-                </Col>
-            </Row>
-        </Container>
+        <Box sx={{ marginTop: 8, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ marginRight: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar src={user.pfp} alt={user.firstName} sx={{ width: 100, height: 100 }} />
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <Typography variant="h5" sx={{ my: 2 }}>
+                    {user.firstName} {user.lastName}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>First Name:</strong> {user.name}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>Last Name:</strong> {user.lname}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>Email:</strong> {user.email}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>Gender:</strong> {user.gender}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>Birthday:</strong> {user.birthday}
+                </Typography>
+                <Typography variant="body1" sx={{ my: 2 }}>
+                    <strong>Password:</strong> {user.password}
+                </Typography>
+            </Box>
+        </Box>
     );
 }
 

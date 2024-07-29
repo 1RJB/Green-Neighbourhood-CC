@@ -101,6 +101,7 @@ router.post("/login", async (req, res) => {
 
   // Return user info
   let userInfo = {
+    pfp: user.pfp,
     id: user.id,
     email: user.email,
     name: user.firstName,
@@ -121,6 +122,7 @@ router.post("/login", async (req, res) => {
 
 router.get("/userauth", validateToken, (req, res) => {
   let userInfo = {
+    pfp: req.user.pfp,
     id: req.user.id,
     email: req.user.email,
     name: req.user.firstName,
