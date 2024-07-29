@@ -4,6 +4,8 @@ require("dotenv").config();
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
 
 // Enable CORS
 app.use(
@@ -26,6 +28,12 @@ app.use("/participant", participantRoute);
 
 const staffRoute = require("./routes/staff");
 app.use("/staff", staffRoute);
+
+const adminRoute = require("./routes/admin");
+app.use("/admin", adminRoute);
+
+const fileRoute = require('./routes/file');
+app.use("/file", fileRoute);
 
 
 const db = require("./models");

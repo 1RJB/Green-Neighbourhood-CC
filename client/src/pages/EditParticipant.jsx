@@ -23,8 +23,8 @@ function EditParticipant() {
     const navigate = useNavigate();
 
     const [participant, setParticipant] = useState({
-        Fname: '',
-        Lname: '',
+        firstName: '',
+        lastName: '',
         email: '',
         gender: '',
         birthday: '',
@@ -41,19 +41,19 @@ function EditParticipant() {
 
     const formik = useFormik({
         initialValues: {
-            Fname: participant.Fname,
-            Lname: participant.Lname,
+            firstName: participant.firstName,
+            lastName: participant.lastName,
             email: participant.email,
             gender: participant.gender,
             birthday: participant.birthday,
             event: participant.event
         },
         validationSchema: yup.object({
-            Fname: yup.string().trim()
+            firstName: yup.string().trim()
                 .min(3, 'First name must be at least 3 characters')
                 .max(100, 'First name must be at most 100 characters')
                 .required('First name is required'),
-            Lname: yup.string().trim()
+            lastName: yup.string().trim()
                 .min(3, 'Last name must be at least 3 characters')
                 .max(100, 'Last name must be at most 100 characters')
                 .required('Last name is required'),
@@ -117,22 +117,22 @@ function EditParticipant() {
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
                                 label="First Name"
-                                name="Fname"
-                                value={formik.values.Fname}
+                                name="firstName"
+                                value={formik.values.firstName}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.Fname && Boolean(formik.errors.Fname)}
-                                helperText={formik.touched.Fname && formik.errors.Fname}
+                                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                                helperText={formik.touched.firstName && formik.errors.firstName}
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
                                 label="Last Name"
-                                name="Lname"
-                                value={formik.values.Lname}
+                                name="lastName"
+                                value={formik.values.lastName}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.Lname && Boolean(formik.errors.Lname)}
-                                helperText={formik.touched.Lname && formik.errors.Lname}
+                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                                helperText={formik.touched.lastName && formik.errors.lastName}
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"

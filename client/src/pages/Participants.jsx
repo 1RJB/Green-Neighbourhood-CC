@@ -74,7 +74,7 @@ function Participants() {
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
                 {
-                    user && (
+                    user && (user.usertype === 'staff' || user.usertype === 'admin') && (
                         <Link to="/addparticipant" style={{ textDecoration: 'none' }}>
                             <Button variant='contained' color='primary'>
                                 Add
@@ -105,22 +105,22 @@ function Participants() {
                             participantList.map((participant) => (
                                 <TableRow key={participant.id}>
                                     <TableCell>{participant.id}</TableCell>
-                                    <TableCell>{participant.Fname}</TableCell>
-                                    <TableCell>{participant.Lname}</TableCell>
+                                    <TableCell>{participant.firstName}</TableCell>
+                                    <TableCell>{participant.lastName}</TableCell>
                                     <TableCell>{participant.email}</TableCell>
                                     <TableCell>{participant.gender}</TableCell>
-                                    <TableCell>{dayjs(participant.birthday).format('YYYY-MM-DD')}</TableCell>
+                                    <TableCell>{new Date(participant.birthday).toLocaleDateString()}</TableCell>
                                     <TableCell>{participant.event}</TableCell>
                                     <TableCell>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
                                             <AccountCircle sx={{ mr: 1 }} />
-                                            <Typography>{participant.user?.name}</Typography>
+                                            <Typography>{participant.createdBy}</Typography>
                                         </Box>
                                     </TableCell>
                                     <TableCell>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
                                             <AccessTime sx={{ mr: 1 }} />
-                                            <Typography>{dayjs(participant.createdAt).format(global.datetimeFormat)}</Typography>
+                                            <Typography>{new Date(participant.createdAt).toLocaleString()}</Typography>
                                         </Box>
                                     </TableCell>
                                     <TableCell>
