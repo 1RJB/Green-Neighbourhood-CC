@@ -42,8 +42,7 @@ const Header = () => {
 
       return (
         <>
-          <Nav.Link as={Link} to="/user/profile">Profile</Nav.Link>
-          <Nav.Link as={Link} to="/user/settings">Settings</Nav.Link>
+        {/* user */}
         </>
       );
     }
@@ -81,8 +80,10 @@ const Header = () => {
                 {user.name}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item>Settings</Dropdown.Item>
-                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                <Dropdown.Item style={{textAlign: 'center', display: 'block', width: '100%', border: 'none' }}><Nav.Link as={Link} to="/userprofile" style={{ color: 'black'}}>Profile</Nav.Link></Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout} style={{ backgroundColor: 'red', color: 'white', textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                  <Nav.Link style={{ color: 'white', textDecoration: 'none' }}>Log Out</Nav.Link>
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           )}

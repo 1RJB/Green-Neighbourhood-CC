@@ -104,6 +104,10 @@ router.post("/login", async (req, res) => {
     id: user.id,
     email: user.email,
     name: user.firstName,
+    lname:user.lastName,
+    password: user.password,
+    birthday: user.birthday,
+    gender: user.gender,
     usertype: user.usertype // Include usertype
   };
   let accessToken = sign(userInfo, process.env.APP_SECRET, {
@@ -120,6 +124,10 @@ router.get("/userauth", validateToken, (req, res) => {
     id: req.user.id,
     email: req.user.email,
     name: req.user.firstName,
+    lname: req.user.lastName,
+    password: req.user.password,
+    birthday: req.user.birthday,
+    gender: user.gender,
     usertype: req.user.usertype // Include usertype
   };
   res.json({
@@ -127,7 +135,7 @@ router.get("/userauth", validateToken, (req, res) => {
   });
 });
 
-router.put("/staff/:id", async (req, res) => {
+router.put("/user/:id", async (req, res) => {
     const { id } = req.params;
     let data = req.body;
   
