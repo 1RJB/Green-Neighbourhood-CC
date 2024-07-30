@@ -45,5 +45,15 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    Reward.associate = (models) => {
+        Reward.belongsTo(models.Customer, {
+            foreignKey: "customerId",
+            as: 'customer'
+        });
+        Reward.hasMany(models.Redemption, {
+            foreignKey: 'rewardId'
+        });
+    };
+
     return Reward;
 }

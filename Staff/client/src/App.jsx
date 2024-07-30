@@ -7,6 +7,7 @@ import MyTheme from './themes/MyTheme';
 import Rewards from './pages/Rewards';
 import AddReward from './pages/AddReward';
 import EditReward from './pages/EditReward';
+import RedemptionsMade from './pages/RedemptionsMade';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import http from './http';
@@ -65,6 +66,8 @@ function App() {
               <Route path={"/rewards"} element={<Rewards />} />
               <Route path={"/addreward"} element={<AddReward />} />
               <Route path={"/editreward/:id"} element={<EditReward />} />
+              <Route path={"/reward/redemptionsmade"} 
+              element={<RedemptionsMade />} />
               <Route path={"/staff/register"} element={<Register />} />
               <Route path={"/staff/login"} element={<Login />} />
             </Routes>

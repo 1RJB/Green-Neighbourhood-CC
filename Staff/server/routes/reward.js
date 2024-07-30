@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Staff, Reward } = require('../models');
+const { Staff, Reward, Redemption } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
@@ -139,6 +139,31 @@ router.delete("/:id", validateToken, async (req, res) => {
         res.status(400).json({
             message: `Cannot delete reward with id ${id}.`
         });
+    }
+});
+
+// Fetch redemptions with filtering and sorting
+router.get('/redemptionsmade', validateToken, async (req, res) => {
+    const { rewardId, customerId, sortBy = 'redeemedAt', order = 'DESC' } = req.query;
+
+    const where = {};
+    if (rewardId) where.rewardId = rewardId;
+    if (customerId) where.customerId = customerId;
+
+    try {
+        const redemptions = await Redemption.findAll({
+            where,
+            include: [
+                { model: Reward, attributes: ['title'] },
+                { model: Customer, attributes: ['name', 'email'] }
+            ],
+            order: [[sortBy, order]]
+        });
+
+        res.json(redemptions);
+    } catch (error) {
+        console.error('Error fetching redemptions:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
