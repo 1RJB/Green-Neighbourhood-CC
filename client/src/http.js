@@ -1,0 +1,46 @@
+import axios from "axios";
+
+const instance = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL
+});
+
+// Add a request interceptor
+instance.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    let accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+    if (config.data && config.data.staff) {
+        delete config.data.staff;
+    }
+    if (config.data && config.data.customer) {
+        delete config.data.customer;
+    }
+    return config;
+}, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+});
+
+// Add a response interceptor
+instance.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+}, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    if (error.response.status === 401 || error.response.status === 403) {
+        localStorage.clear();
+        const currentPath = window.location.pathname;
+        if (currentPath.startsWith('/staff')) {
+            window.location = "/staff/login";
+        } else if (currentPath.startsWith('/customer')) {
+            window.location = "/customer/login";
+        }
+    }
+    return Promise.reject(error);
+});
+
+export default instance;
