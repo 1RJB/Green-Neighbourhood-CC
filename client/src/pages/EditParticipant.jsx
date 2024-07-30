@@ -17,7 +17,8 @@ function EditParticipant() {
         email: '',
         gender: '',
         birthday: '',
-        event: ''
+        event: '',
+        status: ''
     });
     const [loading, setLoading] = useState(true);
     const [eventList, setEventList] = useState([]);
@@ -44,7 +45,8 @@ function EditParticipant() {
             email: participant.email,
             gender: participant.gender,
             birthday: participant.birthday,
-            event: participant.event    
+            event: participant.event,
+            status: participant.status    
         },
         validationSchema: yup.object({
             firstName: yup.string().trim()
@@ -65,7 +67,9 @@ function EditParticipant() {
             birthday: yup.date()
                 .required('Birthday is required'),
             event: yup.string().trim()
-                .required('Event is required')
+                .required('Event is required'),
+            status: yup.string().trim()
+                .required('status is required')
         }),
         enableReinitialize: true,
         onSubmit: (values) => {
@@ -164,6 +168,23 @@ function EditParticipant() {
                                     ))}
                                 </Select>
                                 {formik.touched.event && <Typography color="error">{formik.errors.event}</Typography>}
+                            </FormControl>
+                            <FormControl fullWidth margin="dense" error={formik.touched.status && Boolean(formik.errors.status)}>
+                                <InputLabel htmlFor="status">Status</InputLabel>
+                                <Select
+                                    label="Status"
+                                    name="status"
+                                    value={formik.values.status}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    autoComplete="off"
+                                >
+                                    <MenuItem value="">Select status</MenuItem>
+                                    <MenuItem value="Joined">Joined</MenuItem>
+                                    <MenuItem value="Participated">Participated</MenuItem>
+
+                                </Select>
+                                {formik.touched.status && <Typography color="error">{formik.errors.status}</Typography>}
                             </FormControl>
                         </Grid>
                     </Grid>

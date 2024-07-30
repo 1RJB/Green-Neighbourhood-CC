@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth')
 
-router.post("/",validateToken, async (req, res) => {
+router.post("/", validateToken, async (req, res) => {
     const participantsData = req.body.participants; // Expecting an array of participants
     const userId = req.user.id;
 
@@ -28,6 +28,7 @@ router.post("/",validateToken, async (req, res) => {
         for (const data of participantsData) {
             const validatedData = await validationSchema.validate(data, { abortEarly: false });
             validatedData.userId = userId; // Assign the userId here
+            validatedData.status = "Joined"; // Set the status to "Joined"
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
         }
@@ -75,8 +76,7 @@ router.delete("/:id", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     const id = req.params.id;
-    const participant = await Participant.findByPk(id, {
-    });
+    const participant = await Participant.findByPk(id, {});
 
     if (!participant) {
         return res.sendStatus(404); 
@@ -102,6 +102,7 @@ router.put("/:id", async (req, res) => {
         gender: yup.string().oneOf(["Male", "Female"]).required(),
         birthday: yup.date().max(new Date()).required(),
         event: yup.string().trim().required(),
+        status: yup.string().oneOf(["Joined", "Participated"]).required(),
     });
 
     try {

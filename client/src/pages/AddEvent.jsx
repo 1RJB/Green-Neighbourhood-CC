@@ -182,7 +182,7 @@ function AddEvent() {
                                         </img>
                                     </Box>
                                 )
-                                
+
                             }
                         </Box>
                         {formik.touched.imageFile && formik.errors.imageFile && (

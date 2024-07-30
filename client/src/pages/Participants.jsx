@@ -105,8 +105,9 @@ function Participants() {
                             <TableCell style={{ minWidth: 100 }}>Birthday</TableCell>
                             <TableCell style={{ minWidth: 120 }}>Event</TableCell>
                             <TableCell style={{ minWidth: 120 }}>Created By</TableCell>
+                            <TableCell style={{ minWidth: 120 }}>Status</TableCell>
                             <TableCell style={{ minWidth: 150 }}>Created At</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell> {/* New Column */}
+                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell> 
                             <TableCell style={{ minWidth: 100 }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -127,6 +128,7 @@ function Participants() {
                                             <Typography>{participant.user?.firstName + " " + participant.user?.lastName || 'Unknown'}</Typography> 
                                         </Box>
                                     </TableCell>
+                                    <TableCell>{participant.status}</TableCell>
                                     <TableCell>
                                         <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
                                             <AccessTime sx={{ mr: 1 }} />

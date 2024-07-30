@@ -23,6 +23,10 @@ firstName: {
       event: {
         type: DataTypes.STRING(100),
         allowNull: false
+      },
+      status: {
+        type: DataTypes.STRING(100),
+        allowNull: false
       }
     }, {
         tableName: 'participants'
