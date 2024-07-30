@@ -38,6 +38,13 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Reward.associate = (models) => {
+        Reward.belongsTo(models.Staff, {
+            foreignKey: "staffId",
+            as: 'staff'
+        });
+    };
+
+    Reward.associate = (models) => {
         Reward.belongsTo(models.Customer, {
             foreignKey: "customerId",
             as: 'customer'
