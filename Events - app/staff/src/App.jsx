@@ -15,6 +15,7 @@ import { useState, useEffect } from 'react';
 import UserContext from './contexts/UserContext';
 import http from './http';
 
+
 function App() {
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState(null);

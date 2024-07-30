@@ -17,7 +17,8 @@ function AddEvent() {
             description: "",
             eventDate: "",
             eventTime: "",
-            category: ""  // Initialize category field
+            category: "",  // Initialize category field
+            imageFile: null  // Initialize imageFile field
         },
         validationSchema: yup.object({
             title: yup.string().trim()
@@ -30,7 +31,8 @@ function AddEvent() {
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required'),
             eventTime: yup.string().required('Event time is required'),
-            category: yup.string().required('Category is required')  // Add validation for category
+            category: yup.string().required('Category is required'),  // Add validation for category
+            imageFile: yup.mixed().required('Image is required')  // Add validation for imageFile
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -66,11 +68,16 @@ function AddEvent() {
             })
                 .then((res) => {
                     setImageFile(res.data.filename);
+                    formik.setFieldValue('imageFile', res.data.filename);  // Update formik value
                 })
                 .catch(function (error) {
                     console.log(error.response);
                 });
         }
+    };
+    const handleClear = () => {
+        formik.resetForm();
+        setImageFile(null);
     };
 
     return (
@@ -111,7 +118,9 @@ function AddEvent() {
                             type="date"
                             label="Event Date"
                             name="eventDate"
+                            placeholder="YYYY-MM-DD"
                             value={formik.values.eventDate}
+                            InputLabelProps={{ shrink: true }}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.eventDate && Boolean(formik.errors.eventDate)}
@@ -124,13 +133,17 @@ function AddEvent() {
                             label="Event Time"
                             name="eventTime"
                             value={formik.values.eventTime}
+                            placeholder="HH:MM" // Add placeholder for time
+                            InputLabelProps={{ shrink: true }} // Ensure the label stays above the input
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.eventTime && Boolean(formik.errors.eventTime)}
                             helperText={formik.touched.eventTime && formik.errors.eventTime}
                         />
                         <FormControl fullWidth margin="dense" error={formik.touched.category && Boolean(formik.errors.category)}>
-                            <InputLabel id="category-label">Category</InputLabel>
+                            <InputLabel id="category-label" sx={{ top: -6, left: 0 }}>
+                                Category
+                            </InputLabel>
                             <Select
                                 labelId="category-label"
                                 id="category"
@@ -138,6 +151,7 @@ function AddEvent() {
                                 value={formik.values.category}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
+                                label="Category"
                             >
                                 <MenuItem value="">Select a category</MenuItem>
                                 <MenuItem value="Sustainable">Sustainable</MenuItem>
@@ -152,6 +166,7 @@ function AddEvent() {
                                 </Typography>
                             )}
                         </FormControl>
+
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
                         <Box sx={{ textAlign: 'center', mt: 2 }} >
@@ -168,11 +183,19 @@ function AddEvent() {
                                 </Box>
                             )}
                         </Box>
+                        {formik.touched.imageFile && formik.errors.imageFile && (
+                            <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1, textAlign: 'center' }}>
+                                {formik.errors.imageFile}
+                            </Typography>
+                        )}
                     </Grid>
                 </Grid>
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
                     <Button variant="contained" type="submit">
                         Add
+                    </Button>
+                    <Button variant="contained" color="error" onClick={handleClear} sx={{ backgroundColor: 'red', color: 'white' }}>
+                        Clear
                     </Button>
                 </Box>
             </Box>
@@ -182,3 +205,5 @@ function AddEvent() {
 }
 
 export default AddEvent;
+
+// re add everythig on update 8 

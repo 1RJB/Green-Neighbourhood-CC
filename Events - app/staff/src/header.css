@@ -1,11 +1,11 @@
 /* header.css */
 
 /* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
 
 /* Navbar styles */
 .custom-navbar {
-  background-color: #228B22; /* Forest Green */
+  background-color: #0A5C36; /* Forest Green */
   color: white;
 }
 
@@ -14,6 +14,7 @@
   color: white;
   font-family: 'Poppins', sans-serif;
   font-size: 1.2rem; /* Adjust the font size as needed */
+  font-weight: 300; /* Thinner font weight */
 }
 
 .custom-navbar .navbar-brand:hover,
@@ -50,6 +51,7 @@
   color: white;
   padding: 0.5rem 1rem; /* Adjust padding for button size */
   border-radius: 0.25rem; /* Rounded corners */
+  font-weight: 300; /* Thinner font weight */
 }
 
 .login-button:hover {
@@ -64,8 +66,11 @@
   cursor: pointer;
   text-decoration: none;
   padding: 0.5rem 1rem;
+  font-weight: 300; /* Thinner font weight */
 }
 
 .user-dropdown-toggle:hover {
   color: #ddd; /* Light grey on hover */
 }
+
+/* re add all this code to integrated in update 8  */

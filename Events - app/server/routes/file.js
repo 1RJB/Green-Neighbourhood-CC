@@ -3,7 +3,7 @@ const router = express.Router();
 const { validateToken } = require('../middlewares/userauth', '../middlewares/staffauth', '../middlewares/adminauth');
 const { upload } = require('../middlewares/upload');
 
-router.post('/fileupload', validateToken, (req, res) => {
+router.post('/upload', validateToken, (req, res) => {
 upload(req, res, (err) => {
     if (err) {
         res.status(400).json(err);
@@ -17,3 +17,5 @@ upload(req, res, (err) => {
     })
 });
 module.exports = router;
+
+// change /upload update 8
