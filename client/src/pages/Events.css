@@ -56,3 +56,21 @@
     background-color: navy;
     color: #fff; /* Adjust text color */
 }
+
+/* new to be added to update 8 */
+/* Events.css */
+
+.event-image-container {
+  width: 100%;
+  height: 200px; /* Set the height to the desired fixed size */
+  overflow: hidden; /* Ensure that any overflow is hidden */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.event-image {
+  width: auto;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
+}

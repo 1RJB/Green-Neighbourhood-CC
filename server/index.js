@@ -32,11 +32,12 @@ app.use("/staff", staffRoute);
 const adminRoute = require("./routes/admin");
 app.use("/admin", adminRoute);
 
+const eventRoute = require('./routes/event');
+app.use("/event", eventRoute);
+
 const fileRoute = require('./routes/file');
 app.use("/file", fileRoute);
 
-const eventRoute = require('./routes/event');
-app.use("/event", eventRoute);
 
 const db = require("./models");
 db.sequelize
