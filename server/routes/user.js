@@ -105,11 +105,12 @@ router.post("/login", async (req, res) => {
     id: user.id,
     email: user.email,
     name: user.firstName,
-    lname:user.lastName,
+    lname: user.lastName,
     password: user.password,
     birthday: user.birthday,
     gender: user.gender,
-    usertype: user.usertype // Include usertype
+    usertype: user.usertype, // Include usertype
+    points: user.points,
   };
   let accessToken = sign(userInfo, process.env.APP_SECRET, {
     expiresIn: process.env.TOKEN_EXPIRES_IN,
@@ -129,41 +130,112 @@ router.get("/userauth", validateToken, (req, res) => {
     lname: req.user.lastName,
     password: req.user.password,
     birthday: req.user.birthday,
-    gender: user.gender,
-    usertype: req.user.usertype // Include usertype
+    gender: req.user.gender,
+    usertype: req.user.usertype, // Include usertype
+    points: req.user.points,
   };
   res.json({
     user: userInfo,
   });
 });
 
-router.put("/user/:id", async (req, res) => {
-    const { id } = req.params;
-    let data = req.body;
-  
-    try {
-      // Validate input data
-      data = await updateSchema.validate(data, { abortEarly: false });
-  
-      // Hash password if provided
-      if (data.password) {
-        data.password = await bcrypt.hash(data.password, 10);
+router.get("/userInfo", validateToken, async (req, res) => {
+  try {
+    // Retrieve the user's information from the database using the user ID from the token
+    const user = await User.findByPk(req.user.id, {
+      attributes: {
+        exclude: [] // Exclude the password from the response
       }
-  
-      // Update user in the database
-      const updatedUser = await User.update(data, {
-        where: { id: id },
-      });
-  
-      if (updatedUser[0] === 1) {
-        res.json({ message: `Staff member with ID ${id} updated successfully.` });
-      } else {
-        res.status(404).json({ message: `Staff member with ID ${id} not found.` });
-      }
-    } catch (err) {
-      res.status(400).json({ errors: err.errors });
-    }
-  });
+    });
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Return user info
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Validation schema for user update
+const updateSchema = yup.object({
+  firstName: yup.string().trim().min(3).max(25).matches(/^[a-zA-Z '-,.]+$/, "Invalid first name"),
+  lastName: yup.string().trim().min(3).max(25).matches(/^[a-zA-Z '-,.]+$/, "Invalid last name"),
+  email: yup.string().trim().lowercase().email().max(50),
+  gender: yup.string().oneOf(["Male", "Female"]),
+  birthday: yup.date().max(new Date()),
+  password: yup.string().trim().min(8).max(50).matches(/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/, "Password must contain at least 1 letter and 1 number"),
+});
+
+router.put("/userInfo/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+  let data = req.body;
+
+  console.log("Received data:", data); // Log the received data
+
+  try {
+    data = await updateSchema.validate(data, { abortEarly: false });
+
+    // Hash password if provided
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+
+    // Remove password if it was not updated (empty string)
+    if (!data.password) {
+      delete data.password;
+    }
+
+    // Update user in the database
+    const updatedUser = await User.update(data, { where: { id } });
+
+    if (updatedUser[0] === 1) {
+      const user = await User.findByPk(id, { attributes: { exclude: ['password'] } });
+      res.json(user);
+    } else {
+      res.status(404).json({ message: `User with ID ${id} not found. ` });
+    }
+  } catch (err) {
+    console.error("Validation error:", err); // Log validation errors
+    res.status(400).json({ errors: err.errors });
+  }
+});
+
+router.delete("/userInfo/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete the user
+    await user.destroy();
+
+    res.json({ message: `User with ID ${id} has been deleted successfully.` });
+  } catch (err) {
+    console.error("Failed to delete user:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/allUsers", validateToken, async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] }
+    });
+
+    res.json(users);
+  } catch (err) {
+    console.error("Failed to fetch users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 module.exports = router;

@@ -14,30 +14,38 @@ app.use(
   })
 );
 
-// Simple Route
+// Simple Routes
 app.get("/", (req, res) => {
   res.send("HOW DID U GET TO MY SUPER SECRET SPACE.");
 });
 
+app.get("/welcome", (req, res) => {
+  res.send("Welcome to the Green Neighbourhood Rewards");
+});
+
 // Routes
 const userRoute = require("./routes/user");
-app.use("/user", userRoute);
-
 const participantRoute = require('./routes/participant');
-app.use("/participant", participantRoute);
-
 const staffRoute = require("./routes/staff");
-app.use("/staff", staffRoute);
-
 const adminRoute = require("./routes/admin");
-app.use("/admin", adminRoute);
-
 const eventRoute = require('./routes/event');
-app.use("/event", eventRoute);
-
 const fileRoute = require('./routes/file');
-app.use("/file", fileRoute);
+const volunteerRoute = require("./routes/volunteer");
+const rewardRoute = require("./routes/reward");
+const redemptionRoute = require('./routes/redemption');
+const pointsRoute = require('./routes/points');
 
+
+app.use("/user", userRoute);
+app.use("/participant", participantRoute);
+app.use("/staff", staffRoute);
+app.use("/admin", adminRoute);
+app.use("/event", eventRoute);
+app.use("/file", fileRoute);
+app.use("/volunteer", volunteerRoute);
+app.use("/reward", rewardRoute);
+app.use("/redemption", redemptionRoute); 
+app.use("/points", pointsRoute);
 
 const db = require("./models");
 db.sequelize
@@ -45,7 +53,7 @@ db.sequelize
   .then(() => {
     let port = process.env.APP_PORT;
     app.listen(port, () => {
-      console.log(`Sever running on http://localhost:${port}`);
+      console.log(`⚡ Server running on http://localhost:${port}`);
     });
   })
   .catch((err) => {

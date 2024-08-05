@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import http from "../http"; 
+import http from "../http";
+import emailjs from 'emailjs-com';
 import {
   Box,
   Typography,
@@ -18,8 +19,28 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const sendOTP = async (email, otp) => {
+  const templateParams = {
+    to_email: email,
+    otp: otp,
+  };
+
+  try {
+    await emailjs.send('service_atajjxp', 'template_c8ziunu', templateParams, 'YNOWo8S4upqxTO_Tk');
+    toast.success('OTP sent successfully!');
+  } catch (error) {
+    console.error('Failed to send OTP', error);
+    toast.error('Failed to send OTP. Please try again later.');
+  }
+};
+
 function Register() {
   const navigate = useNavigate();
+  const [generatedOtp, setGeneratedOtp] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +51,7 @@ function Register() {
       confirmPassword: "",
       birthday: "",
       gender: "",
+      otp: ""
     },
     validationSchema: yup.object({
       firstName: yup
@@ -80,6 +102,10 @@ function Register() {
         .string()
         .oneOf([yup.ref("password"), null], "Passwords must match")
         .required("Confirm Password is required"),
+      otp: yup
+        .string()
+        .required('OTP is required')
+        .test('otp-match', 'Invalid OTP', value => value === generatedOtp),
     }),
     onSubmit: async (values) => {
       try {
@@ -100,7 +126,12 @@ function Register() {
     },
   });
 
-  return (
+  const handleSendOtp = async () => {
+    const otp = generateOTP();
+    setGeneratedOtp(otp);
+    await sendOTP(formik.values.email, otp);
+  };
+return (
     <Box
       sx={{
         marginTop: 8,
@@ -152,6 +183,26 @@ function Register() {
           onBlur={formik.handleBlur}
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
+        />
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{ mt: 2, marginBottom: 2 }}
+          onClick={handleSendOtp}
+        >
+          Send OTP
+        </Button>
+        <TextField
+          fullWidth
+          margin="dense"
+          autoComplete="off"
+          label="OTP"
+          name="otp"
+          value={formik.values.otp}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.otp && Boolean(formik.errors.otp)}
+          helperText={formik.touched.otp && formik.errors.otp}
         />
         <TextField
           fullWidth
@@ -210,7 +261,7 @@ function Register() {
             aria-label="gender"
             name="gender"
             value={formik.values.gender}
-            onChange={formik.handleChange}
+onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           >
             <FormControlLabel value="Male" control={<Radio />} label="Male" />

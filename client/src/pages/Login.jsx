@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import React, { useContext } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
@@ -75,19 +76,21 @@ function Login() {
                     error={formik.touched.password && Boolean(formik.errors.password)}
                     helperText={formik.touched.password && formik.errors.password}
                 />
+                <Typography sx={{ my: 2, textAlign: 'center' }}>
+                    <Link to="/register" style={{ textDecoration: 'none', color: '#1976d2' }}>
+                        Not signed up yet? Sign Up now!
+                    </Link>
+                </Typography>
+                <Typography sx={{ my: 2, textAlign: 'center' }}>
+                    <Link to="/forgotPassword" style={{ textDecoration: 'none', color: '#1976d2' }}>
+                        Forgot password? click here!
+                    </Link>
+                </Typography>
                 <Button fullWidth variant="contained" sx={{ mt: 2 }}
                     type="submit">
                     Login
                 </Button>
             </Box>
-
-            {/* Registration link */}
-            <Typography variant="body2" sx={{ mt: 2 }}>
-                Don't have an account yet? 
-                <Link to="/register" style={{ color: '#1976d2', textDecoration: 'underline', marginLeft: '5px' }}>
-                    Sign up here 
-                </Link>
-            </Typography>
 
             <ToastContainer />
         </Box>

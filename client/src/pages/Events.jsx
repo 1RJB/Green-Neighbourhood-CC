@@ -82,7 +82,7 @@ function Events() {
     useEffect(() => {
         getEvents();
     }, [search, selectedCategory]); // Re-fetch events when search or category changes
-    
+
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>

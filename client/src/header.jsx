@@ -37,20 +37,23 @@ const Header = () => {
           <>
             <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
             <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
-            <Nav.Link as={Link} to="/participants">Participants</Nav.Link>
           </>
         );
       }
-
+      // Update this block for non-staff users to link to the main volunteer page
       return (
         <>
-        {/* user */}
+          <Nav.Link as={Link} to="/volunteers">Volunteer Tickets</Nav.Link>
         </>
       );
     }
-
-    return <Nav.Link as={Link} to="/login">Login</Nav.Link>;
-  };
+    return (
+      <>
+        <Nav.Link as={Link} to="/login">Login</Nav.Link>
+        <Nav.Link as={Link} to="/register">Register</Nav.Link>
+      </>
+    );
+  }
 
   return (
     <Navbar className="custom-navbar" expand="lg">
@@ -71,20 +74,23 @@ const Header = () => {
           <Nav className="mx-auto">
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/events">Events</Nav.Link>
-            <Nav.Link as={Link} to="/register">Register</Nav.Link>
-            <Nav.Link as={Link} to="/staffregister">Staff Register</Nav.Link>
-            <Nav.Link as={Link} to="/adminregister">Admin Register</Nav.Link>
+            <Nav.Link as={Link} to="/rewards">Rewards</Nav.Link>
             <Nav.Link as={Link} to="/contactUs">Contact Us</Nav.Link>
             {renderUserLinks()}
           </Nav>
           {user && (
-            <Dropdown alignRight>
+            <Dropdown style={{ textAlign: 'right' }}>
               <Dropdown.Toggle as="a" className="user-dropdown-toggle">
                 {user.name}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item style={{textAlign: 'center', display: 'block', width: '100%', border: 'none' }}><Nav.Link as={Link} to="/userprofile" style={{ color: 'black'}}>Profile</Nav.Link></Dropdown.Item>
-                <Dropdown.Item onClick={handleLogout} style={{ backgroundColor: 'red', color: 'white', textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                  <Nav.Link as={Link} to="/userprofile" style={{ color: 'black' }}>Profile</Nav.Link>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={handleLogout}
+                  style={{ backgroundColor: 'red', color: 'white', textAlign: 'center', display: 'block', width: '100%', border: 'none' }}
+                >
                   <Nav.Link style={{ color: 'white', textDecoration: 'none' }}>Log Out</Nav.Link>
                 </Dropdown.Item>
               </Dropdown.Menu>
