@@ -170,7 +170,7 @@ function Rewards() {
                                             <CardContent>
                                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
                                                     <Typography variant="body2" className={`category-pill category-${categoryColors[reward.category]}`}>
-                                                        {reward.category}
+                                                        {reward.category.replace(/_/g, ' ')}
                                                     </Typography>
                                                 </Box>
                                                 <Box sx={{ display: 'flex', mb: 1 }}>

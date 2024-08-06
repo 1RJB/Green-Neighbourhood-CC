@@ -12,7 +12,7 @@ let validationSchema = yup.object({
     startDate: yup.date().min(new Date()).required(),
     endDate: yup.date().min(yup.ref('startDate')).required(),
     points: yup.number().min(1).required(),
-    category: yup.string().oneOf(['Vouchers', 'GiftCards', 'Health And Wellness', 'Workshops', 'Career Development', 'Recognition', 'Others']).required(),
+    category: yup.string().oneOf(['Vouchers', 'Gift_Cards', 'Health_And_Wellness', 'Workshops', 'Career_Development', 'Recognition', 'Others']).required(),
     maxEachRedeem: yup.number().min(1),
     maxTotalRedeem: yup.number().min(1)
 });

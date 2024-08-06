@@ -196,10 +196,10 @@ function EditReward() {
                                     >
                                         <MenuItem value="">Select a category</MenuItem>
                                         <MenuItem value="Vouchers">Vouchers</MenuItem>
-                                        <MenuItem value="GiftCards">Gift Cards</MenuItem>
-                                        <MenuItem value="Health And Wellness">Health & Wellness</MenuItem>
+                                        <MenuItem value="Gift_Cards">Gift Cards</MenuItem>
+                                        <MenuItem value="Health_And_Wellness">Health And Wellness</MenuItem>
                                         <MenuItem value="Workshops">Workshops</MenuItem>
-                                        <MenuItem value="Career Development">Career Development</MenuItem>
+                                        <MenuItem value="Career_Development">Career Development</MenuItem>
                                         <MenuItem value="Recognition">Recognition</MenuItem>
                                         <MenuItem value="Others">Others</MenuItem>
                                     </Select>

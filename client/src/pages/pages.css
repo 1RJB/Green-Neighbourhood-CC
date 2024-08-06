@@ -47,13 +47,23 @@
     color: #fff; /* Adjust text color */
 }
 
-.category-brown {
-    background-color: brown;
+.category-lightgreen {
+    background-color: lightgreen;
+    color: #000; /* Adjust text color */
+}
+
+.category-orange {
+    background-color: orange;
     color: #fff; /* Adjust text color */
 }
 
-.category-navy {
-    background-color: navy;
+.category-purple {
+    background-color: purple;
+    color: #fff; /* Adjust text color */
+}
+
+.category-grey {
+    background-color: grey;
     color: #fff; /* Adjust text color */
 }
 

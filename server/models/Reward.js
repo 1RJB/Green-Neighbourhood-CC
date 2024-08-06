@@ -20,11 +20,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        imageFile: {
-            type: DataTypes.STRING(20)
-        },
         category: {
-            type: DataTypes.ENUM('Vouchers', 'GiftCards', 'Health And Wellness', 'Workshops', 'Career Development', 'Recognition', 'Others'),
+            type: DataTypes.ENUM('Vouchers', 'Gift_Cards', 'Health_And_Wellness', 'Workshops', 'Career_Development', 'Recognition', 'Others'),
             allowNull: false
         },
         maxEachRedeem: {
@@ -34,11 +31,14 @@ module.exports = (sequelize, DataTypes) => {
         maxTotalRedeem: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        imageFile: {
+            type: DataTypes.STRING(20)
         }
-    }, 
-    {
-        tableName: 'rewards'
-    });
+    },
+        {
+            tableName: 'rewards'
+        });
 
     Reward.associate = (models) => {
         Reward.belongsTo(models.Staff, {
@@ -46,8 +46,8 @@ module.exports = (sequelize, DataTypes) => {
             as: 'staff'
         });
         Reward.hasMany(models.Redemption, {
-            foreignKey: 'rewardId', 
-            as: 'redemptions' 
+            foreignKey: 'rewardId',
+            as: 'redemptions'
         });
     };
 
