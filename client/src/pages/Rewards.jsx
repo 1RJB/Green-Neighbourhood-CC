@@ -180,7 +180,7 @@ function Rewards() {
                                                     {
                                                         user && user.usertype === "staff" && (
                                                             <Link to={`/editreward/${reward.id}`}>
-                                                                <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                                <IconButton color="primary" sx={{ padding: '4px', mt: 2.5 }}>
                                                                     <Edit />
                                                                 </IconButton>
                                                             </Link>
