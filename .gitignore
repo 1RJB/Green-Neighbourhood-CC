@@ -100,3 +100,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Dependency lock files (uncomment if you want to ignore them)
+*/package-lock.json
+*/yarn.lock
+*/pnpm-lock.yaml
