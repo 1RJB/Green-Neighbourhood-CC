@@ -1,7 +1,8 @@
 // reward.js
 const express = require('express');
 const router = express.Router();
-const { Staff, Reward } = require('../models');
+const { Staff, Reward, Redemption, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const yup = require("yup");
 const { validateToken: validateStaffToken } = require('../middlewares/staffauth');
 
@@ -57,11 +58,25 @@ router.get("/", async (req, res) => {
         let list = await Reward.findAll({
             where: condition,
             order: [['createdAt', 'DESC']],
-            include: {
-                model: Staff,
-                as: "staff",
-                attributes: ['firstName', 'lastName']
-            }
+            include: [
+                {
+                    model: Staff,
+                    as: "staff",
+                    attributes: ['firstName', 'lastName']
+                },
+                {
+                    model: Redemption,
+                    as: "redemptions",
+                    attributes: []
+                },
+            ],
+            attributes: {
+                include: [
+                    [sequelize.fn('COUNT', sequelize.col('redemptions.id')), 'redemptionCount']
+                ]
+            },
+            group: ['Reward.id']
+
         });
         res.json(list);
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress } from '@mui/material';
 import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Star, ArrowForward } from '@mui/icons-material';
 import http from '../http';
 import { toast, ToastContainer } from 'react-toastify';
@@ -54,7 +54,14 @@ function Rewards() {
         console.log("Fetching rewards with URL:", url);
         http.get(url).then((res) => {
             console.log("Rewards data:", res.data);
-            setRewardList(res.data);
+            const currentDate = dayjs();
+            const filteredRewards = res.data.filter(reward => {
+                if (user && user.usertype === "staff") {
+                    return true; // Show all rewards to staff
+                }
+                return dayjs(reward.endDate).isAfter(currentDate);
+            });
+            setRewardList(filteredRewards);
         }).catch((error) => {
             console.error("Error fetching rewards:", error);
         });
@@ -62,7 +69,7 @@ function Rewards() {
 
     useEffect(() => {
         getRewards();
-    }, [selectedCategory, search]);
+    }, [selectedCategory, search, user]);
 
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -151,10 +158,21 @@ function Rewards() {
             <Grid container spacing={2}>
                 {
                     rewardList.map((reward, i) => {
+                        const isExpired = dayjs().isAfter(dayjs(reward.endDate));
+                        const isMaxRedeemed = reward.redemptionCount >= reward.maxTotalRedeem;
                         return (
                             <Grid item xs={12} md={6} lg={4} key={reward.id}>
                                 <Link to={`/reward/redeem/${reward.id}`} style={{ textDecoration: 'none' }}>
-                                    <Card>
+                                    <Card className={
+                                        (isExpired && user && user.usertype === "staff") ? "expired-reward" :
+                                            (isMaxRedeemed && user && user.usertype === "staff") ? "max-redeemed-reward" : ""
+                                    }>
+                                        {isExpired && user && user.usertype === "staff" && (
+                                            <div className="expired-label">Expired</div>
+                                        )}
+                                        {isMaxRedeemed && user && user.usertype === "staff" && (
+                                            <div className="max-redeemed-label">Max Redeemed</div>
+                                        )}
                                         <div className="pages-card-content">
 
                                             {
@@ -210,7 +228,23 @@ function Rewards() {
                                                     )
                                                 }
                                                 {
-                                                    (!user || user.usertype !== "staff") && (
+                                                    user && user.usertype === "user" && (
+                                                        <>
+                                                            {
+                                                                user.points < reward.points && (
+                                                                    <Box sx={{ width: '100%' }}>
+                                                                        <LinearProgress variant="determinate" value={(user.points / reward.points) * 100} />
+                                                                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center' }}>
+                                                                            {`${user.points} of ${reward.points} points`}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                )
+                                                            }
+                                                        </>
+                                                    )
+                                                }
+                                                {
+                                                    (!user || user.usertype !== "staff" || (user.usertype === "user" && user.points >= reward.points)) && (
                                                         <>
                                                             <Typography textAlign={'center'} fontSize={15} color="primary" >
                                                                 <Star sx={{ mr: 1 }} color="primary" />

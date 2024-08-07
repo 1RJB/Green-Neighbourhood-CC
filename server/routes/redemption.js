@@ -2,36 +2,51 @@
 const express = require('express');
 const router = express.Router();
 const { User, Reward, Redemption } = require('../models');
-const { Op } = require("sequelize");
+const { Sequelize, Op } = require("sequelize");
 const yup = require("yup");
+const dayjs = require('dayjs');
 const { validateToken: validateStaffToken } = require('../middlewares/staffauth');
 const { validateToken: validateUserToken } = require('../middlewares/userauth');
 
-// GET: List redemptions with optional userId and rewardId filtering, and sorted
+// GET: List redemptions with optional userName and rewardName filtering, and sorted
 router.get("/", async (req, res) => {
-    let { rewardId, userId, sortBy, order } = req.query;
-    let whereClause = {};
-    if (rewardId) whereClause.rewardId = rewardId;
-    if (userId) whereClause.userId = userId;
+    let { rewardName, userName, sortBy, order, status } = req.query;
 
+    console.log('Query Params:', { rewardName, userName, sortBy, order, status });
 
-    console.log('Query Params:', { rewardId, userId, sortBy, order });
-    console.log('Where Clause:', whereClause);
+    // Define sort attribute for Sequelize query
+    let sortAttribute;
+    if (sortBy === 'userName') {
+        sortAttribute = Sequelize.literal("CONCAT(`user`.`firstName`, ' ', `user`.`lastName`)");
+    } else if (sortBy === 'rewardName') {
+        sortAttribute = Sequelize.literal("`reward`.`title`");
+    } else {
+        sortAttribute = sortBy || 'redeemedAt';
+    }
 
     try {
         const redemptions = await Redemption.findAll({
-            where: whereClause,
-            order: [[sortBy || 'redeemedAt', order || 'DESC']],
+            order: [[sortAttribute, order || 'DESC']],
+            where: status && status !== 'All' ? { status } : {},
             include: [
                 {
                     model: User,
                     as: 'user',
-                    attributes: ['id', 'firstName', 'lastName', 'email']
+                    attributes: ['id', 'firstName', 'lastName', 'email'],
+                    where: userName ? {
+                        [Op.or]: [
+                            { firstName: { [Op.like]: `%${userName}%` } },
+                            { lastName: { [Op.like]: `%${userName}%` } }
+                        ]
+                    } : {}
                 },
                 {
                     model: Reward,
                     as: 'reward',
-                    attributes: ['id', 'title']
+                    attributes: ['id', 'title'],
+                    where: rewardName ? {
+                        title: { [Op.like]: `%${rewardName}%` }
+                    } : {}
                 }
             ],
         });
@@ -79,31 +94,25 @@ router.get("/:id", async (req, res) => {
 });
 
 
-// PUT: Update a redemption by ID
+// PUT: Update a specific redemption
 router.put("/:id", async (req, res) => {
-    const id = req.params.id;
-    const redemption = await Redemption.findByPk(id);
-    if (!redemption) {
-        return res.sendStatus(404);
-    }
-    let data = req.body;
+    const { id } = req.params;
+    const { collectBy, status } = req.body;
+
     try {
-        data = await validationSchema.validate(data, { abortEarly: false });
-        // Process valid data
-        let num = await Redemption.update(data, {
-            where: { id: id }
-        });
-        if (num == 1) {
-            res.json({
-                message: "Redemption was updated successfully."
-            });
-        } else {
-            res.status(400).json({
-                message: `Cannot update redemption with id ${id}.`
-            });
+        const redemption = await Redemption.findByPk(id);
+        if (!redemption) {
+            return res.status(404).json({ error: 'Redemption not found' });
         }
-    } catch (err) {
-        res.status(400).json({ errors: err.errors });
+
+        redemption.collectBy = collectBy ? dayjs(collectBy).toISOString() : null;
+        redemption.status = status;
+
+        await redemption.save();
+        res.json(redemption);
+    } catch (error) {
+        console.error('Error updating redemption:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

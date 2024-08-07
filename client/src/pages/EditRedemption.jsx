@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, MenuItem } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import dayjs from 'dayjs';
 
 function EditRedemption() {
     const { id } = useParams();
     const navigate = useNavigate();
-
     const [redemption, setRedemption] = useState({});
     const [loading, setLoading] = useState(true);
-    const [rewardList, setRewardList] = useState([]);
 
     useEffect(() => {
         // Fetch redemption data
@@ -26,47 +25,37 @@ function EditRedemption() {
                 console.error('Error fetching redemption:', error);
                 setLoading(false);
             });
-
-        // Fetch Reward titles from the database
-        http.get('/redemption')
-            .then((res) => {
-                setRewardList(res.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching rewards:', error);
-            });
     }, [id]);
 
     const formik = useFormik({
         initialValues: {
-            firstName: redemption.firstName || '',
-            lastName: redemption.lastName || '',
-            email: redemption.email || '',
+            rewardTitle: redemption.reward?.title || '',
+            firstName: redemption.user?.firstName || '',
+            lastName: redemption.user?.lastName || '',
+            email: redemption.user?.email || '',
+            collectBy: redemption.collectBy ? dayjs(redemption.collectBy).format('YYYY-MM-DDTHH:mm:ss') : '',
+            status: redemption.status || '',
         },
         validationSchema: yup.object({
-            firstName: yup.string().trim()
-                .min(3, 'First name must be at least 3 characters')
-                .max(100, 'First name must be at most 100 characters')
-                .required('First name is required'),
-            lastName: yup.string().trim()
-                .min(3, 'Last name must be at least 3 characters')
-                .max(100, 'Last name must be at most 100 characters')
-                .required('Last name is required'),
-            email: yup.string().trim()
-                .email('Invalid email format')
-                .max(100, 'Email must be at most 100 characters')
-                .required('Email is required'),
+            collectBy: yup.date().nullable(),
+            status: yup.string()
+                .oneOf(['Pending', 'Collected', 'Expired'])
+                .required('Status is required'),
         }),
         enableReinitialize: true,
         onSubmit: (values) => {
-            http.put(`/redemption/${id}`, values)
+            const updatedData = {
+                collectBy: values.collectBy ? dayjs(values.collectBy).toISOString() : null,
+                status: values.status,
+            };
+            http.put(`/redemption/${id}`, updatedData)
                 .then((res) => {
                     console.log(res.data);
                     toast.success('Redemption updated successfully');
-                    navigate('/redemptions');
+                    navigate('/reward/redemptions');
                 })
                 .catch((error) => {
-                    console.error('Update error:', error);
+                    console.error('Update error:', error.response.data);
                     toast.error('Failed to update redemption');
                 });
         }
@@ -85,34 +74,67 @@ function EditRedemption() {
                         <Grid item xs={12} md={6} lg={8}>
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
+                                label="Reward Title"
+                                value={redemption.reward?.title || ''}
+                                disabled
+                            />
+                            <TextField
+                                fullWidth margin="dense" autoComplete="off"
                                 label="First Name"
                                 name="firstName"
-                                value={formik.values.firstName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                                helperText={formik.touched.firstName && formik.errors.firstName}
+                                value={redemption.user?.firstName || ''}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
                                 label="Last Name"
                                 name="lastName"
-                                value={formik.values.lastName}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                                helperText={formik.touched.lastName && formik.errors.lastName}
+                                value={redemption.user?.lastName || ''}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
                                 label="Email"
                                 name="email"
-                                value={formik.values.email}
+                                value={redemption.user?.email || ''}
+                                disabled
+                            />
+                            <TextField
+                                fullWidth margin="dense" autoComplete="off"
+                                label="Redeemed At"
+                                value={dayjs(redemption.redeemedAt).format('DD/MM/YYYY HH:mm:ss') || ''}
+                                disabled
+                            />
+                            <TextField
+                                fullWidth margin="dense" autoComplete="off"
+                                label="Collect By"
+                                name="collectBy"
+                                type="datetime-local"
+                                value={formik.values.collectBy}
+                                onChange={(e) => {
+                                    const date = e.target.value ? dayjs(e.target.value).format('YYYY-MM-DDTHH:mm:ss') : '';
+                                    formik.setFieldValue('collectBy', date);
+                                }}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.collectBy && Boolean(formik.errors.collectBy)}
+                                helperText={formik.touched.collectBy && formik.errors.collectBy}
+                                InputLabelProps={{ shrink: true }}
+                            />
+                            <TextField
+                                fullWidth margin="dense" autoComplete="off"
+                                label="Status"
+                                name="status"
+                                select
+                                value={formik.values.status}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                                helperText={formik.touched.email && formik.errors.email}
-                            />
+                                error={formik.touched.status && Boolean(formik.errors.status)}
+                                helperText={formik.touched.status && formik.errors.status}
+                            >
+                                <MenuItem value="Pending">Pending</MenuItem>
+                                <MenuItem value="Collected">Collected</MenuItem>
+                                <MenuItem value="Expired">Expired</MenuItem>
+                            </TextField>
                         </Grid>
                     </Grid>
                     <Box sx={{ mt: 2 }}>
@@ -122,7 +144,6 @@ function EditRedemption() {
                     </Box>
                 </Box>
             )}
-            <ToastContainer />
         </Box>
     );
 }

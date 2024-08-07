@@ -91,6 +91,7 @@ const RedeemReward = () => {
                     )}
                 </CardContent>
             </Card>
+            <ToastContainer />
         </Box>
     );
 };

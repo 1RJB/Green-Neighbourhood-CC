@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
         redeemedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
+        },
+        collectBy: {
+            type: DataTypes.DATE,
+            defaultValue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        },
+        status: {
+            type: DataTypes.ENUM('Pending', 'Collected', 'Expired'),
+            defaultValue: 'Pending',
         }
     }, {
         tableName: 'redemptions',

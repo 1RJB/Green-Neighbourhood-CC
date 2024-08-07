@@ -11,9 +11,10 @@ import { Edit, Delete } from '@mui/icons-material';
 
 const Redemptions = () => {
     const [redemptionList, setRedemptionList] = useState([]);
-    const [rewardId, setRewardId] = useState('');
-    const [userId, setUserId] = useState('');
+    const [rewardName, setRewardName] = useState('');
+    const [userName, setUserName] = useState('');
     const [sortBy, setSortBy] = useState('redeemedAt');
+    const [status, setStatus] = useState('All');
     const [order, setOrder] = useState('DESC');
     const [open, setOpen] = useState(false); // Dialog open state
     const [selectedRedemption, setSelectedRedemption] = useState(null); // Selected redemption to delete
@@ -23,17 +24,18 @@ const Redemptions = () => {
             console.log('Fetching redemptions...');
             const response = await http.get('/redemption', {
                 params: {
-                    rewardId: rewardId,
-                    userId: userId,
+                    rewardName: rewardName,
+                    userName: userName,
                     sortBy: sortBy,
-                    order: order
+                    order: order,
+                    status: status
                 }
             });
             console.log(response); // Log entire response
             console.log(response.data); // Log response data
 
             if (response.data) {
-                setRedemptionList(response.data); 
+                setRedemptionList(response.data);
             }
         } catch (error) {
             console.error('Error getting redemptions:', error);
@@ -76,16 +78,16 @@ const Redemptions = () => {
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
             <Box display="flex" justifyContent="space-between" mb={3}>
                 <TextField
-                    label="Filter by Reward ID"
-                    value={rewardId}
-                    onChange={(e) => setRewardId(e.target.value)}
+                    label="Filter by Reward Name"
+                    value={rewardName}
+                    onChange={(e) => setRewardName(e.target.value)}
                     variant="outlined"
                     sx={{ mr: 2 }}
                 />
                 <TextField
-                    label="Filter by User ID"
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
+                    label="Filter by User Name"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                     variant="outlined"
                     sx={{ mr: 2 }}
                 />
@@ -96,8 +98,21 @@ const Redemptions = () => {
                     sx={{ mr: 2 }}
                 >
                     <MenuItem value="redeemedAt">Redeemed At</MenuItem>
-                    <MenuItem value="rewardId">Reward ID</MenuItem>
-                    <MenuItem value="userId">User ID</MenuItem>
+                    <MenuItem value="rewardName">Reward Name</MenuItem>
+                    <MenuItem value="userName">User Name</MenuItem>
+                    <MenuItem value="status">Status</MenuItem>
+                </Select>
+
+                <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    variant="outlined"
+                    sx={{ mr: 2 }}
+                >
+                    <MenuItem value="All">All</MenuItem>
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Collected">Collected</MenuItem>
+                    <MenuItem value="Expired">Expired</MenuItem>
                 </Select>
                 <Select
                     value={order}
@@ -125,17 +140,21 @@ const Redemptions = () => {
                             <TableCell>User Name</TableCell>
                             <TableCell>User Email</TableCell>
                             <TableCell>Redeemed At</TableCell>
+                            <TableCell>Collect By</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt }) => (
+                        {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt, collectBy, status }) => (
                             <TableRow key={id}>
                                 <TableCell>{id}</TableCell>
                                 <TableCell>{reward.title}</TableCell>
                                 <TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
+                                <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
+                                <TableCell>{status}</TableCell>
                                 <TableCell>
                                     <Link to={`/reward/editredemption/${id}`}>
                                         <IconButton color="primary" sx={{ padding: '4px' }}>
@@ -143,11 +162,11 @@ const Redemptions = () => {
                                         </IconButton>
                                     </Link>
                                     <IconButton variant="contained" color="error" sx={{ ml: 2 }} onClick={() => handleOpen({ id, reward, user })}>
-                                        <Delete/>
+                                        <Delete />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
-                        )) : <TableRow><TableCell colSpan={6}>No redemptions made</TableCell></TableRow>}
+                        )) : <TableRow><TableCell colSpan={8}>No redemptions made</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>
