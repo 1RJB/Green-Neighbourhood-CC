@@ -84,6 +84,9 @@ const RedeemReward = () => {
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                         <strong>End Date: </strong>{dayjs(reward?.endDate).format("D MMMM YYYY")}
                     </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        <strong>No. Redeemable: </strong>{reward?.maxEachRedeem}
+                    </Typography>
                     {user && user.usertype === "user" && (
                         <Button variant="contained" color="primary" onClick={handleRedeem} sx={{ mt: 2 }}>
                             Redeem
