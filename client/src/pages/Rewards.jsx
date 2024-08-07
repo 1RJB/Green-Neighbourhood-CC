@@ -228,30 +228,41 @@ function Rewards() {
                                                     )
                                                 }
                                                 {
-                                                    user && user.usertype === "user" && (
+
+                                                    user && user.usertype === "user" ? (
                                                         <>
                                                             {
-                                                                user.points < reward.points && (
-                                                                    <Box sx={{ width: '100%' }}>
-                                                                        <LinearProgress variant="determinate" value={(user.points / reward.points) * 100} />
-                                                                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center' }}>
+                                                                user.points < reward.points ? (
+                                                                    <Box sx={{ width: '70%', margin: '0 auto', mt: 3 }}>
+                                                                        <LinearProgress variant="determinate" value={(user.points / reward.points) * 100} sx={{ borderRadius: 5 }} />
+                                                                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', fontSize: 14}} color={'primary'}>
                                                                             {`${user.points} of ${reward.points} points`}
                                                                         </Typography>
                                                                     </Box>
+                                                                ) : (
+                                                                    <Typography textAlign={'center'} fontSize={14} color="primary" >
+                                                                        <Star sx={{ mr: 1 }} color="primary" />
+                                                                        {reward.points} points
+                                                                    </Typography>
                                                                 )
                                                             }
                                                         </>
+                                                    ) : (
+                                                        <Typography textAlign={'center'} fontSize={15} color="primary" >
+                                                            <Star sx={{ mr: 1 }} color="primary" />
+                                                            {reward.points} points
+                                                        </Typography>
                                                     )
-                                                }
-                                                {
-                                                    (!user || user.usertype !== "staff" || (user.usertype === "user" && user.points >= reward.points)) && (
-                                                        <>
-                                                            <Typography textAlign={'center'} fontSize={15} color="primary" >
-                                                                <Star sx={{ mr: 1 }} color="primary" />
-                                                                {reward.points} points
-                                                            </Typography>
-                                                        </>
-                                                    )
+
+
+
+
+
+
+
+
+
+
                                                 }
 
                                                 {
