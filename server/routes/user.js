@@ -238,4 +238,24 @@ router.get("/allUsers", validateToken, async (req, res) => {
   }
 });
 
+// Get top 20 users by points
+router.get("/top20Users", validateToken, async (req, res) => {
+  try {
+    // Fetch all users, excluding staff
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      where: { usertype: 'user' } // Assuming 'usertype' field distinguishes between users and staff
+    });
+
+    // Sort users by points in descending order and limit to top 20
+    const sortedUsers = users.sort((a, b) => b.points - a.points).slice(0, 20);
+
+    res.json(sortedUsers);
+  } catch (err) {
+    console.error("Failed to fetch users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 module.exports = router;
