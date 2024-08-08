@@ -7,9 +7,18 @@ import { keyframes } from '@emotion/react';
 
 const Points = () => {
     const [pointsInfo, setPointsInfo] = useState([]);
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
 
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const { data } = await http.get('/user/userInfo');
+                setUser(data); // Update user data in context
+            } catch (err) {
+                console.error('Failed to fetch user data:', err.response?.data || err.message);
+            }
+        };
+
         const fetchPointsInfo = async () => {
             try {
                 const { data } = await http.get('/points/points-info');
@@ -19,6 +28,8 @@ const Points = () => {
             }
         };
 
+        // Fetch user data and points info on mount
+        fetchUserData();
         fetchPointsInfo();
     }, []);
 
@@ -71,7 +82,7 @@ const Points = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
-                                    onClick={() => {/* Handle action */ }}
+                                    onClick={() => {/* Handle action */}}
                                 >
                                     {info.actionText}
                                 </Button>
