@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, IconButton, SnackbarContent } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import http from '../http';
+import './pages.css'; // Import the CSS file
 
 const LeaderBoard = () => {
     const [leaderboard, setLeaderboard] = useState([]);
@@ -52,7 +53,7 @@ const LeaderBoard = () => {
     };
 
     return (
-        <Box sx={{ mt: 4 }}>
+        <Box className="leaderboard">
             <Typography variant="h4" gutterBottom>
                 Leaderboard
             </Typography>
@@ -62,7 +63,6 @@ const LeaderBoard = () => {
                         <TableRow>
                             <TableCell>Rank</TableCell>
                             <TableCell>Name</TableCell>
-                            <TableCell>Email</TableCell>
                             <TableCell align="right">Points</TableCell>
                         </TableRow>
                     </TableHead>
@@ -70,8 +70,7 @@ const LeaderBoard = () => {
                         {leaderboard.map((user, index) => (
                             <TableRow key={user.id} sx={getRowStyles(index)}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
-                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.firstName}</TableCell>
                                 <TableCell align="right">{user.points}</TableCell>
                             </TableRow>
                         ))}
@@ -91,14 +90,7 @@ const LeaderBoard = () => {
                 }}
             >
                 <SnackbarContent
-                    sx={{
-                        bgcolor: '#d4edda', // Light green background
-                        color: '#155724', // Dark green text color
-                        p: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
+                    className="MuiSnackbarContent-root"
                     message={`Congratulations ${currentUser?.firstName}! You are ranked #${userRank + 1} on the leaderboard.`}
                     action={
                         <IconButton
