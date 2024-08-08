@@ -152,11 +152,26 @@ router.put("/:id", validateToken, async (req, res) => {
         // Validate the incoming data
         const data = await validationSchema.validate(req.body, { abortEarly: false });
 
+        // Store the old status
+        const oldStatus = participant.status;
+
         // Update the participant
         const [num] = await Participant.update(data, { where: { id: id } });
 
         if (num === 1) {
-            res.json({ message: "Participant was updated successfully." });
+            // Fetch the participant again to get the updated status
+            const updatedParticipant = await Participant.findByPk(id);
+            
+            // Check if the status has changed to "Participated" and was not already "Participated"
+            if (data.status === "Participated" && oldStatus !== "Participated") {
+                user.points += 10000;
+                await user.save();
+                console.log(`User points updated to ${user.points}`);
+            } else {
+                console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
+            }
+            
+            res.json({ message: "Participant was updated successfully.", updatedPoints: user.points });
         } else {
             res.status(400).json({ message: `Cannot update participant with id ${id}.` });
         }
