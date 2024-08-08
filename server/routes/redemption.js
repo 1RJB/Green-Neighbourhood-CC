@@ -1,7 +1,7 @@
 // redemption.js
 const express = require('express');
 const router = express.Router();
-const { User, Reward, Redemption } = require('../models');
+const { User, Reward, Redemption, Achievement } = require('../models');
 const { Sequelize, Op } = require("sequelize");
 const yup = require("yup");
 const dayjs = require('dayjs');
@@ -190,10 +190,30 @@ router.post('/redeem/:rewardId', validateUserToken, async (req, res) => {
             redeemedAt: new Date()
         });
 
-        // Fetch the updated user data to return
-        let updatedUser = await User.findByPk(userId);
+        // Check for first redemption achievement
+        const userAchievements = await user.getAchievements();
+        if (!userAchievements.some(a => a.type === 'first_redemption')) {
+            const firstRedemptionAchievement = await Achievement.findOne({ where: { type: 'first_redemption' } });
+            if (firstRedemptionAchievement) {
+                await user.addAchievement(firstRedemptionAchievement);
+            }
+        }
 
-        res.json({ message: 'Reward redeemed successfully', redemption, user: updatedUser });
+        // Fetch the updated user data to return
+        let updatedUser = await User.findByPk(userId, {
+            include: [{
+                model: Achievement,
+                as: 'achievements',
+                through: { attributes: [] }
+            }]
+        });
+
+        res.json({ 
+            message: 'Reward redeemed successfully', 
+            redemption, 
+            user: updatedUser,
+            newAchievement: !userAchievements.some(a => a.type === 'first_redemption')
+        });
 
     } catch (error) {
         console.error('Error redeeming reward:', error);
