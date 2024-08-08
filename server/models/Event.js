@@ -16,9 +16,15 @@ module.exports = (sequelize, DataTypes) => {
         eventDate: {
             type: DataTypes.DATEONLY // Date without time
         },
+        endDate: {
+            type: DataTypes.DATEONLY // Date without time
+        },
         eventTime: {
             type: DataTypes.TIME // Time without date
-        }, 
+        },
+        endTime: {
+            type: DataTypes.TIME // Time without date
+        },
         category: {
             type: DataTypes.ENUM('Sustainable', 'Sports', 'Community', 'Workshop', 'Other'),
             allowNull: false
