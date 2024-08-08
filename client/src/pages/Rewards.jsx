@@ -25,12 +25,26 @@ function Rewards() {
     const [rewardList, setRewardList] = useState([]);
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext); // Assuming setUser exists in UserContext
     const navigate = useNavigate();
 
-    // Log the user and userType to the console for debugging
-    console.log("User Object:", user);
-    console.log("User Type:", user ? user.usertype : "No user object");
+    // Function to fetch user data
+    const fetchUserData = () => {
+        http.get('/user/userInfo').then((res) => {
+            console.log("Fetched user data:", res.data);
+            setUser(res.data); // Update user data in context
+        }).catch((error) => {
+            console.error("Error fetching user data:", error);
+        });
+    };
+
+    useEffect(() => {
+        fetchUserData(); // Fetch user data on mount
+    }, []); // Empty dependency array means this runs once on mount
+
+    useEffect(() => {
+        getRewards();
+    }, [search, selectedCategory]);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -67,10 +81,6 @@ function Rewards() {
         });
     };
 
-    useEffect(() => {
-        getRewards();
-    }, [selectedCategory, search, user]);
-
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
             getRewards();
@@ -86,14 +96,6 @@ function Rewards() {
         setSelectedCategory('All');
         getRewards();
     }
-
-    const handleRedemption = (reward) => {
-        if (user) {
-            navigate('/redeem', { state: { reward: reward.title } });
-        } else {
-            toast.error("Please log in to redeem rewards.");
-        }
-    };
 
     return (
         <Box>
@@ -228,8 +230,7 @@ function Rewards() {
                                                     )
                                                 }
                                                 {
-
-                                                    user && user.usertype === "user" ? (
+                                                    user && user.usertype === "user" && (
                                                         <>
                                                             {
                                                                 user.points < reward.points ? (
@@ -247,24 +248,8 @@ function Rewards() {
                                                                 )
                                                             }
                                                         </>
-                                                    ) : (
-                                                        <Typography textAlign={'center'} fontSize={15} color="primary" >
-                                                            <Star sx={{ mr: 1 }} color="primary" />
-                                                            {reward.points} points
-                                                        </Typography>
-                                                    )
-
-
-
-
-
-
-
-
-
-
+                                                    ) 
                                                 }
-
                                                 {
                                                     user && user.usertype === "staff" && (
                                                         <>
@@ -315,7 +300,8 @@ function Rewards() {
                     })
                 }
             </Grid>
-        </Box >
+
+        </Box>
     );
 }
 

@@ -11,7 +11,7 @@ import { Edit, Delete } from '@mui/icons-material';
 
 const Redemptions = () => {
     const [redemptionList, setRedemptionList] = useState([]);
-    const [rewardName, setRewardName] = useState('');
+    const [rewardTitle, setRewardTitle] = useState('');
     const [userName, setUserName] = useState('');
     const [sortBy, setSortBy] = useState('redeemedAt');
     const [status, setStatus] = useState('All');
@@ -24,7 +24,7 @@ const Redemptions = () => {
             console.log('Fetching redemptions...');
             const response = await http.get('/redemption', {
                 params: {
-                    rewardName: rewardName,
+                    rewardTitle: rewardTitle,
                     userName: userName,
                     sortBy: sortBy,
                     order: order,
@@ -79,8 +79,8 @@ const Redemptions = () => {
             <Box display="flex" justifyContent="space-between" mb={3}>
                 <TextField
                     label="Filter by Reward Name"
-                    value={rewardName}
-                    onChange={(e) => setRewardName(e.target.value)}
+                    value={rewardTitle}
+                    onChange={(e) => setRewardTitle(e.target.value)}
                     variant="outlined"
                     sx={{ mr: 2 }}
                 />
@@ -98,7 +98,7 @@ const Redemptions = () => {
                     sx={{ mr: 2 }}
                 >
                     <MenuItem value="redeemedAt">Redeemed At</MenuItem>
-                    <MenuItem value="rewardName">Reward Name</MenuItem>
+                    <MenuItem value="rewardTitle">Reward Name</MenuItem>
                     <MenuItem value="userName">User Name</MenuItem>
                     <MenuItem value="status">Status</MenuItem>
                 </Select>

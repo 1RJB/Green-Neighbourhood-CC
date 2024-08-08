@@ -41,7 +41,7 @@ router.post("/", validateToken, async (req, res) => {
                 throw new Error(`${validatedData.firstName} ${validatedData.lastName} has already participated in this event.`);
             }
 
-            validatedData.createdBy = userId;
+            validatedData.userId = userId;
             validatedData.status = "Joined";
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
@@ -65,14 +65,14 @@ router.get("/", validateToken, async (req, res) => {
     if (search) {
         condition[Op.or] = [
             { firstName: { [Op.like]: `%${search}%` } },
-            { lastName: { [Op.like]: `%${search}%` } }
+            { lastName: { [Op.like]: `%${search}%` } },
+            { event: { [Op.like]: `%${search}%` } }
         ];
     }
 
     if (userType !== 'staff') {
         condition.userId = userId;
     }
-
     try {
         const list = await Participant.findAll({
             where: condition,
