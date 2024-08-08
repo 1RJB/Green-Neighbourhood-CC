@@ -43,7 +43,7 @@ const Header = () => {
       // Update this block for non-staff users to link to the main volunteer page
       return (
         <>
-          <Nav.Link as={Link} to="/volunteers">Volunteer Tickets</Nav.Link>
+          <Nav.Link as={Link} to="/volunteers">Your Tickets</Nav.Link>
         </>
       );
     }

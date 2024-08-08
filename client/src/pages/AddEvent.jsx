@@ -16,9 +16,11 @@ function AddEvent() {
             title: "",
             description: "",
             eventDate: "",
+            endDate: "", // Make sure this is consistent
             eventTime: "",
-            category: "",  // Initialize category field
-            imageFile: null  // Initialize imageFile field
+            endTime: "", // Make sure this is consistent
+            category: "",
+            imageFile: null
         },
         validationSchema: yup.object({
             title: yup.string().trim()
@@ -30,9 +32,11 @@ function AddEvent() {
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required'),
+            endDate: yup.string().required('End date is required'),
             eventTime: yup.string().required('Event time is required'),
-            category: yup.string().required('Category is required'),  // Add validation for category
-            imageFile: yup.mixed().required('Image is required')  // Add validation for imageFile
+            endTime: yup.string().required('End time is required'),
+            category: yup.string().required('Category is required'),
+            imageFile: yup.mixed().required('Image is required')
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -40,14 +44,17 @@ function AddEvent() {
             }
             data.title = data.title.trim();
             data.description = data.description.trim();
-            data.createdAt = `${data.eventDate} ${data.eventTime}`; // Combine date and time
+            data.createdAt = `${data.eventDate} ${data.eventTime}`;
+            data.endDetails = `${data.endDate}${data.endTime}`;// Adjust format as needed
+            data.eventTime = data.eventTime;
+            data.endDate = data.endDate;
             http.post("/event", data)
                 .then((res) => {
                     console.log(res.data);
                     navigate("/events");
                 })
                 .catch((error) => {
-                    console.error('Error submitting form:', error); // Log any errors
+                    console.error('Error submitting form:', error);
                 });
         }
     });
@@ -68,13 +75,14 @@ function AddEvent() {
             })
                 .then((res) => {
                     setImageFile(res.data.filename);
-                    formik.setFieldValue('imageFile', res.data.filename);  // Update formik value
+                    formik.setFieldValue('imageFile', res.data.filename);
                 })
                 .catch(function (error) {
                     console.log(error.response);
                 });
         }
     };
+
     const handleClear = () => {
         formik.resetForm();
         setImageFile(null);
@@ -129,17 +137,46 @@ function AddEvent() {
                         <TextField
                             fullWidth
                             margin="dense"
+                            type="date"
+                            label="End Date"
+                            name="endDate" // Ensure this is consistent
+                            placeholder="YYYY-MM-DD"
+                            value={formik.values.endDate}
+                            InputLabelProps={{ shrink: true }}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                            helperText={formik.touched.endDate && formik.errors.endDate}
+                        />
+                        <TextField
+                            fullWidth
+                            margin="dense"
                             type="time"
                             label="Event Time"
                             name="eventTime"
                             value={formik.values.eventTime}
-                            placeholder="HH:MM" // Add placeholder for time
-                            InputLabelProps={{ shrink: true }} // Ensure the label stays above the input
+                            placeholder="HH:MM"
+                            InputLabelProps={{ shrink: true }}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.eventTime && Boolean(formik.errors.eventTime)}
                             helperText={formik.touched.eventTime && formik.errors.eventTime}
                         />
+                        <TextField
+                            fullWidth
+                            margin="dense"
+                            type="time"
+                            label="End Time"
+                            name="endTime"
+                            value={formik.values.endTime}
+                            placeholder="HH:MM"
+                            InputLabelProps={{ shrink: true }}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.endTime && Boolean(formik.errors.endTime)}
+                            helperText={formik.touched.endTime && formik.errors.endTime}
+                        />
+
                         <FormControl fullWidth margin="dense" error={formik.touched.category && Boolean(formik.errors.category)}>
                             <InputLabel id="category-label" sx={{ top: -6, left: 0 }}>
                                 Category
@@ -166,7 +203,6 @@ function AddEvent() {
                                 </Typography>
                             )}
                         </FormControl>
-
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
                         <Box sx={{ textAlign: 'center', mt: 2 }} >
@@ -182,7 +218,6 @@ function AddEvent() {
                                         </img>
                                     </Box>
                                 )
-
                             }
                         </Box>
                         {formik.touched.imageFile && formik.errors.imageFile && (
@@ -207,5 +242,3 @@ function AddEvent() {
 }
 
 export default AddEvent;
-
-// re add everythig on update 8 
