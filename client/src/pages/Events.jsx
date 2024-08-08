@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem } from '@mui/material';
-import { AccountCircle, CalendarToday, Search, Clear, Edit } from '@mui/icons-material';
+import { AccountCircle, CalendarToday, Search, Clear, Edit, AccessTime } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -9,6 +9,8 @@ import UserContext from '../contexts/UserContext';
 import http from '../http';
 import global from '../global';
 import './Events.css'; // Import CSS for Events component styling
+import Clock from '@mui/icons-material/AccessTime'; // You can use AccessTime for the clock icon
+
 
 // Define category colors mapping
 const categoryColors = {
@@ -156,17 +158,21 @@ function Events() {
                                         )}
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
-                                        <AccountCircle sx={{ mr: 1 }} />
-                                        <Typography>
-                                            {event.staff ? `${event.staff.firstName} ${event.staff.lastName}` : "Unknown Staff"}
-                                        </Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <CalendarToday sx={{ mr: 1 }} />
                                         <Typography>
                                             {dayjs(event.createdAt).format(global.datetimeFormat)}
                                         </Typography>
                                     </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
+                                        <Clock sx={{ mr: 1 }} />
+                                        <Typography>
+                                            <Typography>
+                                                {event.endDate && event.endTime ? dayjs(`${event.endDate} ${event.endTime}`).format(global.datetimeFormat) : 'N/A'}
+                                            </Typography>
+
+                                        </Typography>
+                                    </Box>
+
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <Typography variant="body2">
                                             Category: {event.category}
