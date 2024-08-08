@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -6,10 +6,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import UserContext from '../contexts/UserContext';
 
 function EditParticipant() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { userType } = useContext(UserContext);
 
     const [participant, setParticipant] = useState({
         firstName: '',
@@ -46,11 +48,30 @@ function EditParticipant() {
             gender: participant.gender,
             birthday: participant.birthday,
             event: participant.event,
-            status: participant.status    
+            status: participant.status
         },
         validationSchema: yup.object({
+            firstName: yup.string().trim()
+                .min(3, 'First name must be at least 3 characters')
+                .max(100, 'First name must be at most 100 characters')
+                .required('First name is required'),
+            lastName: yup.string().trim()
+                .min(3, 'Last name must be at least 3 characters')
+                .max(100, 'Last name must be at most 100 characters')
+                .required('Last name is required'),
+            email: yup.string().trim()
+                .email('Invalid email format')
+                .max(100, 'Email must be at most 100 characters')
+                .required('Email is required'),
+            gender: yup.string().trim()
+                .oneOf(['Male', 'Female'], 'Gender must be either male or female')
+                .required('Gender is required'),
+            birthday: yup.date()
+                .required('Birthday is required'),
+            event: yup.string().trim()
+                .required('Event is required'),
             status: yup.string().trim()
-                .required('status is required')
+                .required('Status is required')
         }),
         enableReinitialize: true,
         onSubmit: (values) => {
@@ -65,6 +86,9 @@ function EditParticipant() {
                 });
         }
     });
+
+    // Determine if all inputs should be disabled based on userType
+    const areInputsDisabled = userType === 'staff';
 
     return (
         <Box>
@@ -138,24 +162,15 @@ function EditParticipant() {
                                 helperText={formik.touched.birthday && formik.errors.birthday}
                                 disabled
                             />
-                            <FormControl fullWidth margin="dense" error={formik.touched.event && Boolean(formik.errors.event)}>
-                                <InputLabel htmlFor="event">Event</InputLabel>
-                                <Select
+                                <TextField
+                                    fullWidth margin="dense" autoComplete="off"
                                     label="Event"
                                     name="event"
                                     value={formik.values.event}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    autoComplete="off"
                                     disabled
-                                >
-                                    <MenuItem value="">Select Event</MenuItem>
-                                    {eventList.map((event) => (
-                                        <MenuItem key={event.id} value={event.title}>{event.title}</MenuItem>
-                                    ))}
-                                </Select>
-                                {formik.touched.event && <Typography color="error">{formik.errors.event}</Typography>}
-                            </FormControl>
+                                />
                             <FormControl fullWidth margin="dense" error={formik.touched.status && Boolean(formik.errors.status)}>
                                 <InputLabel htmlFor="status">Status</InputLabel>
                                 <Select
@@ -165,18 +180,17 @@ function EditParticipant() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     autoComplete="off"
+                                    placeholder='Select Status'
                                 >
-                                    <MenuItem value="">Select status</MenuItem>
                                     <MenuItem value="Joined">Joined</MenuItem>
                                     <MenuItem value="Participated">Participated</MenuItem>
-
                                 </Select>
                                 {formik.touched.status && <Typography color="error">{formik.errors.status}</Typography>}
                             </FormControl>
                         </Grid>
                     </Grid>
                     <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" type="submit">
+                        <Button variant="contained" type="submit" disabled={areInputsDisabled}>
                             Update
                         </Button>
                     </Box>

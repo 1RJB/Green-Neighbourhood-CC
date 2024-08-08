@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Input, IconButton, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { Search, Clear, AccountCircle, AccessTime, Edit, Delete } from '@mui/icons-material'; // Import the Delete icon
+import { Box, Typography, Input, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Search, Clear, AccountCircle, AccessTime, Edit, Delete } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 
@@ -16,7 +16,7 @@ function Participants() {
 
     const getParticipants = () => {
         http.get('/participant')
-            .then((res) => {
+            .then((res) => {''
                 console.log('Participants fetched:', res.data);
                 setParticipantList(res.data);
             })
@@ -27,7 +27,7 @@ function Participants() {
 
     const searchParticipants = () => {
         if (search.trim() === '') {
-            return; // Avoid searching when the search field is empty
+            return;
         }
         http.get(`/participant?search=${encodeURIComponent(search)}`)
             .then((res) => {
@@ -41,7 +41,7 @@ function Participants() {
 
     useEffect(() => {
         getParticipants();
-    }, []); // Fetch participants on component mount
+    }, []);
 
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -62,7 +62,7 @@ function Participants() {
         if (window.confirm('Are you sure you want to delete this participant?')) {
             http.delete(`/participant/${id}`)
                 .then(() => {
-                    setParticipantList(participantList.filter(participant => participant.id !== id)); // Remove deleted participant from the state
+                    setParticipantList(participantList.filter(participant => participant.id !== id));
                     console.log(`Participant with ID ${id} deleted successfully.`);
                 })
                 .catch((error) => {
@@ -107,53 +107,55 @@ function Participants() {
                             <TableCell style={{ minWidth: 120 }}>Created By</TableCell>
                             <TableCell style={{ minWidth: 120 }}>Status</TableCell>
                             <TableCell style={{ minWidth: 150 }}>Created At</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell> 
+                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell>
                             <TableCell style={{ minWidth: 100 }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {
-                            participantList.map((participant) => (
-                                <TableRow key={participant.id}>
-                                    <TableCell>{participant.id}</TableCell>
-                                    <TableCell>{participant.firstName}</TableCell>
-                                    <TableCell>{participant.lastName}</TableCell>
-                                    <TableCell>{participant.email}</TableCell>
-                                    <TableCell>{participant.gender}</TableCell>
-                                    <TableCell>{new Date(participant.birthday).toLocaleDateString()}</TableCell>
-                                    <TableCell>{participant.event}</TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
-                                            <AccountCircle sx={{ mr: 1 }} />
-                                            <Typography>{participant.user?.firstName + " " + participant.user?.lastName || 'Unknown'}</Typography> 
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>{participant.status}</TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
-                                            <AccessTime sx={{ mr: 1 }} />
-                                            <Typography>{new Date(participant.createdAt).toLocaleString()}</Typography>
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
-                                            <AccessTime sx={{ mr: 1 }} />
-                                            <Typography>{new Date(participant.updatedAt).toLocaleString()}</Typography> {/* Display updatedAt */}
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Link to={`/editparticipant/${participant.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
+                        {participantList.map((participant) => (
+                            <TableRow key={participant.id}>
+                                <TableCell>{participant.id}</TableCell>
+                                <TableCell>{participant.firstName}</TableCell>
+                                <TableCell>{participant.lastName}</TableCell>
+                                <TableCell>{participant.email}</TableCell>
+                                <TableCell>{participant.gender}</TableCell>
+                                <TableCell>{new Date(participant.birthday).toLocaleDateString()}</TableCell>
+                                <TableCell>{participant.event}</TableCell>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
+                                        <AccountCircle sx={{ mr: 1 }} />
+                                        <Typography>{participant.user?.firstName + " " + participant.user?.lastName || 'Unknown'}</Typography>
+                                    </Box>
+                                </TableCell>
+                                <TableCell>{participant.status}</TableCell>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
+                                        <AccessTime sx={{ mr: 1 }} />
+                                        <Typography>{new Date(participant.createdAt).toLocaleString()}</Typography>
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
+                                        <AccessTime sx={{ mr: 1 }} />
+                                        <Typography>{new Date(participant.updatedAt).toLocaleString()}</Typography>
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                {user.usertype === 'staff' && (
+                                    <Link to={`/editparticipant/${participant.id}`}>
+                                        <IconButton color="primary" sx={{ padding: '4px' }}>
+                                            <Edit />
+                                        </IconButton>
+                                    </Link>
+                                )}
+                                    {user.usertype === 'user' && (
                                         <IconButton color="error" sx={{ padding: '4px' }} onClick={() => deleteParticipant(participant.id)}>
                                             <Delete />
                                         </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
