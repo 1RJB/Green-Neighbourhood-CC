@@ -228,8 +228,7 @@ function Rewards() {
                                                     )
                                                 }
                                                 {
-
-                                                    user && user.usertype === "user" ? (
+                                                    user && user.usertype === "user" && (
                                                         <>
                                                             {
                                                                 user.points < reward.points ? (
@@ -247,24 +246,8 @@ function Rewards() {
                                                                 )
                                                             }
                                                         </>
-                                                    ) : (
-                                                        <Typography textAlign={'center'} fontSize={15} color="primary" >
-                                                            <Star sx={{ mr: 1 }} color="primary" />
-                                                            {reward.points} points
-                                                        </Typography>
-                                                    )
-
-
-
-
-
-
-
-
-
-
+                                                    ) 
                                                 }
-
                                                 {
                                                     user && user.usertype === "staff" && (
                                                         <>
@@ -315,7 +298,8 @@ function Rewards() {
                     })
                 }
             </Grid>
-        </Box >
+
+        </Box>
     );
 }
 
