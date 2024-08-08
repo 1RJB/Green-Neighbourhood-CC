@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Participant } = require('../models');
+const { User, Participant, Achievement } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
@@ -45,6 +45,20 @@ router.post("/", validateToken, async (req, res) => {
             validatedData.status = "Joined";
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
+
+            // Check for first event participation achievement
+            const userAchievements = await User.findByPk(userId, {
+                include: [{
+                    model: Achievement,
+                    as: 'achievements'
+                }]
+            });
+            if (!userAchievements.achievements.some(a => a.type === 'first_event')) {
+                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event' } });
+                if (firstEventAchievement) {
+                    await userAchievements.addAchievement(firstEventAchievement);
+                }
+            }
         }
 
         res.json({ message: results });
@@ -161,7 +175,7 @@ router.put("/:id", validateToken, async (req, res) => {
         if (num === 1) {
             // Fetch the participant again to get the updated status
             const updatedParticipant = await Participant.findByPk(id);
-            
+
             // Check if the status has changed to "Participated" and was not already "Participated"
             if (data.status === "Participated" && oldStatus !== "Participated") {
                 user.points += 10000;
@@ -170,7 +184,7 @@ router.put("/:id", validateToken, async (req, res) => {
             } else {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
             }
-            
+
             res.json({ message: "Participant was updated successfully.", updatedPoints: user.points });
         } else {
             res.status(400).json({ message: `Cannot update participant with id ${id}.` });
