@@ -40,8 +40,11 @@ function Rewards() {
 
     useEffect(() => {
         fetchUserData(); // Fetch user data on mount
-        getRewards();
     }, []); // Empty dependency array means this runs once on mount
+
+    useEffect(() => {
+        getRewards();
+    }, [search, selectedCategory]);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
