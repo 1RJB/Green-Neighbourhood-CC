@@ -1,26 +1,51 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, LocationOn, Event, Search, Clear, Edit } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Event, Search, Clear, Edit } from '@mui/icons-material';
 import http from '../http';
-import dayjs from 'dayjs';
-import 'dayjs/locale/en'; // Adjust locale as needed
+import dayjs from 'dayjs'; // Ensure this import is included
+import { format } from 'date-fns';
+
+
 import UserContext from '../contexts/UserContext';
+
+
+
+function formatTime24to12(time24hr) {
+    return dayjs(time24hr, 'HH:mm:ss').format('hh:mm A');
+  }
 
 function Volunteers() {
     const [volunteerList, setVolunteerList] = useState([]);
     const [search, setSearch] = useState('');
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
 
     useEffect(() => {
         getVolunteers();
     }, []);
 
+    useEffect(() => {
+        // Fetch user info from the /userInfo endpoint
+        http.get('/user/userInfo', {
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+        }).then((res) => {
+            setUser(res.data);
+            formik.setValues({
+                firstName: res.data.firstName,
+                lastName: res.data.lastName,
+            });
+            setLoading(false);
+        }).catch(error => {
+            console.error("Failed to fetch user data:", error);
+            setLoading(false);
+            toast.error("Failed to load user data.");
+        });
+    }, [setUser]);
+
     const getVolunteers = () => {
         http.get('/volunteer')
             .then((res) => {
                 setVolunteerList(res.data);
-                console.log(res.data);
             })
             .catch((error) => console.error('Error fetching volunteers:', error));
     };
@@ -50,21 +75,20 @@ function Volunteers() {
         getVolunteers();
     };
 
-    function formatTime(time) {
-        let date = new Date("1970-01-01 " + time);
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0'+minutes : minutes;
-        return hours + ':' + minutes + ' ' + ampm;
-      }
+    const fullName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
+
+    function formatTime24to12(time24hr) {
+        const [hours, minutes] = time24hr.split(':');
+        const date = new Date();
+        date.setHours(hours, minutes);
+        return format(date, 'hh:mm a');
+    }
+    
 
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Volunteer Events
+                Your Tickets
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Input
@@ -90,14 +114,6 @@ function Volunteers() {
                 {volunteerList.map((volunteer) => (
                     <Grid item xs={12} md={6} lg={4} key={volunteer.id}>
                         <Card>
-                            {volunteer.uploadPhoto && (
-                                <Box className="aspect-ratio-container">
-                                    <img
-                                        alt="volunteer"
-                                        src={`${import.meta.env.VITE_FILE_BASE_URL}${volunteer.uploadPhoto}`}
-                                    />
-                                </Box>
-                            )}
                             <CardContent>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
                                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -113,21 +129,30 @@ function Volunteers() {
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccountCircle sx={{ mr: 1 }} />
-                                    <Typography>{volunteer.user?.name}</Typography>
+                                    <Typography>{fullName}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccessTime sx={{ mr: 1 }} />
                                     <Typography>
-                                        {formatTime(volunteer.timeAvailable)}
+                                        {formatTime24to12(volunteer.timeAvailable)}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <Event sx={{ mr: 1 }} />
-                                    <Typography>{dayjs(volunteer.date).format('DD MMM YYYY')}</Typography>
+                                    <Typography>{dayjs(volunteer.dateAvailable).format('DD MMM YYYY')}</Typography>
                                 </Box>
-                                
-
-
+                                <Box sx={{ mb: 1 }} color="text.secondary">
+                                    <Typography><strong>Service Type:</strong> {volunteer.serviceType}</Typography>
+                                </Box>
+                                <Box sx={{ mb: 1 }} color="text.secondary">
+                                    <Typography><strong>Comments:</strong> {volunteer.comments}</Typography>
+                                </Box>
+                                <Box sx={{ mb: 1 }} color="text.secondary">
+                                    <Typography><strong>Duration:</strong> {volunteer.duration} hours</Typography>
+                                </Box>
+                                <Box sx={{ mb: 1 }} color="text.secondary">
+                                    <Typography><strong>Contact Info:</strong> {volunteer.contactInfo}</Typography>
+                                </Box>
                             </CardContent>
                         </Card>
                     </Grid>
