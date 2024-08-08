@@ -85,7 +85,7 @@ router.get("/:id", async (req, res) => {
 // PUT: Update an event by ID
 router.put("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
-    // Check id not found
+    // Check if id not found
     let event = await Event.findByPk(id);
     if (!event) {
         res.sendStatus(404);
@@ -103,7 +103,9 @@ router.put("/:id", validateToken, async (req, res) => {
         title: yup.string().trim().min(3).max(100),
         description: yup.string().trim().min(3).max(500),
         eventDate: yup.date(),
+        endDate: yup.date(),
         eventTime: yup.string(),
+        endTime: yup.string(),
         category: yup.string().oneOf(['Sustainable', 'Sports', 'Community', 'Workshop', 'Others'])
     });
     try {
@@ -125,6 +127,7 @@ router.put("/:id", validateToken, async (req, res) => {
         res.status(400).json({ errors: err.errors });
     }
 });
+
 
 // DELETE: Remove an event by ID
 router.delete("/:id", async (req, res) => {

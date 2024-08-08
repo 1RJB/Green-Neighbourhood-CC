@@ -99,6 +99,8 @@ function AddVolunteer() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.dateAvailable && Boolean(formik.errors.dateAvailable)}
                             helperText={formik.touched.dateAvailable && formik.errors.dateAvailable}
+                            InputLabelProps={{ shrink: true }}  // Ensure label is always visible
+                            inputProps={{ 'aria-label': 'Date Available' }}  // Accessible label
                         />
                         <TextField
                             fullWidth
@@ -164,24 +166,6 @@ function AddVolunteer() {
                             error={formik.touched.contactInfo && Boolean(formik.errors.contactInfo)}
                             helperText={formik.touched.contactInfo && formik.errors.contactInfo}
                         />
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
-                        <Box sx={{ textAlign: 'center', mt: 2 }} >
-                            <Button variant="contained" component="label">
-                                Upload Image
-                                <input hidden accept="image/*" multiple type="file"
-                                    onChange={onFileChange} />
-                            </Button>
-                            {
-                                imageFile && (
-                                    <Box className="aspect-ratio-container" sx={{ mt: 2 }}>
-                                        <img alt="volunteer"
-                                            src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
-                                        </img>
-                                    </Box>
-                                )
-                            }
-                        </Box>
                     </Grid>
                 </Grid>
                 <Box sx={{ mt: 2 }}>
