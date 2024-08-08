@@ -87,6 +87,11 @@ const Header = () => {
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/userprofile" style={{ color: 'black' }}>Profile</Nav.Link>
                 </Dropdown.Item>
+                {userType === 'user' && (
+                  <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                    <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
+                  </Dropdown.Item>
+                )}
                 <Dropdown.Item
                   onClick={handleLogout}
                   style={{ backgroundColor: 'red', color: 'white', textAlign: 'center', display: 'block', width: '100%', border: 'none' }}
