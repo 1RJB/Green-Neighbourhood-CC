@@ -56,14 +56,56 @@ function ParticipateEvent() {
 
     const handleSubmit = async (values) => {
         try {
+            // Check for duplicate email addresses
+            const emailSet = new Set(values.participants.map(p => p.email.trim().toLowerCase()));
+            if (emailSet.size !== values.participants.length) {
+                throw new Error('Duplicate email address found.');
+            }
+
+            // Create a map to track occurrences of each participant's unique combination
+            const participantMap = new Map();
+            const duplicates = [];
+
+            values.participants.forEach(participant => {
+                const key = `${participant.email.trim().toLowerCase()}-${participant.event}`;
+
+                // Check if the combination already exists
+                if (participantMap.has(key)) {
+                    duplicates.push(`${participant.firstName} ${participant.lastName}`);
+                } else {
+                    participantMap.set(key, true);
+                }
+            });
+
+            // If there are duplicates, throw an error
+            if (duplicates.length > 0) {
+                throw new Error(`${duplicates.join(', ')} ${duplicates.length > 1 ? 'are' : 'is'} already participating.`);
+            }
+
+            // Proceed to submit the form data to the backend
             const response = await http.post("/participant", { participants: values.participants });
             toast.success("Participation successful! " + response.data.message.join(" ")); // Display success messages
             navigate("/events");
         } catch (error) {
-            console.error("API error:", error);
-            toast.error("An error occurred. Please try again.");
+            // Clear any existing participants in case of error
+            if (error.response && error.response.data && error.response.data.errors) {
+                toast.error(error.response.data.errors); // Display the detailed error message from the backend
+            } else if (error.message === 'Duplicate email address found.') {
+                toast.error('Please use a different email for each participant.');
+            } else if (error.message.includes('already participating')) {
+                toast.error(error.message); // Display the detailed error message for already participating issue
+            } else {
+                console.error("API error:", error);
+                toast.error("An error occurred. Please try again.");
+            }
+            // Ensure no participants are submitted if an error is detected
+            // You may need additional logic here if there are any partial submissions
         }
     };
+
+
+
+
 
     const formik = useFormik({
         initialValues: {

@@ -49,25 +49,6 @@ function EditParticipant() {
             status: participant.status    
         },
         validationSchema: yup.object({
-            firstName: yup.string().trim()
-                .min(3, 'First name must be at least 3 characters')
-                .max(100, 'First name must be at most 100 characters')
-                .required('First name is required'),
-            lastName: yup.string().trim()
-                .min(3, 'Last name must be at least 3 characters')
-                .max(100, 'Last name must be at most 100 characters')
-                .required('Last name is required'),
-            email: yup.string().trim()
-                .email('Invalid email format')
-                .max(100, 'Email must be at most 100 characters')
-                .required('Email is required'),
-            gender: yup.string().trim()
-                .oneOf(['Male', 'Female'], 'Gender must be either male or female')
-                .required('Gender is required'),
-            birthday: yup.date()
-                .required('Birthday is required'),
-            event: yup.string().trim()
-                .required('Event is required'),
             status: yup.string().trim()
                 .required('status is required')
         }),
@@ -103,6 +84,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.firstName && Boolean(formik.errors.firstName)}
                                 helperText={formik.touched.firstName && formik.errors.firstName}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
@@ -113,6 +95,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.lastName && Boolean(formik.errors.lastName)}
                                 helperText={formik.touched.lastName && formik.errors.lastName}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
@@ -123,6 +106,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.email && Boolean(formik.errors.email)}
                                 helperText={formik.touched.email && formik.errors.email}
+                                disabled
                             />
                             <FormControl fullWidth margin="dense" error={formik.touched.gender && Boolean(formik.errors.gender)}>
                                 <InputLabel htmlFor="gender">Gender</InputLabel>
@@ -133,6 +117,7 @@ function EditParticipant() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     autoComplete="off"
+                                    disabled
                                 >
                                     <MenuItem value="">Select Gender</MenuItem>
                                     <MenuItem value="Male">Male</MenuItem>
@@ -151,6 +136,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.birthday && Boolean(formik.errors.birthday)}
                                 helperText={formik.touched.birthday && formik.errors.birthday}
+                                disabled
                             />
                             <FormControl fullWidth margin="dense" error={formik.touched.event && Boolean(formik.errors.event)}>
                                 <InputLabel htmlFor="event">Event</InputLabel>
@@ -161,6 +147,7 @@ function EditParticipant() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     autoComplete="off"
+                                    disabled
                                 >
                                     <MenuItem value="">Select Event</MenuItem>
                                     {eventList.map((event) => (

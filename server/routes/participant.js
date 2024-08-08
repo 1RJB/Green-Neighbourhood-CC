@@ -6,7 +6,7 @@ const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth')
 
 router.post("/", validateToken, async (req, res) => {
-    const participantsData = req.body.participants; // Expecting an array of participants
+    const participantsData = req.body.participants;
     const userId = req.user.id;
 
     if (!Array.isArray(participantsData)) {
@@ -27,8 +27,21 @@ router.post("/", validateToken, async (req, res) => {
 
         for (const data of participantsData) {
             const validatedData = await validationSchema.validate(data, { abortEarly: false });
-            validatedData.userId = userId; // Assign the userId here
-            validatedData.status = "Joined"; // Set the status to "Joined"
+
+            // Check if participant already exists
+            const existingParticipant = await Participant.findOne({
+                where: {
+                    email: validatedData.email,
+                    event: validatedData.event,
+                }
+            });
+
+            if (existingParticipant) {
+                throw new Error(`${validatedData.firstName} ${validatedData.lastName} has already participated in this event.`);
+            }
+
+            validatedData.userId = userId;
+            validatedData.status = "Joined";
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
         }
