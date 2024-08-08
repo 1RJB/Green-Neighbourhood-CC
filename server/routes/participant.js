@@ -79,7 +79,7 @@ router.get("/:id", async (req, res) => {
     const participant = await Participant.findByPk(id, {});
 
     if (!participant) {
-        return res.sendStatus(404); 
+        return res.sendStatus(404);
     }
 
     res.json(participant);
@@ -88,32 +88,47 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     const id = req.params.id;
 
-    // Check if the participant exists
-    const participant = await Participant.findByPk(id);
-    if (!participant) {
-        return res.sendStatus(404);
-    }
-
-    // Define the validation schema
-    const validationSchema = yup.object({
-        firstName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
-        lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
-        email: yup.string().trim().lowercase().email().max(50).required(),
-        gender: yup.string().oneOf(["Male", "Female"]).required(),
-        birthday: yup.date().max(new Date()).required(),
-        event: yup.string().trim().required(),
-        status: yup.string().oneOf(["Joined", "Participated"]).required(),
-    });
-
     try {
+        // Fetch the participant
+        const participant = await Participant.findByPk(id);
+        if (!participant) {
+            return res.status(404).json({ message: "Participant not found" });
+        }
+
+        // Fetch the user based on the participant's email
+        const user = await User.findOne({ where: { email: participant.email } });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Define the validation schema
+        const validationSchema = yup.object({
+            status: yup.string().oneOf(["Joined", "Participated"]).required()
+        });
+
         // Validate the incoming data
         const data = await validationSchema.validate(req.body, { abortEarly: false });
+
+        // Store the old status
+        const oldStatus = participant.status;
 
         // Update the participant
         const [num] = await Participant.update(data, { where: { id: id } });
 
         if (num === 1) {
-            res.json({ message: "Participant was updated successfully." });
+            // Fetch the participant again to get the updated status
+            const updatedParticipant = await Participant.findByPk(id);
+            
+            // Check if the status has changed to "Participated" and was not already "Participated"
+            if (data.status === "Participated" && oldStatus !== "Participated") {
+                user.points += 10000;
+                await user.save();
+                console.log(`User points updated to ${user.points}`);
+            } else {
+                console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
+            }
+            
+            res.json({ message: "Participant was updated successfully.", updatedPoints: user.points });
         } else {
             res.status(400).json({ message: `Cannot update participant with id ${id}.` });
         }
