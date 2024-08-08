@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-    Box, Typography, Button, Card, CardContent, CardMedia,
-    CircularProgress
-} from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, CardMedia,CircularProgress } from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { ToastContainer, toast } from 'react-toastify';
