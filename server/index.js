@@ -35,7 +35,7 @@ const rewardRoute = require("./routes/reward");
 const redemptionRoute = require('./routes/redemption');
 const pointsRoute = require('./routes/points');
 const achievementRoute = require("./routes/achievement");
-
+const staffAchievementRoute = require('./routes/staffAchievement');
 
 app.use("/user", userRoute);
 app.use("/participant", participantRoute);
@@ -48,10 +48,16 @@ app.use("/reward", rewardRoute);
 app.use("/redemption", redemptionRoute); 
 app.use("/points", pointsRoute);
 app.use("/achievement", achievementRoute);
+app.use('/staff/achievement', staffAchievementRoute);
 
 const db = require("./models");
+const createInitialAchievements = require('./scripts/createInitialAchievements');
+
 db.sequelize
   .sync({ alter: true })
+  .then(() => {
+    return createInitialAchievements();
+  })
   .then(() => {
     let port = process.env.APP_PORT;
     app.listen(port, () => {

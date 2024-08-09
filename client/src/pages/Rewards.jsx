@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress } from '@mui/material';
 import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Star, ArrowForward } from '@mui/icons-material';
 import http from '../http';
-import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
 import UserContext from '../contexts/UserContext';
@@ -39,7 +38,8 @@ function Rewards() {
     };
 
     useEffect(() => {
-        fetchUserData(); // Fetch user data on mount
+        if (user)
+            fetchUserData(); // Fetch user data on mount
     }, []); // Empty dependency array means this runs once on mount
 
     useEffect(() => {
@@ -130,11 +130,16 @@ function Rewards() {
                     ))}
                 </Select>
                 <Box sx={{ flexGrow: 1 }} />
+                <Link to="/leaderboard">
+                    <Button variant="contained" color="primary">
+                        View Leaderboard
+                    </Button>
+                </Link>
                 {
                     user && user.usertype === "staff" && (
                         <>
                             <Link to="/reward/redemptions">
-                                <Button variant='contained'>
+                                <Button variant='contained' sx={{ ml: 2 }}>
                                     Redemptions
                                 </Button>
                             </Link>
@@ -149,7 +154,7 @@ function Rewards() {
                 {
                     user && user.usertype === "user" && (
                         <Link to="/points-info">
-                            <Button variant='contained'>
+                            <Button variant='contained' sx={{ ml: 2 }}>
                                 My Points: {user.points}
                             </Button>
                         </Link>
@@ -236,7 +241,7 @@ function Rewards() {
                                                                 user.points < reward.points ? (
                                                                     <Box sx={{ width: '70%', margin: '0 auto', mt: 3 }}>
                                                                         <LinearProgress variant="determinate" value={(user.points / reward.points) * 100} sx={{ borderRadius: 5 }} />
-                                                                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', fontSize: 14}} color={'primary'}>
+                                                                        <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', fontSize: 14 }} color={'primary'}>
                                                                             {`${user.points} of ${reward.points} points`}
                                                                         </Typography>
                                                                     </Box>
@@ -248,7 +253,7 @@ function Rewards() {
                                                                 )
                                                             }
                                                         </>
-                                                    ) 
+                                                    )
                                                 }
                                                 {
                                                     user && user.usertype === "staff" && (
@@ -302,6 +307,7 @@ function Rewards() {
             </Grid>
 
         </Box>
+
     );
 }
 

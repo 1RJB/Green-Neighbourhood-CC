@@ -46,15 +46,15 @@ router.post("/", validateToken, async (req, res) => {
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
 
-            // Check for first event participation achievement
+            // Check for first event registration achievement
             const userAchievements = await User.findByPk(userId, {
                 include: [{
                     model: Achievement,
                     as: 'achievements'
                 }]
             });
-            if (!userAchievements.achievements.some(a => a.type === 'first_event')) {
-                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event' } });
+            if (!userAchievements.achievements.some(a => a.type === 'first_event_registration')) {
+                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_registration' } });
                 if (firstEventAchievement) {
                     await userAchievements.addAchievement(firstEventAchievement);
                 }
@@ -154,8 +154,8 @@ router.put("/:id", validateToken, async (req, res) => {
 
         // Define the validation schema
         const validationSchema = yup.object({
-            firstName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
-            lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
+            firstName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters:'-,."),
+            lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters:'-,."),
             email: yup.string().trim().lowercase().email().max(50).required(),
             gender: yup.string().oneOf(["Male", "Female"]).required(),
             birthday: yup.date().max(new Date()).required(),
@@ -176,10 +176,26 @@ router.put("/:id", validateToken, async (req, res) => {
             // Fetch the participant again to get the updated status
             const updatedParticipant = await Participant.findByPk(id);
 
+            // Fetch the user associated with the participant
+            const user = await User.findByPk(updatedParticipant.userId);
+
             // Check if the status has changed to "Participated" and was not already "Participated"
             if (data.status === "Participated" && oldStatus !== "Participated") {
                 user.points += 10000;
                 await user.save();
+                // Check for first event participation achievement
+                const userAchievements = await User.findByPk(updatedParticipant.userId, {
+                    include: [{
+                        model: Achievement,
+                        as: 'achievements'
+                    }]
+                });
+                if (!userAchievements.achievements.some(a => a.type === 'first_event_participation')) {
+                    const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_participation' } });
+                    if (firstEventAchievement) {
+                        await userAchievements.addAchievement(firstEventAchievement);
+                    }
+                }
                 console.log(`User points updated to ${user.points}`);
             } else {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);

@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         type: {
-            type: DataTypes.ENUM('first_redemption', 'first_event', 'first_volunteer', 'other'),
+            type: DataTypes.ENUM('first_redemption', 'first_event_registration', 'first_event_participation', 'first_volunteer', 'other'),
             allowNull: false
         },
         imageFile: {
-            type: DataTypes.STRING(20)
+            type: DataTypes.STRING(100)
         }
     }, {
         tableName: 'achievements'
@@ -21,11 +21,12 @@ module.exports = (sequelize, DataTypes) => {
 
     Achievement.associate = (models) => {
         Achievement.belongsToMany(models.User, {
-            through: 'UserAchievements',
-            as: 'users',
-            foreignKey: 'achievementId'
+          through: 'UserAchievements',
+          as: 'users',
+          foreignKey: 'achievementId',
+          otherKey: 'userId'
         });
-    };
+      };      
 
     return Achievement;
 };

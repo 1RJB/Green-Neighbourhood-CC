@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
+const { User, Achievement } = require("../models");
 
 const yup = require("yup");
 
@@ -144,8 +144,13 @@ router.get("/userInfo", validateToken, async (req, res) => {
     // Retrieve the user's information from the database using the user ID from the token
     const user = await User.findByPk(req.user.id, {
       attributes: {
-        exclude: [] // Exclude the password from the response
-      }
+        exclude: ['password']
+      },
+      include: [{
+        model: Achievement,
+        as: 'achievements',
+        through: { attributes: [] }
+      }]
     });
 
     if (!user) {

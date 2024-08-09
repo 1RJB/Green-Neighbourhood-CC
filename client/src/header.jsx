@@ -56,7 +56,7 @@ const Header = () => {
   }
 
   return (
-    <Navbar className="custom-navbar" expand="lg">
+    <Navbar className={`custom-navbar ${userType === 'staff' || userType === 'admin' ? 'staff-navbar' : 'user-navbar'}`} expand="lg">
       <Container>
         <Navbar.Brand as={Link} to="/">
           <img
@@ -81,16 +81,21 @@ const Header = () => {
           {user && (
             <Dropdown style={{ textAlign: 'right' }}>
               <Dropdown.Toggle as="a" className="user-dropdown-toggle">
-                {user.name}
+                {user.firstName}
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/userprofile" style={{ color: 'black' }}>Profile</Nav.Link>
                 </Dropdown.Item>
                 {userType === 'user' && (
+                  <>
                   <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                     <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
                   </Dropdown.Item>
+                  <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                    <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Your Achievements</Nav.Link>
+                  </Dropdown.Item>
+                  </>
                 )}
                 <Dropdown.Item
                   onClick={handleLogout}
