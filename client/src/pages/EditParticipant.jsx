@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -6,10 +6,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import UserContext from '../contexts/UserContext';
 
 function EditParticipant() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { userType } = useContext(UserContext);
 
     const [participant, setParticipant] = useState({
         firstName: '',
@@ -46,7 +48,7 @@ function EditParticipant() {
             gender: participant.gender,
             birthday: participant.birthday,
             event: participant.event,
-            status: participant.status    
+            status: participant.status
         },
         validationSchema: yup.object({
             firstName: yup.string().trim()
@@ -69,7 +71,7 @@ function EditParticipant() {
             event: yup.string().trim()
                 .required('Event is required'),
             status: yup.string().trim()
-                .required('status is required')
+                .required('Status is required')
         }),
         enableReinitialize: true,
         onSubmit: (values) => {
@@ -84,6 +86,9 @@ function EditParticipant() {
                 });
         }
     });
+
+    // Determine if all inputs should be disabled based on userType
+    const areInputsDisabled = userType === 'staff';
 
     return (
         <Box>
@@ -103,6 +108,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.firstName && Boolean(formik.errors.firstName)}
                                 helperText={formik.touched.firstName && formik.errors.firstName}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
@@ -113,6 +119,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.lastName && Boolean(formik.errors.lastName)}
                                 helperText={formik.touched.lastName && formik.errors.lastName}
+                                disabled
                             />
                             <TextField
                                 fullWidth margin="dense" autoComplete="off"
@@ -123,6 +130,7 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.email && Boolean(formik.errors.email)}
                                 helperText={formik.touched.email && formik.errors.email}
+                                disabled
                             />
                             <FormControl fullWidth margin="dense" error={formik.touched.gender && Boolean(formik.errors.gender)}>
                                 <InputLabel htmlFor="gender">Gender</InputLabel>
@@ -133,6 +141,7 @@ function EditParticipant() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     autoComplete="off"
+                                    disabled
                                 >
                                     <MenuItem value="">Select Gender</MenuItem>
                                     <MenuItem value="Male">Male</MenuItem>
@@ -151,24 +160,17 @@ function EditParticipant() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.birthday && Boolean(formik.errors.birthday)}
                                 helperText={formik.touched.birthday && formik.errors.birthday}
+                                disabled
                             />
-                            <FormControl fullWidth margin="dense" error={formik.touched.event && Boolean(formik.errors.event)}>
-                                <InputLabel htmlFor="event">Event</InputLabel>
-                                <Select
+                                <TextField
+                                    fullWidth margin="dense" autoComplete="off"
                                     label="Event"
                                     name="event"
                                     value={formik.values.event}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    autoComplete="off"
-                                >
-                                    <MenuItem value="">Select Event</MenuItem>
-                                    {eventList.map((event) => (
-                                        <MenuItem key={event.id} value={event.title}>{event.title}</MenuItem>
-                                    ))}
-                                </Select>
-                                {formik.touched.event && <Typography color="error">{formik.errors.event}</Typography>}
-                            </FormControl>
+                                    disabled
+                                />
                             <FormControl fullWidth margin="dense" error={formik.touched.status && Boolean(formik.errors.status)}>
                                 <InputLabel htmlFor="status">Status</InputLabel>
                                 <Select
@@ -178,18 +180,17 @@ function EditParticipant() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     autoComplete="off"
+                                    placeholder='Select Status'
                                 >
-                                    <MenuItem value="">Select status</MenuItem>
                                     <MenuItem value="Joined">Joined</MenuItem>
                                     <MenuItem value="Participated">Participated</MenuItem>
-
                                 </Select>
                                 {formik.touched.status && <Typography color="error">{formik.errors.status}</Typography>}
                             </FormControl>
                         </Grid>
                     </Grid>
                     <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" type="submit">
+                        <Button variant="contained" type="submit" disabled={areInputsDisabled}>
                             Update
                         </Button>
                     </Box>

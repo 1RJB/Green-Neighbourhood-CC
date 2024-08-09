@@ -34,6 +34,7 @@ const volunteerRoute = require("./routes/volunteer");
 const rewardRoute = require("./routes/reward");
 const redemptionRoute = require('./routes/redemption');
 const pointsRoute = require('./routes/points');
+const achievementRoute = require("./routes/achievement");
 
 
 app.use("/user", userRoute);
@@ -46,6 +47,7 @@ app.use("/volunteer", volunteerRoute);
 app.use("/reward", rewardRoute);
 app.use("/redemption", redemptionRoute); 
 app.use("/points", pointsRoute);
+app.use("/achievement", achievementRoute);
 
 const db = require("./models");
 db.sequelize

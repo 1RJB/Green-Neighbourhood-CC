@@ -32,6 +32,8 @@ import Redemptions from './pages/Redemptions';
 import RedeemReward from './pages/RedeemReward';
 import Points from './pages/PointsInfo';
 import EditRedemption from './pages/EditRedemption';
+import LeaderBoard from './pages/LeaderBoard';
+import Achievements from './pages/Achievements';
 import ManageUsers from "./pages/manageUsers";
 import ManageStaff from "./pages/manageStaff"; // Import ManageStaff correctly
 import ForgotPassword from "./pages/ForgotPassword";
@@ -61,8 +63,8 @@ function App() {
 
   return (
     <UserContext.Provider value={{ user, userType, setUser, setUserType }}>
-    <Router>
-      <Header/>
+      <Router>
+        <Header />
         <Container className="mt-4">
           <Routes>
             <Route path="/" element={<div>Home</div>} />
@@ -88,6 +90,8 @@ function App() {
             <Route path="/editreward/:id" element={<EditReward />} />
             <Route path="/reward/redemptions" element={<Redemptions />} />
             <Route path="/reward/editredemption/:id" element={<EditRedemption />} />
+            <Route path="/leaderboard" element={<LeaderBoard />} />
+            <Route path="/achievements" element={<Achievements />} />
             <Route path="/allusers" element={userType === 'staff' || userType === 'admin' ? <ManageUsers /> : <Navigate to="/" />} />
             <Route path="/allstaffs" element={userType === 'admin' ? <ManageStaff /> : <Navigate to="/" />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
@@ -96,7 +100,7 @@ function App() {
           </Routes>
         </Container>
         <ToastContainer />
-    </Router>
+      </Router>
     </UserContext.Provider>
   );
 }

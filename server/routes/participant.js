@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { User, Participant } = require('../models');
+const { User, Participant, Achievement } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
-const { validateToken } = require('../middlewares/userauth')
+const { validateToken } = require('../middlewares/userauth');
 
+// Create new participants
 router.post("/", validateToken, async (req, res) => {
-    const participantsData = req.body.participants; // Expecting an array of participants
+    const participantsData = req.body.participants;
     const userId = req.user.id;
 
     if (!Array.isArray(participantsData)) {
@@ -27,10 +28,37 @@ router.post("/", validateToken, async (req, res) => {
 
         for (const data of participantsData) {
             const validatedData = await validationSchema.validate(data, { abortEarly: false });
-            validatedData.userId = userId; // Assign the userId here
-            validatedData.status = "Joined"; // Set the status to "Joined"
+
+            // Check if participant already exists
+            const existingParticipant = await Participant.findOne({
+                where: {
+                    email: validatedData.email,
+                    event: validatedData.event,
+                }
+            });
+
+            if (existingParticipant) {
+                throw new Error(`${validatedData.firstName} ${validatedData.lastName} has already participated in this event.`);
+            }
+
+            validatedData.userId = userId;
+            validatedData.status = "Joined";
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
+
+            // Check for first event participation achievement
+            const userAchievements = await User.findByPk(userId, {
+                include: [{
+                    model: Achievement,
+                    as: 'achievements'
+                }]
+            });
+            if (!userAchievements.achievements.some(a => a.type === 'first_event')) {
+                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event' } });
+                if (firstEventAchievement) {
+                    await userAchievements.addAchievement(firstEventAchievement);
+                }
+            }
         }
 
         res.json({ message: results });
@@ -40,70 +68,99 @@ router.post("/", validateToken, async (req, res) => {
     }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateToken, async (req, res) => {
+    const { search } = req.query;
+    const userId = req.user.id; // ID of the user making the request
+    const userType = req.user.usertype; // User type (staff or user)
+
     const condition = {};
-    const search = req.query.search;
+
+    // Add search condition
     if (search) {
         condition[Op.or] = [
             { firstName: { [Op.like]: `%${search}%` } },
-            { lastName: { [Op.like]: `%${search}%` } }
+            { lastName: { [Op.like]: `%${search}%` } },
+            { event: { [Op.like]: `%${search}%` } }
         ];
     }
 
-    const list = await Participant.findAll({
-        where: condition,
-        order: [['createdAt', 'DESC']],
-        include: { model: User, as: "user", attributes: ['firstName', 'lastName'] }
-    });
-    res.json(list);
-});
-
-router.delete("/:id", async (req, res) => {
-    const id = req.params.id;
-    const participant = await Participant.findByPk(id);
-
-    if (!participant) {
-        return res.sendStatus(404);
+    if (userType !== 'staff') {
+        condition.userId = userId;
     }
-
-    const num = await Participant.destroy({ where: { id: id } });
-    if (num == 1) {
-        res.json({ message: "Participant was deleted successfully." });
-    } else {
-        res.status(400).json({ message: `Cannot delete participant with id ${id}.` });
+    try {
+        const list = await Participant.findAll({
+            where: condition,
+            order: [['createdAt', 'DESC']],
+            include: { model: User, as: "user", attributes: ['firstName', 'lastName'] }
+        });
+        res.json(list);
+    } catch (error) {
+        console.error("Error fetching participants:", error);
+        res.status(500).json({ message: "Error fetching participants" });
     }
 });
 
-router.get("/:id", async (req, res) => {
-    const id = req.params.id;
-    const participant = await Participant.findByPk(id, {});
-
-    if (!participant) {
-        return res.sendStatus(404);
-    }
-
-    res.json(participant);
-});
-
-router.put("/:id", async (req, res) => {
+// Delete participant by ID
+router.delete("/:id", validateToken, async (req, res) => {
     const id = req.params.id;
 
     try {
-        // Fetch the participant
         const participant = await Participant.findByPk(id);
+
         if (!participant) {
-            return res.status(404).json({ message: "Participant not found" });
+            return res.sendStatus(404);
         }
 
-        // Fetch the user based on the participant's email
-        const user = await User.findOne({ where: { email: participant.email } });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
+        const num = await Participant.destroy({ where: { id: id } });
+        if (num === 1) {
+            res.json({ message: "Participant was deleted successfully." });
+        } else {
+            res.status(400).json({ message: `Cannot delete participant with id ${id}.` });
+        }
+    } catch (error) {
+        console.error("Error deleting participant:", error);
+        res.status(500).json({ message: "Error deleting participant" });
+    }
+});
+
+// Get participant by ID
+router.get("/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const participant = await Participant.findByPk(id);
+
+        if (!participant) {
+            return res.sendStatus(404);
+        }
+
+        res.json(participant);
+    } catch (error) {
+        console.error("Error fetching participant:", error);
+        res.status(500).json({ message: "Error fetching participant" });
+    }
+});
+
+// Update participant by ID
+router.put("/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        // Check if the participant exists
+        const participant = await Participant.findByPk(id);
+        if (!participant) {
+            return res.sendStatus(404);
         }
 
         // Define the validation schema
         const validationSchema = yup.object({
-            status: yup.string().oneOf(["Joined", "Participated"]).required()
+            firstName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
+            lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
+            email: yup.string().trim().lowercase().email().max(50).required(),
+            gender: yup.string().oneOf(["Male", "Female"]).required(),
+            birthday: yup.date().max(new Date()).required(),
+            event: yup.string().trim().required(),
+            status: yup.string().oneOf(["Joined", "Participated"]).required(),
         });
 
         // Validate the incoming data
@@ -118,7 +175,7 @@ router.put("/:id", async (req, res) => {
         if (num === 1) {
             // Fetch the participant again to get the updated status
             const updatedParticipant = await Participant.findByPk(id);
-            
+
             // Check if the status has changed to "Participated" and was not already "Participated"
             if (data.status === "Participated" && oldStatus !== "Participated") {
                 user.points += 10000;
@@ -127,7 +184,7 @@ router.put("/:id", async (req, res) => {
             } else {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
             }
-            
+
             res.json({ message: "Participant was updated successfully.", updatedPoints: user.points });
         } else {
             res.status(400).json({ message: `Cannot update participant with id ${id}.` });

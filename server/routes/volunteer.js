@@ -28,6 +28,21 @@ router.post("/", validateToken, async (req, res) => {
     data = await validationSchema.validate(data, { abortEarly: false });
     console.log(data.timeAvailable);
     let result = await Volunteer.create(data);
+
+    // Check for first volunteer achievement
+    const user = await User.findByPk(req.user.id, {
+      include: [{
+        model: Achievement,
+        as: 'achievements'
+      }]
+    });
+    if (!user.achievements.some(a => a.type === 'first_volunteer')) {
+      const firstVolunteerAchievement = await Achievement.findOne({ where: { type: 'first_volunteer' } });
+      if (firstVolunteerAchievement) {
+        await user.addAchievement(firstVolunteerAchievement);
+      }
+    }
+
     res.json(result);
   } catch (err) {
     res.status(400).json({ errors: err.errors });

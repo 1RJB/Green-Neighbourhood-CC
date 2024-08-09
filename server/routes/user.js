@@ -8,7 +8,7 @@ const { User } = require("../models");
 
 const yup = require("yup");
 
-router.post("/register", async (req, res) => {
+router.post("/  ", async (req, res) => {
   let data = req.body;
   let validationSchema = yup.object({
     firstName: yup
@@ -104,8 +104,8 @@ router.post("/login", async (req, res) => {
     pfp: user.pfp,
     id: user.id,
     email: user.email,
-    name: user.firstName,
-    lname: user.lastName,
+    firstName: user.firstName,
+    lastName: user.lastName,
     password: user.password,
     birthday: user.birthday,
     gender: user.gender,
@@ -126,8 +126,8 @@ router.get("/userauth", validateToken, (req, res) => {
     pfp: req.user.pfp,
     id: req.user.id,
     email: req.user.email,
-    name: req.user.firstName,
-    lname: req.user.lastName,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
     password: req.user.password,
     birthday: req.user.birthday,
     gender: req.user.gender,
@@ -237,5 +237,25 @@ router.get("/allUsers", validateToken, async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Get top 20 users by points
+router.get("/top20Users", validateToken, async (req, res) => {
+  try {
+    // Fetch all users, excluding staff
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      where: { usertype: 'user' } // Assuming 'usertype' field distinguishes between users and staff
+    });
+
+    // Sort users by points in descending order and limit to top 20
+    const sortedUsers = users.sort((a, b) => b.points - a.points).slice(0, 20);
+
+    res.json(sortedUsers);
+  } catch (err) {
+    console.error("Failed to fetch users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 module.exports = router;
