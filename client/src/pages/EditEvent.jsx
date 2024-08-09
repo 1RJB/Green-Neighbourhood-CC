@@ -31,7 +31,7 @@ function EditEvent() {
             setLoading(false);
         });
     }, [id]);
-
+    const today = new Date().toISOString().split('T')[0];
     const formik = useFormik({
         initialValues: event,
         enableReinitialize: true,
@@ -43,13 +43,11 @@ function EditEvent() {
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
-                .required('Description is required')
-                .min(new Date().setHours(0, 0, 0, 0), 'Event date cannot be in the past')
+                .required('Description is required'),
+                eventDate: yup.date()
+                .min(today, 'Event date cannot be in the past')
                 .required('Event date is required'),
-            eventDate: yup.string().required('Event date is required')
-                .min(yup.ref('eventDate'), 'End date cannot be before event date')
-                .required('End date is required'),
-            endDate: yup.string().required('End date is required')
+            endDate: yup.date()
                 .min(yup.ref('eventDate'), 'End date cannot be before event date')
                 .required('End date is required'),
             eventTime: yup.string().required('Event time is required'),

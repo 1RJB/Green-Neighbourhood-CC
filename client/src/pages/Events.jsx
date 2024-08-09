@@ -73,13 +73,17 @@ function Events() {
         getEvents();
     };
 
-    const handleParticipate = (event) => {
-        if (user) {
-            navigate('/participateevent', { state: { event: event.title } });
-        } else {
-            toast.error("Please log in to participate in events.");
-        }
+    // const handleParticipate = (event) => {
+    //     if (user) {
+    //         navigate('/participateevent', { state: { event: event.title } });
+    //     } else {
+    //         toast.error("Please log in to participate in events.");
+    //     }
+    // };
+    const handleViewDetails = (event) => {
+        navigate(`/viewevent/${event.id}`); // Use the event ID to navigate to the details page
     };
+    
 
     useEffect(() => {
         getEvents();
@@ -181,8 +185,12 @@ function Events() {
                                     <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                                         {event.description}
                                     </Typography>
-                                    <Button variant="contained" color="primary" onClick={() => handleParticipate(event)}>
+                                    {/* <Button variant="contained" color="primary" onClick={() => handleParticipate(event)}>
                                         Participate
+                                    </Button> */}
+                                    {/* trying to add a view page detail */}
+                                    <Button variant="contained" color="primary" onClick={() => handleViewDetails(event)}>
+                                        View Details
                                     </Button>
                                 </CardContent>
                             </div>

@@ -1,0 +1,13 @@
+.event-details-content {
+    padding: 16px;
+}
+
+.event-image-container {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.event-image {
+    max-width: 100%;
+    height: auto;
+}

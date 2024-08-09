@@ -22,6 +22,8 @@ import UserProfile from './pages/userprofile';
 import Events from './pages/Events';
 import AddEvent from './pages/AddEvent';
 import EditEvent from './pages/EditEvent';
+import EventDetails from './pages/EventDetails';
+import ViewEvent from './pages/ViewEvent';
 import Volunteers from './pages/Volunteers';
 import AddVolunteer from './pages/AddVolunteer';
 import EditVolunteer from './pages/EditVolunteer';
@@ -81,6 +83,8 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path={"/addevent"} element={<AddEvent />} />
             <Route path={"/editevent/:id"} element={<EditEvent />} />
+            <Route path="/eventdetails/:id" element={<EventDetails />} />
+            <Route path="/viewevent/:id" element={<ViewEvent />} />
             <Route path="/editparticipant/:id" element={<EditParticipant />} />
             <Route path="/userprofile" element={user ? <UserProfile /> : <Navigate to="/login" />} />
             <Route path="/rewards" element={<Rewards />} />
