@@ -158,7 +158,7 @@ function Events() {
                                         </Typography>
                                         {user && user.usertype === "staff" && user.id === event.staffId && (
                                             <Link to={`/editevent/${event.id}`}>
-                                                <IconButton color="primary" sx={{ padding: '20px' }}>
+                                                <IconButton color="black" sx={{ padding: '20px' }}>
                                                     <Edit />
                                                 </IconButton>
                                             </Link>

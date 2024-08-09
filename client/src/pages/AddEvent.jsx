@@ -6,6 +6,8 @@ import http from '../http';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import dayjs from 'dayjs';
+
 
 function AddEvent() {
     const navigate = useNavigate();
@@ -32,11 +34,13 @@ function AddEvent() {
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required')
-                .min(new Date().setHours(0, 0, 0, 0), 'Event date cannot be in the past')
-                .required('Event date is required'),
+                .test('is-future-date', 'Event date must be in the future', (value) => {
+                    return dayjs(value).isAfter(dayjs());
+                }),
             endDate: yup.string().required('End date is required')
-                .min(new Date().setHours(0, 0, 0, 0), 'Event end date cannot be in the past')
-                .required('Event end date is required'),
+                .test('is-future-date', 'Event date must be in the future', (value) => {
+                    return dayjs(value).isAfter(dayjs());
+                }),
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('End time is required'),
             category: yup.string().required('Category is required'),
