@@ -190,7 +190,7 @@ function EditParticipant() {
                         </Grid>
                     </Grid>
                     <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" type="submit" disabled={areInputsDisabled}>
+                        <Button variant="contained" type="submit">
                             Update
                         </Button>
                     </Box>
