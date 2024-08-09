@@ -131,8 +131,8 @@ function ParticipateEvent() {
 
         if (event.target.checked) {
             // Autofill with user information
-            firstParticipant.firstName = user.name || '';
-            firstParticipant.lastName = user.lname || '';
+            firstParticipant.firstName = user.firstName || '';
+            firstParticipant.lastName = user.lastName || '';
             firstParticipant.email = user.email || '';
             firstParticipant.gender = user.gender || '';
             firstParticipant.birthday = user.birthday || ''; // Ensure you have birthday in the user context if needed
