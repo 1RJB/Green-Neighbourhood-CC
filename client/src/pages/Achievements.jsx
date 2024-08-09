@@ -7,6 +7,7 @@ function Achievements() {
 
     useEffect(() => {
         http.get('/achievement').then((res) => {
+            console.log('Achievements:', res.data);
             setAchievements(res.data);
         });
     }, []);
@@ -23,6 +24,7 @@ function Achievements() {
                             <CardContent>
                                 <Typography variant="h6">{achievement.title}</Typography>
                                 <Typography>{achievement.description}</Typography>
+                                <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '70%', borderRadius: '170px' }} />
                             </CardContent>
                         </Card>
                     </Grid>
