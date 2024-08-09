@@ -57,6 +57,7 @@ function AddReward() {
                 .then((res) => {
                     console.log(res.data);
                     navigate("/rewards");
+                    toast.success('Reward added successfully.');
                 })
                 .catch((error) => {
                     console.error('Error adding reward:', error);

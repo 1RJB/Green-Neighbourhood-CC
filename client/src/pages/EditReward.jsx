@@ -74,6 +74,7 @@ function EditReward() {
                 .then((res) => {
                     console.log(res.data);
                     navigate("/rewards");
+                    toast.success('Reward updated successfully.');
                 })
                 .catch((error) => {
                     console.error('Error updating reward:', error);
