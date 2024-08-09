@@ -46,15 +46,15 @@ router.post("/", validateToken, async (req, res) => {
             const result = await Participant.create(validatedData);
             results.push(`${result.firstName} ${result.lastName} is participating successfully.`);
 
-            // Check for first event participation achievement
+            // Check for first event registration achievement
             const userAchievements = await User.findByPk(userId, {
                 include: [{
                     model: Achievement,
                     as: 'achievements'
                 }]
             });
-            if (!userAchievements.achievements.some(a => a.type === 'first_event')) {
-                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event' } });
+            if (!userAchievements.achievements.some(a => a.type === 'first_event_registration')) {
+                const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_registration' } });
                 if (firstEventAchievement) {
                     await userAchievements.addAchievement(firstEventAchievement);
                 }
@@ -180,6 +180,19 @@ router.put("/:id", validateToken, async (req, res) => {
             if (data.status === "Participated" && oldStatus !== "Participated") {
                 user.points += 10000;
                 await user.save();
+                // Check for first event participation achievement
+                const userAchievements = await User.findByPk(userId, {
+                    include: [{
+                        model: Achievement,
+                        as: 'achievements'
+                    }]
+                });
+                if (!userAchievements.achievements.some(a => a.type === 'first_event_parrticipation')) {
+                    const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_participation' } });
+                    if (firstEventAchievement) {
+                        await userAchievements.addAchievement(firstEventAchievement);
+                    }
+                }
                 console.log(`User points updated to ${user.points}`);
             } else {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
