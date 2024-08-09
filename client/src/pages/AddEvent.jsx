@@ -31,8 +31,12 @@ function AddEvent() {
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
-            eventDate: yup.string().required('Event date is required'),
-            endDate: yup.string().required('End date is required'),
+            eventDate: yup.string().required('Event date is required')
+                .min(new Date().setHours(0, 0, 0, 0), 'Event date cannot be in the past')
+                .required('Event date is required'),
+            endDate: yup.string().required('End date is required')
+                .min(yup.ref('eventDate'), 'End date cannot be before event date')
+                .required('End date is required'),
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('End time is required'),
             category: yup.string().required('Category is required'),
@@ -120,63 +124,72 @@ function AddEvent() {
                             error={formik.touched.description && Boolean(formik.errors.description)}
                             helperText={formik.touched.description && formik.errors.description}
                         />
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            type="date"
-                            label="Event Date"
-                            name="eventDate"
-                            placeholder="YYYY-MM-DD"
-                            value={formik.values.eventDate}
-                            InputLabelProps={{ shrink: true }}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.eventDate && Boolean(formik.errors.eventDate)}
-                            helperText={formik.touched.eventDate && formik.errors.eventDate}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            type="date"
-                            label="End Date"
-                            name="endDate" // Ensure this is consistent
-                            placeholder="YYYY-MM-DD"
-                            value={formik.values.endDate}
-                            InputLabelProps={{ shrink: true }}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
-                            helperText={formik.touched.endDate && formik.errors.endDate}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            type="time"
-                            label="Event Time"
-                            name="eventTime"
-                            value={formik.values.eventTime}
-                            placeholder="HH:MM"
-                            InputLabelProps={{ shrink: true }}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.eventTime && Boolean(formik.errors.eventTime)}
-                            helperText={formik.touched.eventTime && formik.errors.eventTime}
-                        />
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            type="time"
-                            label="End Time"
-                            name="endTime"
-                            value={formik.values.endTime}
-                            placeholder="HH:MM"
-                            InputLabelProps={{ shrink: true }}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.endTime && Boolean(formik.errors.endTime)}
-                            helperText={formik.touched.endTime && formik.errors.endTime}
-                        />
-
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    type="date"
+                                    label="Event Date"
+                                    name="eventDate"
+                                    value={formik.values.eventDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.eventDate && Boolean(formik.errors.eventDate)}
+                                    helperText={formik.touched.eventDate && formik.errors.eventDate}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    type="date"
+                                    label="End Date"
+                                    name="endDate"
+                                    value={formik.values.endDate}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                    helperText={formik.touched.endDate && formik.errors.endDate}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    type="time"
+                                    label="Event Time"
+                                    name="eventTime"
+                                    value={formik.values.eventTime}
+                                    placeholder="HH:MM"
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.eventTime && Boolean(formik.errors.eventTime)}
+                                    helperText={formik.touched.eventTime && formik.errors.eventTime}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    type="time"
+                                    label="End Time"
+                                    name="endTime"
+                                    value={formik.values.endTime}
+                                    placeholder="HH:MM"
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.endTime && Boolean(formik.errors.endTime)}
+                                    helperText={formik.touched.endTime && formik.errors.endTime}
+                                />
+                            </Grid>
+                        </Grid>
                         <FormControl fullWidth margin="dense" error={formik.touched.category && Boolean(formik.errors.category)}>
                             <InputLabel id="category-label" sx={{ top: -6, left: 0 }}>
                                 Category
