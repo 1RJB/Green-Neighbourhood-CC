@@ -19,43 +19,18 @@
 }
 
 .category-pill {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    align-items: center;
-    padding: 6px 12px; /* Adjust padding for pill size */
-    border-radius: 20px; /* Adjust border radius for pill shape */
-    font-size: 14px; /* Adjust font size */
-    font-weight: 300; /* Adjust font weight (300 is lighter, 400 is normal) */
-    margin-left: 4px; /* Adjust spacing between icon and text */
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
 }
 
-
-.category-green {
-    background-color: green;
-    color: #fff; /* Adjust text color */
-}
-
-.category-red {
-    background-color: red;
-    color: #fff; /* Adjust text color */
-}
-
-.category-blue {
-    background-color: blue;
-    color: #fff; /* Adjust text color */
-}
-
-.category-brown {
-    background-color: brown;
-    color: #fff; /* Adjust text color */
-}
-
-.category-navy {
-    background-color: navy;
-    color: #fff; /* Adjust text color */
-}
+.category-green { background-color: green; }
+.category-red { background-color: red; }
+.category-blue { background-color: blue; }
+.category-brown { background-color: brown; }
+.category-navy { background-color: navy; }
 
 /* new to be added to update 8 */
 /* Events.css */
@@ -73,4 +48,27 @@
   width: auto;
   height: 100%;
   object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
+}
+
+.custom-select-opener {
+    border: 0.1rem solid #dbdbdb;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    height: 4.5rem; /* Adjust height as necessary */
+    padding: 1.1rem 3rem 1.1rem 1.6rem;
+    position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.custom-select-opener:hover {
+    background-color: #f0f0f0; /* Optional: Add hover effect */
+}
+
+.event-card-item {
+    margin-bottom: 300px; /* Adjust this value as needed */
 }

@@ -44,12 +44,12 @@ function EditEvent() {
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
                 .required('Description is required'),
-                eventDate: yup.date()
+            eventDate: yup.date()
                 .min(today, 'Event date cannot be in the past')
                 .required('Event date is required'),
             endDate: yup.date()
-                .min(yup.ref('eventDate'), 'End date cannot be before event date')
-                .required('End date is required'),
+                .min(today, 'Event End date cannot be in the past')
+                .required('Event End date is required'),
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('Event End time is required'),
             category: yup.string().required('Category is required')  // Add validation for category
@@ -148,32 +148,38 @@ function EditEvent() {
                                     error={formik.touched.description && Boolean(formik.errors.description)}
                                     helperText={formik.touched.description && formik.errors.description}
                                 />
-                                <TextField
-                                    fullWidth
-                                    margin="dense"
-                                    type="date"
-                                    label="Event Date"
-                                    name="eventDate"
-                                    value={formik.values.eventDate}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.eventDate && Boolean(formik.errors.eventDate)}
-                                    helperText={formik.touched.eventDate && formik.errors.eventDate}
-                                    InputLabelProps={{ shrink: true }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    margin="dense"
-                                    type="date"
-                                    label="Event End Date"
-                                    name="eventDate"
-                                    value={formik.values.endDate}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.endDate && Boolean(formik.errors.endDate)}
-                                    helperText={formik.touched.endDate && formik.errors.endDate}
-                                    InputLabelProps={{ shrink: true }}
-                                />
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            fullWidth
+                                            margin="dense"
+                                            type="date"
+                                            label="Event Date"
+                                            name="eventDate"
+                                            value={formik.values.eventDate}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.eventDate && Boolean(formik.errors.eventDate)}
+                                            helperText={formik.touched.eventDate && formik.errors.eventDate}
+                                            InputLabelProps={{ shrink: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            fullWidth
+                                            margin="dense"
+                                            type="date"
+                                            label="Event End Date"
+                                            name="eventDate"
+                                            value={formik.values.endDate}
+                                            onChange={formik.handleChange}
+                                            onBlur={formik.handleBlur}
+                                            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                            helperText={formik.touched.endDate && formik.errors.endDate}
+                                            InputLabelProps={{ shrink: true }}
+                                        />
+                                    </Grid>
+                                </Grid>
                                 <TextField
                                     fullWidth
                                     margin="dense"
@@ -209,6 +215,7 @@ function EditEvent() {
                                         value={formik.values.category}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
+                                        InputLabelProps={{ shrink: true }}
                                     >
                                         <MenuItem value="">Select a category</MenuItem>
                                         <MenuItem value="Sustainable">Sustainable</MenuItem>

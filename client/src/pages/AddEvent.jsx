@@ -35,8 +35,8 @@ function AddEvent() {
                 .min(new Date().setHours(0, 0, 0, 0), 'Event date cannot be in the past')
                 .required('Event date is required'),
             endDate: yup.string().required('End date is required')
-                .min(yup.ref('eventDate'), 'End date cannot be before event date')
-                .required('End date is required'),
+                .min(new Date().setHours(0, 0, 0, 0), 'Event end date cannot be in the past')
+                .required('Event end date is required'),
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('End time is required'),
             category: yup.string().required('Category is required'),
