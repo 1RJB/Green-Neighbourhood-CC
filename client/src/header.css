@@ -5,40 +5,61 @@
 
 /* Navbar styles */
 .custom-navbar {
-  background-color: #0A5C36; /* Forest Green */
   color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-navbar {
+  background-color: #0A5C36; /* Forest Green */
+}
+
+.staff-navbar {
+  background-color: #FCFBF4; /* Staff navbar color*/
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .custom-navbar .navbar-brand,
 .custom-navbar .nav-link {
-  color: white;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.2rem; /* Adjust the font size as needed */
-  font-weight: 300; /* Thinner font weight */
+  font-size: 1.2rem;
+  font-weight: 300;
 }
 
-.custom-navbar .navbar-brand:hover,
-.custom-navbar .nav-link:hover {
-  color: #ddd; /* Light grey on hover */
+.user-navbar .navbar-brand,
+.user-navbar .nav-link {
+  color: white;
+}
+
+.staff-navbar .navbar-brand,
+.staff-navbar .nav-link {
+  color: #0A5C36; /* Dark green for readability on light background */
+}
+
+.user-navbar .navbar-brand:hover,
+.user-navbar .nav-link:hover {
+  color: #ddd;
+}
+
+.staff-navbar .navbar-brand:hover,
+.staff-navbar .nav-link:hover {
+  color: #388e3c; /* Darker green on hover for staff */
 }
 
 .custom-navbar .navbar-nav {
   width: 100%;
   display: flex;
-  justify-content: flex-end; /* Align nav items to the right */
+  justify-content: flex-end;
 }
 
 .custom-navbar .navbar-nav .nav-link {
   text-align: center;
-  padding: 0.5rem 1rem; /* Adjust padding for better spacing */
+  padding: 0.5rem 1rem;
 }
 
 .custom-navbar .navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.5); /* Light grey border for toggler */
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .custom-navbar .navbar-toggler-icon {
-  /* Custom background image for toggler */
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
@@ -46,31 +67,40 @@
 .login-button {
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
-  background-color: #4CAF50; /* Green Button */
+  background-color: #4CAF50;
   border: none;
   color: white;
-  padding: 0.5rem 1rem; /* Adjust padding for button size */
-  border-radius: 0.25rem; /* Rounded corners */
-  font-weight: 300; /* Thinner font weight */
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-weight: 300;
 }
 
 .login-button:hover {
-  background-color: #45A049; /* Darker shade of green on hover */
+  background-color: #45A049;
 }
 
 /* User Dropdown styles */
 .user-dropdown-toggle {
-  color: white;
   font-family: 'Poppins', sans-serif;
   font-size: 1.2rem;
   cursor: pointer;
   text-decoration: none;
   padding: 0.5rem 1rem;
-  font-weight: 300; /* Thinner font weight */
+  font-weight: 300;
 }
 
-.user-dropdown-toggle:hover {
-  color: #ddd; /* Light grey on hover */
+.user-navbar .user-dropdown-toggle {
+  color: white;
 }
 
-/* re add all this code to integrated in update 8  */
+.staff-navbar .user-dropdown-toggle {
+  color: #0A5C36;
+}
+
+.user-navbar .user-dropdown-toggle:hover {
+  color: #ddd;
+}
+
+.staff-navbar .user-dropdown-toggle:hover {
+  color: #388e3c;
+}

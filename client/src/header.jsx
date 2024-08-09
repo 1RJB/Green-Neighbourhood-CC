@@ -56,7 +56,7 @@ const Header = () => {
   }
 
   return (
-    <Navbar className="custom-navbar" expand="lg">
+    <Navbar className={`custom-navbar ${userType === 'staff' || userType === 'admin' ? 'staff-navbar' : 'user-navbar'}`} expand="lg">
       <Container>
         <Navbar.Brand as={Link} to="/">
           <img

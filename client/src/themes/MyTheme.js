@@ -1,15 +1,61 @@
-// https://mui.com/material-ui/customization/color/
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+const userTheme = createTheme({
     palette: {
         primary: {
             main: '#388e3c',
+            light: '#6abf69',
+            dark: '#00600f',
         },
         secondary: {
             main: '#f4511e',
-        }
-    }
+            light: '#ff844c',
+            dark: '#b91400',
+        },
+        background: {
+            default: '#f1f8e9',
+            paper: '#ffffff',
+        },
+        text: {
+            primary: '#212121',
+            secondary: '#757575',
+        },
+    },
 });
 
-export default theme;
+const staffTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#fcfbf4',
+            light: '#ffffff',
+            dark: '#c9c8c1',
+        },
+        secondary: {
+            main: '#388e3c',
+            light: '#6abf69',
+            dark: '#00600f',
+        },
+        background: {
+            default: '#e8f5e9',
+            paper: '#ffffff',
+        },
+        text: {
+            primary: '#1b5e20',
+            secondary: '#33691e',
+        },
+        error: {
+            main: '#d32f2f',
+        },
+        warning: {
+            main: '#ffa000',
+        },
+        info: {
+            main: '#1976d2',
+        },
+        success: {
+            main: '#388e3c',
+        },
+    },
+});
+
+export { userTheme, staffTheme };
