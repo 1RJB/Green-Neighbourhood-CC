@@ -44,6 +44,7 @@ import ManageStaff from "./pages/manageStaff";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import FaqPage from './pages/faq';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -108,6 +109,7 @@ function App() {
               <Route path="/forgotPassword" element={<ForgotPassword />} />
               <Route path="/resetPassword" element={<ResetPassword />} />
               <Route path="/faqpage" element={<FaqPage />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
           </Container>
