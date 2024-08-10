@@ -1,124 +1,88 @@
-// File Path: client/src/pages/Home.jsx
-
-import React, { useEffect, useState, useContext } from 'react';
-import { Container, Typography, Box, Grid, Card, CardContent } from '@mui/material';
-import { Link } from 'react-router-dom';
-import http from '../http';
-import UserContext from '../contexts/UserContext';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './pages.css'; // Assuming you have a CSS file for styling
 
 const Home = () => {
   const [events, setEvents] = useState([]);
   const [rewards, setRewards] = useState([]);
-  const { user, setUser } = useContext(UserContext);
+  const [user, setUser] = useState({ firstName: '', points: 0 });
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [currentRewardIndex, setCurrentRewardIndex] = useState(0);
 
+  // Fetch events from API
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const { data } = await http.get('/user/userInfo');
-        setUser(data);
-      } catch (err) {
-        console.error('Failed to fetch user data:', err.response?.data || err.message);
-      }
-    };
-
-    const fetchEvents = async () => {
-      try {
-        const { data } = await http.get('/events');
-        setEvents(data);
-      } catch (err) {
-        console.error('Failed to fetch events:', err.response?.data || err.message);
-      }
-    };
-
-    const fetchRewards = async () => {
-      try {
-        const { data } = await http.get('/rewards');
-        setRewards(data);
-      } catch (err) {
-        console.error('Failed to fetch rewards:', err.response?.data || err.message);
-      }
-    };
-
-    fetchUserData();
-    fetchEvents();
-    fetchRewards();
+    axios.get('/events')
+      .then(response => setEvents(response.data))
+      .catch(error => console.error('Error fetching events:', error));
   }, []);
 
+  // Fetch rewards from API
+  useEffect(() => {
+    axios.get('/rewards')
+      .then(response => setRewards(response.data))
+      .catch(error => console.error('Error fetching rewards:', error));
+  }, []);
+
+  // Fetch user data from API
+  useEffect(() => {
+    axios.get('/auth/user') // Adjust endpoint as necessary
+      .then(response => setUser(response.data))
+      .catch(error => console.error('Error fetching user data:', error));
+  }, []);
+
+  // Cycle through events every 5 seconds
   useEffect(() => {
     const eventInterval = setInterval(() => {
-      setCurrentEventIndex((prevIndex) => (events.length > 0 ? (prevIndex + 1) % events.length : 0));
-    }, 3000); // Change event every 3 seconds
+      setCurrentEventIndex(prevIndex => (prevIndex + 1) % events.length);
+    }, 5000);
+    return () => clearInterval(eventInterval);
+  }, [events]);
 
+  // Cycle through rewards every 5 seconds
+  useEffect(() => {
     const rewardInterval = setInterval(() => {
-      setCurrentRewardIndex((prevIndex) => (rewards.length > 0 ? (prevIndex + 1) % rewards.length : 0));
-    }, 3000); // Change reward every 3 seconds
-
-    return () => {
-      clearInterval(eventInterval);
-      clearInterval(rewardInterval);
-    };
-  }, [events, rewards]);
+      setCurrentRewardIndex(prevIndex => (prevIndex + 1) % rewards.length);
+    }, 5000);
+    return () => clearInterval(rewardInterval);
+  }, [rewards]);
 
   return (
-    <Container>
-      <Grid container spacing={2} sx={{ mt: 5 }}>
-        <Grid item xs={12} md={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom>
-                Events
-              </Typography>
-              {events.length > 0 ? (
-                <Typography variant="body1">
-                  {events[currentEventIndex].name}
-                </Typography>
-              ) : (
-                <Typography variant="body1">No events available</Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom>
-                Rewards
-              </Typography>
-              {rewards.length > 0 ? (
-                <Typography variant="body1">
-                  {rewards[currentRewardIndex].name}
-                </Typography>
-              ) : (
-                <Typography variant="body1">No rewards available</Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom>
-                Welcome, {user?.firstName || 'Guest'}!
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" component="h2" gutterBottom>
-                Points
-              </Typography>
-              <Typography variant="body1">
-                You have {user?.points || 0} points.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+    <div className="homepage">
+      <div className="tile-large events-tile">
+        <h2>Upcoming Events</h2>
+        {events.length > 0 ? (
+          <div className="carousel">
+            <h3>{events[currentEventIndex].title}</h3>
+            <p>{events[currentEventIndex].description}</p>
+            <p><strong>Category:</strong> {events[currentEventIndex].category}</p>
+          </div>
+        ) : (
+          <p>No events available</p>
+        )}
+      </div>
+
+      <div className="tile-medium rewards-tile">
+        <h2>Available Rewards</h2>
+        {rewards.length > 0 ? (
+          <div className="carousel">
+            <h3>{rewards[currentRewardIndex].title}</h3>
+            <img src={rewards[currentRewardIndex].imageUrl} alt={rewards[currentRewardIndex].title} />
+            <p>{rewards[currentRewardIndex].description}</p>
+            <p><strong>Points Required:</strong> {rewards[currentRewardIndex].points}</p>
+          </div>
+        ) : (
+          <p>No rewards available</p>
+        )}
+      </div>
+
+      <div className="tile-small greeting-tile">
+        <h2>Hello, {user.firstName}!</h2>
+      </div>
+
+      <div className="tile-small points-tile">
+        <h2>Your Points: <span>{user.points}</span></h2>
+      </div>
+    </div>
   );
 };
 

@@ -171,3 +171,55 @@
     background-color: #d4edda;
     color: #155724;
 }
+
+.homepage {
+    display: grid;
+    grid-template-areas:
+      "events-tile rewards-tile"
+      "greeting-tile points-tile";
+    grid-gap: 20px;
+    padding: 20px;
+  }
+  
+  .tile-large {
+    grid-area: events-tile;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .tile-medium {
+    grid-area: rewards-tile;
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .tile-small {
+    background-color: #ececec;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .greeting-tile {
+    grid-area: greeting-tile;
+  }
+  
+  .points-tile {
+    grid-area: points-tile;
+  }
+  
+  h2 {
+    margin: 0 0 10px 0;
+  }
+  
+  .carousel {
+    text-align: center;
+  }
+  
+  .carousel img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
