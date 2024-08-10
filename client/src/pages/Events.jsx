@@ -172,12 +172,12 @@ function Events() {
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <Clock sx={{ mr: 1 }} />
-                                        <Typography>
+
                                             <Typography>
                                                 {event.endDate && event.endTime ? dayjs(`${event.endDate} ${event.endTime}`).format(global.datetimeFormat) : 'N/A'}
                                             </Typography>
 
-                                        </Typography>
+
                                     </Box>
 
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
