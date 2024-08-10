@@ -21,7 +21,7 @@ const validateToken = (req, res, next) => {
     console.log("Token payload:", payload);
 
     // Check if the payload contains staff-related information (optional)
-    if (payload.userType !== 'staff') {
+    if (payload.usertype !== 'staff') {
       console.log("User is not a staff member");
       return res.sendStatus(403); // Forbidden
     }
