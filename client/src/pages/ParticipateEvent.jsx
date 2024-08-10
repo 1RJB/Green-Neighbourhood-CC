@@ -85,7 +85,13 @@ function ParticipateEvent() {
             // Proceed to submit the form data to the backend
             const response = await http.post("/participant", { participants: values.participants });
             toast.success("Participation successful! " + response.data.message.join(" ")); // Display success messages
-            navigate("/events");
+            if (response.data.achievementEarned) {
+                toast.success("Congratulations! You've earned a new achievement!\n First Event Registration !");
+            }
+            // Delay navigation to allow toast to display
+            setTimeout(() => {
+                navigate("/events");
+            }, 3000); // 3 seconds delay
         } catch (error) {
             // Clear any existing participants in case of error
             if (error.response && error.response.data && error.response.data.errors) {
@@ -102,10 +108,6 @@ function ParticipateEvent() {
             // You may need additional logic here if there are any partial submissions
         }
     };
-
-
-
-
 
     const formik = useFormik({
         initialValues: {

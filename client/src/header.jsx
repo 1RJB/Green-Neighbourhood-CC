@@ -92,7 +92,15 @@ const Header = () => {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/events">Events</Nav.Link>
             <Nav.Link as={Link} to="/rewards">Rewards</Nav.Link>
-            <Nav.Link as={Link} to="/contactUs">Contact Us</Nav.Link>
+            <Dropdown>
+            <Dropdown.Toggle as={Nav.Link}>
+              Support
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+            <Nav.Link as={Link} to="/contactUs" style={{ color: 'black' }}>Contact Us</Nav.Link>
+            <Nav.Link as={Link} to="/faqpage" style={{ color: 'black' }}>FAQ</Nav.Link>
+            </Dropdown.Menu>
+          </Dropdown>
             {renderUserLinks()}
           </Nav>
           {user && (
@@ -103,6 +111,9 @@ const Header = () => {
               <Dropdown.Menu>
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/userprofile" style={{ color: 'black' }}>Profile</Nav.Link>
+                </Dropdown.Item>
+                <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                  <Nav.Link as={Link} to="/dashboard" style={{ color: 'black' }}>Dashboard</Nav.Link>
                 </Dropdown.Item>
                 {userType === 'user' && (
                   <>

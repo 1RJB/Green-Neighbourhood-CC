@@ -43,6 +43,10 @@ const RedeemReward = () => {
             if (data.newAchievement) {
                 toast.success("Congratulations! You've earned a new achievement!\n First Redemption !");
             }
+            // Delay navigation to allow toast to display
+            setTimeout(() => {
+                navigate("/rewards");
+            }, 5500); // 3 seconds delay
         } catch (error) {
             toast.error(error.response?.data?.error || 'Failed to redeem reward.');
         }
@@ -94,6 +98,7 @@ const RedeemReward = () => {
                     )}
                 </CardContent>
             </Card>
+            <ToastContainer />
         </Box>
     );
 };
