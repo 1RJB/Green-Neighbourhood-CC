@@ -40,6 +40,9 @@ const RedeemReward = () => {
             // Update the context with the latest user data
             setUser(data.user);
 
+            if (data.newAchievement) {
+                toast.success("Congratulations! You've earned a new achievement!\n First Redemption !");
+            }
         } catch (error) {
             toast.error(error.response?.data?.error || 'Failed to redeem reward.');
         }

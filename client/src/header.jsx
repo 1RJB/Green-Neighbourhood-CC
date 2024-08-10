@@ -35,6 +35,7 @@ const Header = () => {
       if (userType === 'staff') {
         return (
           <>
+            <Nav.Link as={Link} to="/achievements">Achievements</Nav.Link>
             <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
             <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
           </>
@@ -89,12 +90,12 @@ const Header = () => {
                 </Dropdown.Item>
                 {userType === 'user' && (
                   <>
-                  <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
-                    <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
-                  </Dropdown.Item>
-                  <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
-                    <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Your Achievements</Nav.Link>
-                  </Dropdown.Item>
+                    <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                      <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
+                    </Dropdown.Item>
+                    <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                      <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Achievements</Nav.Link>
+                    </Dropdown.Item>
                   </>
                 )}
                 <Dropdown.Item

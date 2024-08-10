@@ -262,5 +262,16 @@ router.get("/top20Users", validateToken, async (req, res) => {
   }
 });
 
+// Get count of all users
+router.get("/count", validateToken, async (req, res) => {
+  try {
+      const count = await User.count();
+      res.json({ count });
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 module.exports = router;
