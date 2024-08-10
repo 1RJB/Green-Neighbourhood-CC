@@ -110,7 +110,7 @@ function staffRegister() {
       }}
     >
       <Typography variant="h5" sx={{ my: 2 }}>
-        Register
+        Staff Register
       </Typography>
       <Box
         component="form"

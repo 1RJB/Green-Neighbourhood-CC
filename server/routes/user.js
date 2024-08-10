@@ -8,7 +8,7 @@ const { User, Achievement } = require("../models");
 
 const yup = require("yup");
 
-router.post("/  ", async (req, res) => {
+router.post("/register", async (req, res) => {
   let data = req.body;
   let validationSchema = yup.object({
     firstName: yup
@@ -106,7 +106,6 @@ router.post("/login", async (req, res) => {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
-    password: user.password,
     birthday: user.birthday,
     gender: user.gender,
     usertype: user.usertype, // Include usertype
@@ -128,7 +127,6 @@ router.get("/userauth", validateToken, (req, res) => {
     email: req.user.email,
     firstName: req.user.firstName,
     lastName: req.user.lastName,
-    password: req.user.password,
     birthday: req.user.birthday,
     gender: req.user.gender,
     usertype: req.user.usertype, // Include usertype

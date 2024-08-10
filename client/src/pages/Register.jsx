@@ -1,3 +1,4 @@
+Register.jsx
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -131,7 +132,8 @@ function Register() {
     setGeneratedOtp(otp);
     await sendOTP(formik.values.email, otp);
   };
-return (
+
+  return (
     <Box
       sx={{
         marginTop: 8,
@@ -261,7 +263,7 @@ return (
             aria-label="gender"
             name="gender"
             value={formik.values.gender}
-onChange={formik.handleChange}
+            onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           >
             <FormControlLabel value="Male" control={<Radio />} label="Male" />

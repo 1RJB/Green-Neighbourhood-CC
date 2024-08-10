@@ -26,8 +26,24 @@ const Header = () => {
         return (
           <>
             <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
-            <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
-            <Nav.Link as={Link} to="/adminregister">Admin Register</Nav.Link>
+            <Dropdown>
+            <Dropdown.Toggle as={Nav.Link}>
+              Manage
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item as={Link} to="/allusers">Users</Dropdown.Item>
+              <Dropdown.Item as={Link} to="/allstaffs">Staffs</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <Dropdown>
+            <Dropdown.Toggle as={Nav.Link}>
+              Register
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+            <Nav.Link as={Link} to="/adminregister">Admin</Nav.Link>
+            <Nav.Link as={Link} to="/staffregister">Staff</Nav.Link>
+            </Dropdown.Menu>
+          </Dropdown>
           </>
         );
       }
@@ -50,8 +66,8 @@ const Header = () => {
     }
     return (
       <>
+
         <Nav.Link as={Link} to="/login">Login</Nav.Link>
-        <Nav.Link as={Link} to="/register">Register</Nav.Link>
       </>
     );
   }
