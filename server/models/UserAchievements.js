@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+      notice: {
+        type: DataTypes.TINYINT(1),
+        allowNull: false,
+        defaultValue: 0,
       }
     }, {
       tableName: 'UserAchievements',
