@@ -47,7 +47,13 @@ function AddVolunteer() {
             http.post("/volunteer", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/Volunteers");
+                    if (res.data.newAchievement) {
+                        toast.success("Congratulations! You've earned a new achievement!\n First Volunteer Registration !");
+                    }
+                    // Delay navigation to allow toast to display
+                    setTimeout(() => {
+                        navigate("/Volunteers");
+                    }, 3000); // 3 seconds delay
                 })
                 .catch((err) => {
                     console.log(err.response);
@@ -63,14 +69,9 @@ function AddVolunteer() {
                 toast.error('Maximum file size is 1MB');
                 return;
             }
-
             let formData = new FormData();
             formData.append('file', file);
-            http.post('/file/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
+            http.post('/file/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then((res) => {
                     setImageFile(res.data.filename);
                 })
@@ -99,8 +100,8 @@ function AddVolunteer() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.dateAvailable && Boolean(formik.errors.dateAvailable)}
                             helperText={formik.touched.dateAvailable && formik.errors.dateAvailable}
-                            InputLabelProps={{ shrink: true }}  // Ensure label is always visible
-                            inputProps={{ 'aria-label': 'Date Available' }}  // Accessible label
+                            InputLabelProps={{ shrink: true }} // Ensure label is always visible
+                            inputProps={{ 'aria-label': 'Date Available' }} // Accessible label
                         />
                         <TextField
                             fullWidth
@@ -126,7 +127,6 @@ function AddVolunteer() {
                             error={formik.touched.comments && Boolean(formik.errors.comments)}
                             helperText={formik.touched.comments && formik.errors.comments}
                         />
-                        
                         <FormControl fullWidth margin="dense">
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <TimePicker
@@ -140,7 +140,8 @@ function AddVolunteer() {
                                             error: formik.touched.time && Boolean(formik.errors.time),
                                             helperText: formik.touched.time && formik.errors.time
                                         }
-                                    }} />
+                                    }}
+                                />
                             </LocalizationProvider>
                         </FormControl>
                         <TextField
@@ -174,7 +175,6 @@ function AddVolunteer() {
                     </Button>
                 </Box>
             </Box>
-
             <ToastContainer />
         </Box>
     );
