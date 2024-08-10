@@ -11,6 +11,7 @@ import UserContext from './contexts/UserContext';
 
 
 // Pages
+import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import StaffRegister from './pages/staffRegister';
@@ -73,7 +74,7 @@ function App() {
           <Header />
           <Container className="mt-4">
             <Routes>
-              <Route path="/" element={<div>Home</div>} />
+              <Route path="/" element={<Home />} />
               <Route path="/Volunteers" element={<Volunteers />} />
               <Route path="/add-volunteer" element={<AddVolunteer />} />
               <Route path="/edit-volunteer/:id" element={<EditVolunteer />} />
