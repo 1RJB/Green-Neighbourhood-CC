@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import http from '../http';
 import './ViewEvent.css'; // Import CSS for ViewEvent component styling
 import UserContext from '../contexts/UserContext';
+import { toast } from 'react-toastify'; // Import toast for error messages
 
 function ViewEvent() {
     const { user } = useContext(UserContext);
@@ -26,7 +27,14 @@ function ViewEvent() {
     if (!event) {
         return <Typography>Loading...</Typography>;
     }
-    const handleParticipate = (event) => {
+
+    // Calculate the date one month before the event date
+    const now = dayjs();
+    const eventDate = dayjs(event.eventDate);
+    const oneMonthBefore = eventDate.subtract(1, 'month');
+    const showParticipateButton = now.isAfter(oneMonthBefore) && now.isBefore(eventDate);
+
+    const handleParticipate = () => {
         if (user) {
             navigate('/participateevent', { state: { event: event.title } });
         } else {
@@ -74,9 +82,11 @@ function ViewEvent() {
                     <Typography paragraph>
                         <strong>Category:</strong> {event.category}
                     </Typography>
-                    <Button variant="contained" color="primary" onClick={() => handleParticipate(event)}>
-                        Participate
-                    </Button>
+                    {showParticipateButton && (
+                        <Button variant="contained" color="primary" onClick={handleParticipate}>
+                            Participate
+                        </Button>
+                    )}
                 </CardContent>
             </Card>
         </Box>
