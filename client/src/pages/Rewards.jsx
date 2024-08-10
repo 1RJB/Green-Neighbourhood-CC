@@ -99,7 +99,7 @@ function Rewards() {
 
     return (
         <Box>
-            <Typography variant="h5" sx={{ my: 2 }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', my: 2 }}>
                 Rewards
             </Typography>
 
