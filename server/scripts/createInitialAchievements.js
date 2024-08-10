@@ -9,8 +9,8 @@ async function createInitialAchievements() {
             imageFile: 'first_redemption.webp'
         },
         {
-            title: 'First Event Participation',
-            description: 'Participated in your first event',
+            title: 'First Event Registration',
+            description: 'Registered in your first event',
             type: 'first_event_registration',
             imageFile: 'first_event_registration.webp'
         },
