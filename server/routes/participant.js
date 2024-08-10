@@ -25,6 +25,7 @@ router.post("/", validateToken, async (req, res) => {
 
     try {
         const results = [];
+        let achievementEarned = false; // Define achievementEarned outside the loop
 
         for (const data of participantsData) {
             const validatedData = await validationSchema.validate(data, { abortEarly: false });
@@ -53,15 +54,22 @@ router.post("/", validateToken, async (req, res) => {
                     as: 'achievements'
                 }]
             });
-            if (!userAchievements.achievements.some(a => a.type === 'first_event_registration')) {
+            const hasFirstEventAchievement = userAchievements.achievements.some(a => a.type === 'first_event_registration');
+
+            if (!hasFirstEventAchievement) {
                 const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_registration' } });
                 if (firstEventAchievement) {
                     await userAchievements.addAchievement(firstEventAchievement);
+                    achievementEarned = true; // Update achievementEarned if achievement is added
                 }
             }
         }
 
-        res.json({ message: results });
+        res.json({ 
+            message: results,
+            achievementEarned // Include achievementEarned in the response
+        });
+
     } catch (err) {
         console.error("Validation or creation error:", err);
         res.status(400).json({ errors: err.errors || err.message });
@@ -180,7 +188,9 @@ router.put("/:id", validateToken, async (req, res) => {
             const user = await User.findByPk(updatedParticipant.userId);
 
             // Check if the status has changed to "Participated" and was not already "Participated"
-            if (data.status === "Participated" && oldStatus !== "Participated") {
+            const achievementEarned = data.status === "Participated" && oldStatus !== "Participated";
+
+            if (achievementEarned) {
                 user.points += 10000;
                 await user.save();
                 // Check for first event participation achievement
@@ -201,7 +211,11 @@ router.put("/:id", validateToken, async (req, res) => {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
             }
 
-            res.json({ message: "Participant was updated successfully.", updatedPoints: user.points });
+            res.json({ 
+                message: "Participant was updated successfully.",
+                updatedPoints: user.points,
+                achievementEarned // Include this line
+            });
         } else {
             res.status(400).json({ message: `Cannot update participant with id ${id}.` });
         }
