@@ -270,7 +270,7 @@ const ManageUsers = () => {
               <Button onClick={() => setOpen(false)} color="secondary">
                 Cancel
               </Button>
-              <Button type="submit" color="primary">
+              <Button type="submit" color="secondary">
                 Save
               </Button>
             </DialogActions>

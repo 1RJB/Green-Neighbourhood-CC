@@ -31,11 +31,6 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           defaultValue: "admin",
         },
-        pfp: {
-          type: DataTypes.STRING,
-          allowNull: false,
-          defaultValue: "../public/uploads/output.png",
-        },
       },
       {
         tableName: "users",

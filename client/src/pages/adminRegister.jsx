@@ -110,7 +110,7 @@ function adminRegister() {
       }}
     >
       <Typography variant="h5" sx={{ my: 2 }}>
-        Register
+        Admin Register
       </Typography>
       <Box
         component="form"
