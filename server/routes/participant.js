@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Participant, Achievement } = require('../models');
+const { User, Participant, Achievement, UserAchievement } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
@@ -65,7 +65,7 @@ router.post("/", validateToken, async (req, res) => {
             }
         }
 
-        res.json({ 
+        res.json({
             message: results,
             achievementEarned // Include achievementEarned in the response
         });
@@ -204,6 +204,12 @@ router.put("/:id", validateToken, async (req, res) => {
                     const firstEventAchievement = await Achievement.findOne({ where: { type: 'first_event_participation' } });
                     if (firstEventAchievement) {
                         await userAchievements.addAchievement(firstEventAchievement);
+
+                        // Update the notice field in userachievements table
+                        await UserAchievement.update(
+                            { notice: 1 },
+                            { where: { userId: updatedParticipant.userId, achievementId: firstEventAchievement.id } }
+                        );
                     }
                 }
                 console.log(`User points updated to ${user.points}`);
@@ -211,7 +217,7 @@ router.put("/:id", validateToken, async (req, res) => {
                 console.log(`No points update needed. Old status: ${oldStatus}, New status: ${data.status}`);
             }
 
-            res.json({ 
+            res.json({
                 message: "Participant was updated successfully.",
                 updatedPoints: user.points,
                 achievementEarned // Include this line
