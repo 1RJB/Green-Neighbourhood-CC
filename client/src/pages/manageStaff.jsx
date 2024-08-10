@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, Box } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, Box, IconButton } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
+import { Clear, Edit } from '@mui/icons-material';
 import 'react-toastify/dist/ReactToastify.css';
 import UserContext from '../contexts/UserContext';
 import http from '../http';
@@ -135,38 +136,26 @@ const ManageStaff = () => {
           { field: 'birthday', headerName: 'Birthday', width: 150 },
           { field: 'usertype', headerName: 'User Type', width: 150 },
           {
-            field: 'edit',
+            field: 'actions',
             headerName: 'Actions',
             width: 150,
             renderCell: (params) => (
-              <strong>
-                <Button
-                  variant="contained"
-                  color="primary"
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton
+                  color="secondary"
                   size="small"
-                  style={{ marginRight: 16 }}
                   onClick={() => handleEdit(params.row)}
                 >
-                  Edit
-                </Button>
-              </strong>
-            ),
-          },
-          {
-            field: 'delete',
-            headerName: 'Actions',
-            width: 150,
-            renderCell: (params) => (
-              <strong>
-                <Button
-                  variant="contained"
+                  <Edit />
+                </IconButton>
+                <IconButton
                   color="error"
                   size="small"
                   onClick={() => handleDelete(params.row.id)}
                 >
-                  Delete
-                </Button>
-              </strong>
+                  <Clear />
+                </IconButton>
+              </Box>
             ),
           },
         ]}
