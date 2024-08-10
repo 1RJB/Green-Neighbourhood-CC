@@ -8,7 +8,7 @@ const { User, Achievement } = require("../models");
 
 const yup = require("yup");
 
-router.post("/  ", async (req, res) => {
+router.post("/register", async (req, res) => {
   let data = req.body;
   let validationSchema = yup.object({
     firstName: yup
