@@ -10,6 +10,7 @@ import http from './http';
 import UserContext from './contexts/UserContext';
 
 
+
 // Pages
 import Home from './pages/Home';
 import Register from './pages/Register';
@@ -42,6 +43,7 @@ import ManageUsers from "./pages/manageUsers";
 import ManageStaff from "./pages/manageStaff";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import FaqPage from './pages/faq';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -105,6 +107,7 @@ function App() {
               <Route path="/allstaffs" element={userType === 'admin' ? <ManageStaff /> : <Navigate to="/" />} />
               <Route path="/forgotPassword" element={<ForgotPassword />} />
               <Route path="/resetPassword" element={<ResetPassword />} />
+              <Route path="/faqpage" element={<FaqPage />} />
               <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
           </Container>

@@ -174,7 +174,7 @@ const ContactUs = () => {
                 sitekey="6LdxyxkqAAAAAHkTZiQF6k35dPDBg6pv89g_nHwl"
                 onChange={handleRecaptchaChange}
               />
-              <Button fullWidth variant="contained" sx={{ mt: 2 , marginBottom: 5}}
+              <Button fullWidth variant="contained" color="secondary" sx={{ mt: 2 , marginBottom: 5}}
                 type="submit">
                 Submit
               </Button>
