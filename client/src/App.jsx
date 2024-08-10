@@ -12,6 +12,7 @@ import UserContext from './contexts/UserContext';
 
 
 // Pages
+import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import StaffRegister from './pages/staffRegister';
@@ -44,6 +45,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import FaqPage from './pages/faq';
 import StaffVolunteer from './pages/StaffVolunteer';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -76,7 +78,7 @@ function App() {
           <Header />
           <Container className="mt-4">
             <Routes>
-              <Route path="/" element={<div>Home</div>} />
+              <Route path="/" element={<Home />} />
               <Route path="/Volunteers" element={<Volunteers />} />
               <Route path="/add-volunteer" element={<AddVolunteer />} />
               <Route path="/edit-volunteer/:id" element={<EditVolunteer />} />
@@ -109,6 +111,7 @@ function App() {
               <Route path="/resetPassword" element={<ResetPassword />} />
               <Route path="/faqpage" element={<FaqPage />} />
               <Route path ="/staff/volunteers" element={<StaffVolunteer />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
           </Container>
