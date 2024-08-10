@@ -23,6 +23,7 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.10.1",
     "nanoid": "^3.3.7",
+    "nodemailer": "^6.9.14",
     "react-toastify": "^10.0.5",
     "sequelize": "^6.37.3",
     "yup": "^1.4.0"

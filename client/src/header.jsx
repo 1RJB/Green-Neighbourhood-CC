@@ -27,23 +27,23 @@ const Header = () => {
           <>
             <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
             <Dropdown>
-            <Dropdown.Toggle as={Nav.Link}>
-              Manage
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/allusers">Users</Dropdown.Item>
-              <Dropdown.Item as={Link} to="/allstaffs">Staffs</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          <Dropdown>
-            <Dropdown.Toggle as={Nav.Link}>
-              Register
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-            <Nav.Link as={Link} to="/adminregister">Admin</Nav.Link>
-            <Nav.Link as={Link} to="/staffregister">Staff</Nav.Link>
-            </Dropdown.Menu>
-          </Dropdown>
+              <Dropdown.Toggle as={Nav.Link}>
+                Manage
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item as={Link} to="/allusers">Users</Dropdown.Item>
+                <Dropdown.Item as={Link} to="/allstaffs">Staffs</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Dropdown>
+              <Dropdown.Toggle as={Nav.Link}>
+                Register
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Nav.Link as={Link} to="/adminregister">Admin</Nav.Link>
+                <Nav.Link as={Link} to="/staffregister">Staff</Nav.Link>
+              </Dropdown.Menu>
+            </Dropdown>
           </>
         );
       }
@@ -54,23 +54,24 @@ const Header = () => {
             <Nav.Link as={Link} to="/achievements">Achievements</Nav.Link>
             <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
             <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
+            <Nav.Link as={Link} to="/staff/volunteers">Volunteer Tickets</Nav.Link> {/* Corrected this line */}
           </>
         );
       }
-      // Update this block for non-staff users to link to the main volunteer page
+
+      if (userType === 'user') {
+        return (
+          <>
+            <Nav.Link as={Link} to="/volunteers">Your Tickets</Nav.Link>
+          </>
+        );
+      }
+    } else {
       return (
-        <>
-          <Nav.Link as={Link} to="/volunteers">Your Tickets</Nav.Link>
-        </>
+        <Nav.Link as={Link} to="/login">Login</Nav.Link>
       );
     }
-    return (
-      <>
-
-        <Nav.Link as={Link} to="/login">Login</Nav.Link>
-      </>
-    );
-  }
+  };
 
   return (
     <Navbar className={`custom-navbar ${userType === 'staff' || userType === 'admin' ? 'staff-navbar' : 'user-navbar'}`} expand="lg">
@@ -93,14 +94,14 @@ const Header = () => {
             <Nav.Link as={Link} to="/events">Events</Nav.Link>
             <Nav.Link as={Link} to="/rewards">Rewards</Nav.Link>
             <Dropdown>
-            <Dropdown.Toggle as={Nav.Link}>
-              Support
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-            <Nav.Link as={Link} to="/contactUs" style={{ color: 'black' }}>Contact Us</Nav.Link>
-            <Nav.Link as={Link} to="/faqpage" style={{ color: 'black' }}>FAQ</Nav.Link>
-            </Dropdown.Menu>
-          </Dropdown>
+              <Dropdown.Toggle as={Nav.Link}>
+                Support
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Nav.Link as={Link} to="/contactUs" style={{ color: 'black' }}>Contact Us</Nav.Link>
+                <Nav.Link as={Link} to="/faqpage" style={{ color: 'black' }}>FAQ</Nav.Link>
+              </Dropdown.Menu>
+            </Dropdown>
             {renderUserLinks()}
           </Nav>
           {user && (

@@ -5,20 +5,16 @@ import { AccountCircle, AccessTime, Event, Search, Clear, Edit } from '@mui/icon
 import http from '../http';
 import dayjs from 'dayjs'; // Ensure this import is included
 import { format } from 'date-fns';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import UserContext from '../contexts/UserContext';
-
-
-
-function formatTime24to12(time24hr) {
-    return dayjs(time24hr, 'HH:mm:ss').format('hh:mm A');
-  }
 
 function Volunteers() {
     const [volunteerList, setVolunteerList] = useState([]);
     const [search, setSearch] = useState('');
     const { user, setUser } = useContext(UserContext);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         getVolunteers();
@@ -30,10 +26,6 @@ function Volunteers() {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         }).then((res) => {
             setUser(res.data);
-            formik.setValues({
-                firstName: res.data.firstName,
-                lastName: res.data.lastName,
-            });
             setLoading(false);
         }).catch(error => {
             console.error("Failed to fetch user data:", error);
@@ -84,7 +76,6 @@ function Volunteers() {
         return format(date, 'hh:mm a');
     }
     
-
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
@@ -114,22 +105,20 @@ function Volunteers() {
                 {volunteerList.map((volunteer) => (
                     <Grid item xs={12} md={6} lg={4} key={volunteer.id}>
                         <Card>
-                            <CardContent>
+                        <CardContent>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
                                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                         {volunteer.title}
                                     </Typography>
-                                    {user && user.id === volunteer.userId && (
-                                        <Link to={`/edit-volunteer/${volunteer.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
-                                    )}
+                                    <Link to={`/edit-volunteer/${volunteer.id}`}>
+                                        <IconButton color="primary" sx={{ padding: '4px' }}>
+                                            <Edit />
+                                        </IconButton>
+                                    </Link>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccountCircle sx={{ mr: 1 }} />
-                                    <Typography>{fullName}</Typography>
+                                    <Typography>{volunteer.userName || 'Unknown User'}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccessTime sx={{ mr: 1 }} />
@@ -158,6 +147,7 @@ function Volunteers() {
                     </Grid>
                 ))}
             </Grid>
+            <ToastContainer />
         </Box>
     );
 }
