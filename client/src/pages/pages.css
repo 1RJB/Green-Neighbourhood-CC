@@ -221,7 +221,7 @@
 
 /* Image styling to maintain aspect ratio and cover container */
 .pages-image {
-    height: 70%;
+    height: 100%;
     /* Full height of the container */
     width: auto;
     /* Maintain original aspect ratio */
@@ -290,7 +290,7 @@ h2 {
 }
 
 .reward-image {
-    height: 10.5rem;
+    height: 11rem;
     width: auto;
     max-width: 19rem;
     border-radius: 10%;
