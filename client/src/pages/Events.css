@@ -72,3 +72,22 @@
 .event-card-item {
     margin-bottom: 300px; /* Adjust this value as needed */
 }
+
+/* Add these styles to Events.css */
+
+.event-type-pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    position: absolute;
+    top: 10px;
+    margin-right: 10px; /* Add space between pills */
+}
+
+
+.event-type-upcoming { background-color: orange; }
+.event-type-current { background-color: navy; }
+.event-type-past { background-color: gray; }
+
