@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Achievement } = require('../models');
+const { User, Achievement, UserAchievements } = require('../models');
 const { validateToken } = require('../middlewares/userauth');
 
 // Get all achievements
@@ -24,6 +24,46 @@ router.get("/", validateToken, async (req, res) => {
             }]
         });
         res.json(user.achievements);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get user's earned achievements with notice field
+router.get("/withnotice", validateToken, async (req, res) => {
+    try {
+        const userAchievements = await UserAchievements.findAll({
+            where: { 
+                userId: req.user.id,
+                notice: 1 // Fetch only achievements with notice = 1
+            },
+            include: [{
+                model: Achievement,
+                as: 'achievement', // Ensure the alias matches your association
+                attributes: ['id', 'title', 'description', 'imageFile'] // Add any other fields you need
+            }],
+            attributes: ['notice', 'earnedAt'] // Include the fields from UserAchievements table
+        });
+
+        res.json(userAchievements);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.put("/resetnotices", validateToken, async (req, res) => {
+    try {
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Update the notice field to 0 for the current user's achievements in UserAchievements model
+        await UserAchievements.update({ notice: 0 }, {
+            where: { userId: req.user.id }
+        });
+
+        res.json({ message: "Achievement notices reset successfully" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

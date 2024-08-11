@@ -31,7 +31,7 @@ function Achievements() {
                     const achievements = achievementsRes.data;
                     setAllAchievements(achievements);
     
-                    const userCountRes = await http.get('/users/count');
+                    const userCountRes = await http.get('/user/count');
                     setUserCounts(userCountRes.data.count);
     
                     const counts = achievements.reduce((acc, achievement) => {

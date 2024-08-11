@@ -226,15 +226,6 @@
 }
 
 /* Additional styles */
-.carousel {
-    text-align: center;
-}
-
-.carousel img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
 
 .homepage {
     display: grid;
@@ -264,7 +255,7 @@ h2 {
 /* Specific styles for event and reward images */
 .carousel img {
     max-width: 100%;
-    height: auto;
+    height: 30rem;
     border-radius: 8px;
 }
 
