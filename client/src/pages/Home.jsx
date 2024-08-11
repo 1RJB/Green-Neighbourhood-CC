@@ -35,7 +35,7 @@ const Home = () => {
                 if (data.length > 0) {
                     // Reset the notice field
                     await http.put('/achievement/resetnotices');
-                    toast.success("You got a new achievement! Check your achievements page to view it.");
+                    toast.done("Congrats, you got a new achievement! You can view on the Acheivements page.");
 
                 }
             } catch (err) {
@@ -209,7 +209,6 @@ const Home = () => {
                     </Card>
                 </Grid>
             </Grid>
-            <ToastContainer />
         </Container>
     );
 };
