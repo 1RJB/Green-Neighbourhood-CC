@@ -36,7 +36,7 @@ function ViewEvent() {
 
     const handleParticipate = () => {
         if (user) {
-            navigate('/participateevent', { state: { event: event.title } });
+            navigate('/participateevent', { state: { event: event.id } });
         } else {
             toast.error("Please log in to participate in events.");
         }
