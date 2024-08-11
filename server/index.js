@@ -50,7 +50,7 @@ app.use("/reward", rewardRoute);
 app.use("/redemption", redemptionRoute); 
 app.use("/points", pointsRoute);
 app.use("/achievement", achievementRoute);
-app.use('/staff/achievement', staffAchievementRoute);
+app.use('/staffachievement', staffAchievementRoute);
 app.use('/staffvolunteer', staffVolunteerRoute);
 
 const db = require("./models");

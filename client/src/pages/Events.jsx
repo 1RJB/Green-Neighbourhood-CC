@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem } from '@mui/material';
-import { CalendarToday, Search, Clear, Edit, AccessTime } from '@mui/icons-material';
+import { CalendarToday, Search, Clear, Edit, Home } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -133,6 +133,11 @@ function Events() {
 
     return (
         <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <IconButton color="black" onClick={() => navigate('/')}>
+                    <Home />
+                </IconButton>
+            </Box>
             <Typography variant="h2" sx={{ fontWeight: 'bold', mb: 10 }}>
                 Events
             </Typography>

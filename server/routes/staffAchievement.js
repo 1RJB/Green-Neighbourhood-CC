@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { Achievement } = require('../models');
+const { Achievement, UserAchievements, sequelize } = require('../models');
 const { validateToken } = require('../middlewares/staffauth');
 
 // Get all achievements
-router.get('/', validateToken, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const achievements = await Achievement.findAll();
         res.json(achievements);
@@ -53,6 +53,38 @@ router.delete('/:id', validateToken, async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Error deleting achievement', error: error.message });
+    }
+});
+
+// Count total number of achievements earned by all users
+router.get('/totalcount', async (req, res) => {
+    try {
+        const totalAchievements = await UserAchievements.count();
+        res.json({ totalAchievements });
+    } catch (error) {
+        res.status(500).json({ message: 'Error counting total achievements', error: error.message });
+    }
+});
+
+// Count earned achievements per achievement
+router.get('/counts', async (req, res) => {
+    try {
+        const counts = await UserAchievements.findAll({
+            attributes: ['achievementId', [sequelize.fn('COUNT', sequelize.col('achievementId')), 'count']],
+            group: 'achievementId',
+            raw: true
+        });
+
+        // Format the counts as an object where keys are achievement IDs
+        const countsObject = counts.reduce((acc, curr) => {
+            acc[curr.achievementId] = parseInt(curr.count, 10);
+            return acc;
+        }, {});
+
+        res.json(countsObject);
+    } catch (error) {
+        console.error("Error counting earned achievements:", error);
+        res.status(500).json({ message: 'Error counting earned achievements', error: error.message });
     }
 });
 
