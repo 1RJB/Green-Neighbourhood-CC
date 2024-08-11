@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FormControl } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs'; // Ensure this is imported
 
 function EditVolunteer() {
@@ -28,6 +27,15 @@ function EditVolunteer() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [serviceTypes] = useState([
+    'All',
+    'Education',
+    'Healthcare',
+    'Environment',
+    'Animal Welfare',
+    'Community Service',
+    'Other'
+  ]);
 
   useEffect(() => {
     getData();
@@ -53,11 +61,10 @@ function EditVolunteer() {
     enableReinitialize: true,
     validationSchema: yup.object({
       dateAvailable: yup.date().required('Date Available is required'),
-      serviceType: yup.string().trim()
-        .min(3, 'Service Type must be at least 3 characters')
-        .max(100, 'Service Type must be at most 100 characters')
+      serviceType: yup.string()
+        .oneOf(serviceTypes, 'Invalid Service Type') // Ensure serviceType is one of the defined options
         .required('Service Type is required'),
-      comments: yup.string().trim().max(500, 'Comments must be at most 500 characters'),
+      comments: yup.string().max(500, 'Comments must be at most 500 characters'),
       timeAvailable: yup.date().required('Time Available is required'),
       duration: yup.number().integer().min(0, 'Duration must be at least 0').nullable(),
       contactInfo: yup.string().max(100, 'Contact Info must be at most 100 characters').nullable(),
@@ -150,16 +157,26 @@ function EditVolunteer() {
                   error={formik.touched.dateAvailable && Boolean(formik.errors.dateAvailable)}
                   helperText={formik.touched.dateAvailable && formik.errors.dateAvailable}
                 />
-                <TextField
-                  fullWidth margin="dense" autoComplete="off"
-                  label="Service Type"
-                  name="serviceType"
-                  value={formik.values.serviceType}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.serviceType && Boolean(formik.errors.serviceType)}
-                  helperText={formik.touched.serviceType && formik.errors.serviceType}
-                />
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="serviceType-label">Service Type</InputLabel>
+                  <Select
+                    labelId="serviceType-label"
+                    name="serviceType"
+                    value={formik.values.serviceType}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.serviceType && Boolean(formik.errors.serviceType)}
+                  >
+                    {serviceTypes.map((type) => (
+                      <MenuItem key={type} value={type}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {formik.touched.serviceType && formik.errors.serviceType && (
+                    <FormHelperText error>{formik.errors.serviceType}</FormHelperText>
+                  )}
+                </FormControl>
                 <TextField
                   fullWidth margin="dense" autoComplete="off"
                   multiline minRows={2}
@@ -178,7 +195,6 @@ function EditVolunteer() {
                       name="timeAvailable"
                       value={formik.values.timeAvailable}
                       onChange={(time) => {
-                        console.log('Selected time:', time);
                         formik.setFieldValue('timeAvailable', time);
                       }}
                       onBlur={() => formik.setFieldTouched('timeAvailable', true)}
@@ -210,24 +226,6 @@ function EditVolunteer() {
                   error={formik.touched.contactInfo && Boolean(formik.errors.contactInfo)}
                   helperText={formik.touched.contactInfo && formik.errors.contactInfo}
                 />
-              </Grid>
-              <Grid item xs={12} md={6} lg={4}>
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  <Button variant="contained" component="label">
-                    Upload Image
-                    <input hidden accept="image/*" multiple type="file"
-                      onChange={onFileChange} />
-                  </Button>
-                  {
-                    imageFile && (
-                      <Box className="aspect-ratio-container" sx={{ mt: 2 }}>
-                        <img alt="ticket"
-                          src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
-                        </img>
-                      </Box>
-                    )
-                  }
-                </Box>
               </Grid>
             </Grid>
             <Box sx={{ mt: 2 }}>

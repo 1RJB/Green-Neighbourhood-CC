@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { toast, ToastContainer } from 'react-toastify';
-import './pages.css'; // Import the CSS file for styles\
-import { Link } from 'react-router-dom';
+import './pages.css'; // Import the CSS file for styles
+import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const [events, setEvents] = useState([]);
@@ -12,6 +12,7 @@ const Home = () => {
     const [userCount, setUserCount] = useState(0);
     const [currentEventIndex, setCurrentEventIndex] = useState(0);
     const [currentRewardIndex, setCurrentRewardIndex] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -95,6 +96,14 @@ const Home = () => {
         };
     }, [events, rewards]);
 
+    const handleVolunteerClick = () => {
+        if (user && user.usertype === 'volunteer') {
+            navigate('/volunteers');
+        } else {
+            navigate(user?.usertype === 'staff' ? '/staff/volunteers' : '/');
+        }
+    };
+
     const getVisibleRewards = () => {
         if (rewards.length === 0) return [];
         const start = currentRewardIndex;
@@ -152,7 +161,7 @@ const Home = () => {
                         <br></br>
                         🌿 Improve Your Resume: Add impressive experience to your career profile.
                     </p>
-                    <Link to="/" className="volunteer-button">Volunteer Now</Link> {/* Link to home page */}
+                    <button onClick={handleVolunteerClick} className="volunteer-button">Volunteer Now</button>
                 </div>
 
             </div>

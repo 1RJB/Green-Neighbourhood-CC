@@ -4,6 +4,8 @@ import { Box, Typography, Card, CardContent, TextField, Button } from '@mui/mate
 import http from '../http';
 import dayjs from 'dayjs';
 import { format } from 'date-fns';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function formatTime24to12(time24hr) {
     const [hours, minutes] = time24hr.split(':');
@@ -18,6 +20,7 @@ function TicketDetails() {
     const [userMap, setUserMap] = useState({});
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
 
     // Function to get user details from userMap
     const getUserDetail = (userId, detail) => {
@@ -57,15 +60,25 @@ function TicketDetails() {
     }, [id]);
 
     // Handle sending a message
-    const handleSendMessage = () => {
-        // Replace this with your actual message sending logic
-        http.post('/send-message', { ticketId: id, message })
-            .then(() => {
-                setSuccess(true);
-                setMessage(''); // Clear message after sending
-            })
-            .catch(() => setSuccess(false));
+    const handleSendMessage = async () => {
+        try {
+            const response = await axios.delete(`http://localhost:3001/ticketdetails/${id}`, { // Use the correct URL here
+                data: {
+                    emailMessage: message
+                }
+            });
+            console.log(response.data);
+            setSuccess(true); // Indicate success
+            setTimeout(() => navigate('/staff/volunteers'), 2000); // Redirect after 2 seconds
+        } catch (error) {
+            console.error("Error sending message:", error.response ? error.response.data : error.message);
+            // Handle error state
+        }
     };
+    
+    
+    
+
 
     if (!ticket || Object.keys(userMap).length === 0) return <Typography>Loading...</Typography>;
 
