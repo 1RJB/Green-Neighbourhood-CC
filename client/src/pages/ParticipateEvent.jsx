@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -29,6 +29,20 @@ function ParticipateEvent() {
         event: location.state?.event || '',
         createdBy: user.id,
     }]);
+    const [eventTitle, setEventTitle] = useState('');
+
+    useEffect(() => {
+        if (location.state?.event) {
+            // Fetch event details to get the event title
+            http.get(`/event/${location.state.event}`)
+                .then((res) => {
+                    setEventTitle(res.data.title);
+                })
+                .catch((error) => {
+                    console.error('Error fetching event details:', error);
+                });
+        }
+    }, [location.state?.event]);
 
     const handleAddParticipant = async () => {
         const currentIndex = participants.length - 1;
@@ -154,7 +168,7 @@ function ParticipateEvent() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Participate in Event
+                Participate in {eventTitle || 'Event'}
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit}>
                 {participants.map((participant, index) => (
@@ -195,7 +209,7 @@ function ParticipateEvent() {
                                     helperText={formik.errors.participants?.[index]?.lastName}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <TextField
                                     fullWidth
                                     margin="dense"
@@ -208,29 +222,28 @@ function ParticipateEvent() {
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <FormControl fullWidth margin="dense" error={Boolean(formik.errors.participants?.[index]?.gender)}>
+                                <FormControl fullWidth margin="dense">
                                     <InputLabel>Gender</InputLabel>
                                     <Select
                                         name={`participants[${index}].gender`}
                                         value={participant.gender}
                                         onChange={handleParticipantChange(index, 'gender')}
+                                        error={Boolean(formik.errors.participants?.[index]?.gender)}
                                     >
-                                        <MenuItem value="">Select Gender</MenuItem>
                                         <MenuItem value="Male">Male</MenuItem>
                                         <MenuItem value="Female">Female</MenuItem>
                                     </Select>
                                     {formik.errors.participants?.[index]?.gender && (
-                                        <Typography color="error" variant="caption">{formik.errors.participants?.[index]?.gender}</Typography>
+                                        <Typography color="error" variant="caption">{formik.errors.participants[index].gender}</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     fullWidth
                                     margin="dense"
-                                    label="Birthday"
                                     type="date"
-                                    InputLabelProps={{ shrink: true }}
+                                    label="Birthday"
                                     name={`participants[${index}].birthday`}
                                     value={participant.birthday}
                                     onChange={handleParticipantChange(index, 'birthday')}
@@ -238,32 +251,34 @@ function ParticipateEvent() {
                                     helperText={formik.errors.participants?.[index]?.birthday}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    margin="dense"
-                                    label="Event"
-                                    value={participant.event}
-                                    disabled
-                                />
-                            </Grid>
                         </Grid>
-                        {/* Show Remove button only for members after the first */}
-                        {index > 0 && (
-                            <Button variant="outlined" color="error" onClick={() => handleRemoveParticipant(index)} sx={{ mt: 2 }}>
-                                Remove
+                        {participants.length > 1 && (
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => handleRemoveParticipant(index)}
+                                sx={{ mt: 2 }}
+                            >
+                                Remove Participant
                             </Button>
                         )}
                     </Box>
                 ))}
-                <Button variant="outlined" onClick={handleAddParticipant}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddParticipant}
+                    sx={{ mb: 2 }}
+                >
                     Add Another Participant
                 </Button>
-                <Box sx={{ mt: 2 }}>
-                    <Button variant="contained" type="submit">
-                        Participate
-                    </Button>
-                </Box>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                >
+                    Submit
+                </Button>
             </Box>
             <ToastContainer />
         </Box>
