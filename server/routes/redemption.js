@@ -2,23 +2,23 @@
 const express = require('express');
 const router = express.Router();
 const { User, Reward, Redemption, Achievement } = require('../models');
-const { Sequelize, Op } = require("sequelize");
+const { Sequelize, Op, fn, col, where } = require("sequelize");
 const yup = require("yup");
 const dayjs = require('dayjs');
 const { validateToken: validateStaffToken } = require('../middlewares/staffauth');
 const { validateToken: validateUserToken } = require('../middlewares/userauth');
 
-// GET: List redemptions with optional userName and rewardName filtering, and sorted
+// GET: List redemptions with optional userName and rewardTitle filtering, and sorted
 router.get("/", async (req, res) => {
-    let { rewardName, userName, sortBy, order, status } = req.query;
+    let { rewardTitle, userName, sortBy, order, status } = req.query;
 
-    console.log('Query Params:', { rewardName, userName, sortBy, order, status });
+    console.log('Query Params:', { rewardTitle, userName, sortBy, order, status });
 
     // Define sort attribute for Sequelize query
     let sortAttribute;
     if (sortBy === 'userName') {
         sortAttribute = Sequelize.literal("CONCAT(`user`.`firstName`, ' ', `user`.`lastName`)");
-    } else if (sortBy === 'rewardName') {
+    } else if (sortBy === 'rewardTitle') {
         sortAttribute = Sequelize.literal("`reward`.`title`");
     } else {
         sortAttribute = sortBy || 'redeemedAt';
@@ -35,6 +35,9 @@ router.get("/", async (req, res) => {
                     attributes: ['id', 'firstName', 'lastName', 'email'],
                     where: userName ? {
                         [Op.or]: [
+                            where(fn('concat', col('firstName'), ' ', col('lastName')), {
+                                [Op.like]: `%${userName}%`
+                            }),
                             { firstName: { [Op.like]: `%${userName}%` } },
                             { lastName: { [Op.like]: `%${userName}%` } }
                         ]
@@ -44,8 +47,8 @@ router.get("/", async (req, res) => {
                     model: Reward,
                     as: 'reward',
                     attributes: ['id', 'title'],
-                    where: rewardName ? {
-                        title: { [Op.like]: `%${rewardName}%` }
+                    where: rewardTitle ? {
+                        title: { [Op.like]: `%${rewardTitle}%` }
                     } : {}
                 }
             ],
@@ -113,23 +116,6 @@ router.put("/:id", async (req, res) => {
     } catch (error) {
         console.error('Error updating redemption:', error);
         res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// DELETE: Remove a redemption by ID
-router.delete("/:id", async (req, res) => {
-    const id = req.params.id;
-    const redemption = await Redemption.findByPk(id);
-
-    if (!redemption) {
-        return res.sendStatus(404);
-    }
-
-    const num = await Redemption.destroy({ where: { id: id } });
-    if (num == 1) {
-        res.json({ message: "Redemption was deleted successfully." });
-    } else {
-        res.status(400).json({ message: `Cannot delete redemption with id ${id}.` });
     }
 });
 

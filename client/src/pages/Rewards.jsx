@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Star, ArrowForward } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Star, ArrowForward, Add, ViewArray, EmojiEvents } from '@mui/icons-material';
 import http from '../http';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
@@ -131,7 +131,7 @@ function Rewards() {
                 </Select>
                 <Box sx={{ flexGrow: 1 }} />
                 <Link to="/leaderboard">
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" startIcon={<EmojiEvents />} color="primary">
                         View Leaderboard
                     </Button>
                 </Link>
@@ -139,13 +139,13 @@ function Rewards() {
                     user && user.usertype === "staff" && (
                         <>
                             <Link to="/reward/redemptions">
-                                <Button variant='contained' sx={{ ml: 2 }}>
-                                    Redemptions
+                                <Button variant='contained' startIcon={<ViewArray />} color="secondary" sx={{ ml: 2 }}>
+                                    View Redemptions
                                 </Button>
                             </Link>
                             <Link to="/addreward">
-                                <Button variant='contained' sx={{ ml: 2 }}>
-                                    Add
+                                <Button variant='contained' startIcon={<Add />} sx={{ ml: 2 }}>
+                                    Add Reward
                                 </Button>
                             </Link>
                         </>
