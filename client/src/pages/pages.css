@@ -1,6 +1,9 @@
+/* Add this at the top of your CSS file */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 /* pages.css */
 
-.pages-card-content {
+.pages-content {
     position: relative;
 }
 
@@ -187,6 +190,9 @@
     grid-gap: 20px;
     padding: 20px;
 }
+.card-title {
+    font-size: 35px;
+}
 
 /* Fixed sizes for tiles */
 .tile-large {
@@ -297,5 +303,167 @@ h2 {
 
 .reward-item:hover .reward-title {
     opacity: 0.8;
-    background-color: #155724;
+    
+}
+
+/* Background image for welcome section */
+.welcome-section {
+    background-image: url('../../public/home_bg.png'); /* Replace with actual path */
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 60px 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* pages.css */
+
+.homepage {
+    display: grid;
+    grid-template-areas:
+        "welcome welcome"
+        "points volunteers"
+        "events rewards";
+    grid-gap: 20px;
+    padding: 20px;
+}
+
+.welcome-section {
+    grid-area: welcome;
+    background-image: url('../../public/home_bg.png'); /* Replace with actual path */
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 60px 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.middle-nav {
+    grid-area: points;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.points-box, .volunteers-box {
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.points-box {
+    background-color: #f8d7da; /* Change background color as needed */
+}
+
+.volunteers-box {
+    background-color: #eaf8ea; /* Change background color as needed */
+}
+
+.events-tile {
+    grid-area: events;
+}
+
+.rewards-tile {
+    grid-area: rewards;
+    background-color: rgb(200, 224, 228);
+    padding: 20px;
+    border-radius: 8px;
+    /* height: 380px; */
+}
+
+.carousel img {
+    max-width: 100%;
+    height: 30rem;
+    border-radius: 8px;
+}
+
+.reward-item {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.reward-item img {
+    width: 100px; /* Adjust width */
+    height: 100px; /* Adjust height */
+    object-fit: cover; /* Ensure the image covers the container */
+    transition: opacity 0.3s ease; /* Smooth transition */
+}
+
+.reward-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6); /* Dark background for readability */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    opacity: 0; /* Hide title by default */
+    transition: opacity 0.3s ease; /* Smooth transition */
+    z-index: 1; /* Ensure title appears above the image */
+}
+
+.reward-item:hover .reward-title {
+    opacity: 1; /* Show title on hover */
+}
+
+.reward-item:hover img {
+    opacity: 0.7; /* Optionally, reduce image opacity on hover */
+}
+
+.volunteer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers content horizontally */
+    text-align: center; /* Centers text inside the section */
+    background-color: rgb(234, 207, 235);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.volunteer-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.volunteer-para {
+    align-items: center;
+}
+/* Apply the font to the entire page */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Apply the font to specific elements */
+.card-title {
+    font-family: 'Roboto', sans-serif;
+}
+
+.volunteer-title {
+    font-family: 'Roboto', sans-serif;
+}
+
+.volunteer-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 20px auto;
+    font-size: 16px;
+    color: #fff;
+    background-color: #13305d; /* Green background */
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s ease;
+}
+
+.volunteer-button:hover {
+    background-color: #70a8e3; /* Darker green on hover */
 }
