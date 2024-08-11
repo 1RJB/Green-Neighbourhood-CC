@@ -21,7 +21,7 @@ router.post("/sendOtp", async (req, res) => {
     console.log("Generated OTP:", otp);
 
     // Store OTP in the database
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
+    const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // OTP expires in 5 minutes
     await OTP.create({ email, otp, expiresAt });
 
     console.log("OTP saved to database");

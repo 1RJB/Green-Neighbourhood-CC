@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import emailjs from "emailjs-com"; // Import emailjs
+import emailjs from "emailjs-com";
 import {
   Box,
   Typography,
@@ -14,12 +14,28 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Grid,
 } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Register() {
   const navigate = useNavigate();
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (isCooldown && cooldownTime > 0) {
+      timer = setInterval(() => {
+        setCooldownTime((prevTime) => prevTime - 1);
+      }, 1000);
+    } else if (cooldownTime === 0) {
+      setIsCooldown(false);
+    }
+
+    return () => clearInterval(timer);
+  }, [isCooldown, cooldownTime]);
 
   const formik = useFormik({
     initialValues: {
@@ -83,6 +99,7 @@ function Register() {
         .required("Confirm Password is required"),
       otp: yup
         .string()
+        .matches(/^\d{6}$/, "OTP must be exactly 6 digits")
         .required('OTP is required'),
     }),
     onSubmit: async (values) => {
@@ -123,6 +140,10 @@ function Register() {
 
       await emailjs.send('service_atajjxp', 'template_c8ziunu', templateParams, 'YNOWo8S4upqxTO_Tk');
       toast.success("OTP sent successfully!");
+
+      // Start cooldown
+      setIsCooldown(true);
+      setCooldownTime(60); // 1 minute cooldown
     } catch (error) {
       console.error("Failed to send OTP", error);
       toast.error("Failed to send OTP. Please try again later.");
@@ -182,26 +203,37 @@ function Register() {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
         />
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{ mt: 2, marginBottom: 2 }}
-          onClick={handleSendOtp}
-        >
-          Send OTP
-        </Button>
-        <TextField
-          fullWidth
-          margin="dense"
-          autoComplete="off"
-          label="OTP"
-          name="otp"
-          value={formik.values.otp}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.otp && Boolean(formik.errors.otp)}
-          helperText={formik.touched.otp && formik.errors.otp}
-        />
+        <Grid container spacing={2} alignItems="center" sx={{ mt: 2, mb: 2 }}>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              margin="dense"
+              autoComplete="off"
+              label="OTP"
+              name="otp"
+              value={formik.values.otp}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.otp && Boolean(formik.errors.otp)}
+              helperText={formik.touched.otp && formik.errors.otp}
+              inputProps={{
+                maxLength: 6,
+                pattern: "[0-9]{6}",
+                title: "OTP should be exactly 6 digits",
+              }}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleSendOtp}
+              disabled={isCooldown}
+            >
+              {isCooldown ? `Retry in ${cooldownTime}s` : "Send OTP"}
+            </Button>
+          </Grid>
+        </Grid>
         <TextField
           fullWidth
           margin="dense"
