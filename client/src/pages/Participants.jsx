@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Typography, Input, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Typography, FormControl, InputLabel, Input, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { Search, Clear, AccountCircle, AccessTime, Edit, Delete } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
@@ -12,6 +12,10 @@ function Participants() {
     const [pastSearch, setPastSearch] = useState('');
     const [eventMap, setEventMap] = useState({});
     const { user } = useContext(UserContext);
+
+    // Modal state
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const onCurrentSearchChange = (e) => {
         setCurrentSearch(e.target.value);
@@ -124,6 +128,8 @@ function Participants() {
                 .then(() => {
                     setCurrentParticipants(currentParticipants.filter(participant => participant.id !== id));
                     setPastParticipants(pastParticipants.filter(participant => participant.id !== id));
+                    setModalMessage('Participant deleted successfully.');
+                    setModalOpen(true);
                     console.log(`Participant with ID ${id} deleted successfully.`);
                 })
                 .catch((error) => {
@@ -132,8 +138,13 @@ function Participants() {
         }
     };
 
+    // Modal close handler
+    const handleModalClose = () => {
+        setModalOpen(false);
+    };
+
     return (
-        <Box>
+        <Box className="container mt-4">
             <Typography variant="h5" sx={{ my: 2 }}>
                 Participants
             </Typography>
@@ -143,38 +154,40 @@ function Participants() {
                 Current Participants
             </Typography>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input
-                    value={currentSearch}
-                    placeholder="Search"
-                    onChange={onCurrentSearchChange}
-                    onKeyDown={onCurrentSearchKeyDown}
-                />
+            <Box className="mb-3 d-flex align-items-center">
+                <FormControl className="me-2">
+                    <InputLabel htmlFor="currentSearch">Search</InputLabel>
+                    <Input
+                        id="currentSearch"
+                        value={currentSearch}
+                        onChange={onCurrentSearchChange}
+                        onKeyDown={onCurrentSearchKeyDown}
+                    />
+                </FormControl>
                 <IconButton color="primary" onClick={onCurrentClickSearch}>
                     <Search />
                 </IconButton>
-                <IconButton color="primary" onClick={onCurrentClickClear}>
+                <IconButton color="secondary" onClick={onCurrentClickClear}>
                     <Clear />
                 </IconButton>
-                <Box sx={{ flexGrow: 1 }} />
             </Box>
 
             <TableContainer component={Paper}>
-                <Table>
+                <Table className="table table-striped">
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ minWidth: 50 }}>ID</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>First Name</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Last Name</TableCell>
-                            <TableCell style={{ minWidth: 200 }}>Email</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Gender</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Birthday</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Event</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Created By</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Status</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Created At</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Actions</TableCell>
+                            <TableCell>ID</TableCell>
+                            <TableCell>First Name</TableCell>
+                            <TableCell>Last Name</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Gender</TableCell>
+                            <TableCell>Birthday</TableCell>
+                            <TableCell>Event</TableCell>
+                            <TableCell>Created By</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Created At</TableCell>
+                            <TableCell>Updated At</TableCell>
+                            <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -231,38 +244,39 @@ function Participants() {
                 Past Participants
             </Typography>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input
-                    value={pastSearch}
-                    placeholder="Search"
-                    onChange={onPastSearchChange}
-                    onKeyDown={onPastSearchKeyDown}
-                />
-                <IconButton color="secondary" onClick={onPastClickSearch}>
+            <Box className="mb-3 d-flex align-items-center">
+                <FormControl className="me-2">
+                    <InputLabel htmlFor="pastSearch">Search</InputLabel>
+                    <Input
+                        id="pastSearch"
+                        value={pastSearch}
+                        onChange={onPastSearchChange}
+                        onKeyDown={onPastSearchKeyDown}
+                    />
+                </FormControl>
+                <IconButton color="primary" onClick={onPastClickSearch}>
                     <Search />
                 </IconButton>
                 <IconButton color="secondary" onClick={onPastClickClear}>
                     <Clear />
                 </IconButton>
-                <Box sx={{ flexGrow: 1 }} />
             </Box>
 
             <TableContainer component={Paper}>
-                <Table>
+                <Table className="table table-striped">
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ minWidth: 50 }}>ID</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>First Name</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Last Name</TableCell>
-                            <TableCell style={{ minWidth: 200 }}>Email</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Gender</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Birthday</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Event</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Created By</TableCell>
-                            <TableCell style={{ minWidth: 120 }}>Status</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Created At</TableCell>
-                            <TableCell style={{ minWidth: 150 }}>Updated At</TableCell>
-                            <TableCell style={{ minWidth: 100 }}>Actions</TableCell>
+                            <TableCell>ID</TableCell>
+                            <TableCell>First Name</TableCell>
+                            <TableCell>Last Name</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Gender</TableCell>
+                            <TableCell>Birthday</TableCell>
+                            <TableCell>Event</TableCell>
+                            <TableCell>Created By</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Created At</TableCell>
+                            <TableCell>Updated At</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -294,25 +308,22 @@ function Participants() {
                                         <Typography>{new Date(participant.updatedAt).toLocaleString()}</Typography>
                                     </Box>
                                 </TableCell>
-                                <TableCell>
-                                    {user.usertype === 'staff' && (
-                                        <Link to={`/editparticipant/${participant.id}`}>
-                                            <IconButton color="secondary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
-                                    )}
-                                    {user.usertype === 'user' && (
-                                        <IconButton color="error" sx={{ padding: '4px' }} onClick={() => deleteParticipant(participant.id)}>
-                                            <Delete />
-                                        </IconButton>
-                                    )}
-                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Modal for messages */}
+            <Dialog open={modalOpen} onClose={handleModalClose}>
+                <DialogTitle>Message</DialogTitle>
+                <DialogContent>
+                    <Typography>{modalMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleModalClose}>Close</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

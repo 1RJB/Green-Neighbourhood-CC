@@ -51,7 +51,8 @@ const Header = () => {
             <Nav.Link as={Link} to="/achievements">Achievements</Nav.Link>
             <Nav.Link as={Link} to="/staff/tasks">Tasks</Nav.Link>
             <Nav.Link as={Link} to="/staff/reports">Reports</Nav.Link>
-            <Nav.Link as={Link} to="/staff/volunteers">Volunteer Tickets</Nav.Link> {/* Corrected this line */}
+            <Nav.Link as={Link} to="/staff/volunteers">Volunteer Tickets</Nav.Link>
+            <Nav.Link as={Link} to="/participants">Participants</Nav.Link>
           </>
         );
       }
@@ -110,11 +111,11 @@ const Header = () => {
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/dashboard" style={{ color: 'black' }}>Dashboard</Nav.Link>
                 </Dropdown.Item>
-                <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
-                  <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
-                </Dropdown.Item>
                 {userType === 'user' && (
                   <>
+                    <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                      <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
+                    </Dropdown.Item>
                     <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                       <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Achievements</Nav.Link>
                     </Dropdown.Item>
