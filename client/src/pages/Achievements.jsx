@@ -3,7 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, 
 import { Edit, Delete, Add, CardGiftcard } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Achievements() {
     const [allAchievements, setAllAchievements] = useState([]);
@@ -194,7 +194,7 @@ function Achievements() {
                         {user?.usertype === 'staff' && (
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                                 <Typography variant="caption">
-                                    User's Earned: {achievementCounts[achievement.id] || 0} times
+                                    No.  of users earned: {achievementCounts[achievement.id] || 0}
                                 </Typography>
                                 <Box>
                                     <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
@@ -307,6 +307,7 @@ function Achievements() {
                     <Button onClick={handleAward} color="primary">Award</Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer />
         </Box>
     );
 }
