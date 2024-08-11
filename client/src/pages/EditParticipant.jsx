@@ -11,7 +11,6 @@ import UserContext from '../contexts/UserContext';
 function EditParticipant() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { userType } = useContext(UserContext);
 
     const [participant, setParticipant] = useState({
         firstName: '',
@@ -86,9 +85,6 @@ function EditParticipant() {
                 });
         }
     });
-
-    // Determine if all inputs should be disabled based on userType
-    const areInputsDisabled = userType === 'staff';
 
     return (
         <Box>
