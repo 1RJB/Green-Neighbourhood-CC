@@ -8,10 +8,7 @@ import UserContext from './contexts/UserContext';
 const Header = () => {
   const { user, userType, setUser, setUserType } = useContext(UserContext);
 
-  useEffect(() => {
-    console.log('User:', user);
-    console.log('UserType:', userType);
-  }, [user, userType]);
+
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -93,7 +90,6 @@ const Header = () => {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/events">Events</Nav.Link>
             <Nav.Link as={Link} to="/rewards">Rewards</Nav.Link>
-            <Nav.Link as={Link} to="/participants">Participants</Nav.Link>
             <Dropdown>
               <Dropdown.Toggle as={Nav.Link}>
                 Support
@@ -117,11 +113,11 @@ const Header = () => {
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/dashboard" style={{ color: 'black' }}>Dashboard</Nav.Link>
                 </Dropdown.Item>
+                <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                  <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
+                </Dropdown.Item>
                 {userType === 'user' && (
                   <>
-                    <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
-                      <Nav.Link as={Link} to="/participants" style={{ color: 'black' }}>Participants</Nav.Link>
-                    </Dropdown.Item>
                     <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                       <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Achievements</Nav.Link>
                     </Dropdown.Item>

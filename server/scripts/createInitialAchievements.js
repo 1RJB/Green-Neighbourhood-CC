@@ -6,25 +6,30 @@ async function createInitialAchievements() {
             title: 'First Redemption',
             description: 'Redeemed your first reward',
             type: 'first_redemption',
-            imageFile: 'first_redemption.webp'
+            imageFile: 'first_redemption.webp',
+            condition: 'First time redeeming  a reward'
+            
         },
         {
             title: 'First Event Registration',
             description: 'Registered in your first event',
             type: 'first_event_registration',
-            imageFile: 'first_event_registration.webp'
+            imageFile: 'first_event_registration.webp',
+            condition: 'First time registering for an event'
         },
         {
             title: 'First Event Participation',
             description: 'Participated in your first event',
             type: 'first_event_participation',
-            imageFile: 'first_event_participation.webp'
+            imageFile: 'first_event_participation.webp',
+            condition: 'First time participated in an event'
         },
         {
             title: 'First Volunteer Activity',
             description: 'Volunteered for the first time',
             type: 'first_volunteer',
-            imageFile: 'first_volunteer.webp'
+            imageFile: 'first_volunteer.webp',
+            condition: 'First time volunteering'
         }
     ];
 

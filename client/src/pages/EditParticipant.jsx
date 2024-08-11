@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
@@ -6,7 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import UserContext from '../contexts/UserContext';
 
 function EditParticipant() {
     const { id } = useParams();
@@ -18,25 +17,42 @@ function EditParticipant() {
         email: '',
         gender: '',
         birthday: '',
-        event: '',
+        eventId: '',
         status: ''
     });
     const [loading, setLoading] = useState(true);
     const [eventList, setEventList] = useState([]);
 
+    const getEventTitleById = (id) => {
+        const event = eventList.find(event => event.id === id); // Replace 'id' with the actual ID property from your event object
+        return event ? event.title : ''; // Replace 'title' with the actual title property from your event object
+    };
+
     useEffect(() => {
         // Fetch participant data
-        http.get(`/participant/${id}`).then((res) => {
-            setParticipant(res.data);
-            setLoading(false);
-        });
+        const fetchParticipant = async () => {
+            try {
+                const res = await http.get(`/participant/${id}`);
+                setParticipant(res.data);
+            } catch (error) {
+                console.error('Error fetching participant:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
         // Fetch event titles from the database
-        http.get('/event').then((res) => {
-            setEventList(res.data);
-        }).catch((error) => {
-            console.error('Error fetching events:', error);
-        });
+        const fetchEvents = async () => {
+            try {
+                const res = await http.get('/event');
+                setEventList(res.data);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        };
+
+        fetchParticipant();
+        fetchEvents();
     }, [id]);
 
     const formik = useFormik({
@@ -45,8 +61,8 @@ function EditParticipant() {
             lastName: participant.lastName,
             email: participant.email,
             gender: participant.gender,
-            birthday: participant.birthday,
-            event: participant.event,
+            birthday: participant.birthday.split('T')[0], // Format date for input
+            eventId: participant.eventId,
             status: participant.status
         },
         validationSchema: yup.object({
@@ -67,7 +83,7 @@ function EditParticipant() {
                 .required('Gender is required'),
             birthday: yup.date()
                 .required('Birthday is required'),
-            event: yup.string().trim()
+            eventId: yup.string().trim()
                 .required('Event is required'),
             status: yup.string().trim()
                 .required('Status is required')
@@ -75,8 +91,8 @@ function EditParticipant() {
         enableReinitialize: true,
         onSubmit: (values) => {
             http.put(`/participant/${id}`, values)
-                .then((res) => {
-                    console.log(res.data);
+                .then(() => {
+                    toast.success('Participant updated successfully!');
                     navigate('/participants');
                 })
                 .catch((error) => {
@@ -85,6 +101,21 @@ function EditParticipant() {
                 });
         }
     });
+
+    // Update formik values when participant data changes
+    useEffect(() => {
+        if (!loading) {
+            formik.setValues({
+                firstName: participant.firstName,
+                lastName: participant.lastName,
+                email: participant.email,
+                gender: participant.gender,
+                birthday: participant.birthday.split('T')[0], // Format date for input
+                eventId: participant.eventId, // Ensure this matches the property name
+                status: participant.status
+            });
+        }
+    }, [participant, loading]);
 
     return (
         <Box>
@@ -158,15 +189,17 @@ function EditParticipant() {
                                 helperText={formik.touched.birthday && formik.errors.birthday}
                                 disabled
                             />
-                                <TextField
-                                    fullWidth margin="dense" autoComplete="off"
-                                    label="Event"
-                                    name="event"
-                                    value={formik.values.event}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    disabled
-                                />
+                            <TextField
+                                fullWidth
+                                margin="dense"
+                                autoComplete="off"
+                                label="Event"
+                                name="event"
+                                value={getEventTitleById(formik.values.eventId)}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                disabled
+                            />
                             <FormControl fullWidth margin="dense" error={formik.touched.status && Boolean(formik.errors.status)}>
                                 <InputLabel htmlFor="status">Status</InputLabel>
                                 <Select
@@ -175,8 +208,6 @@ function EditParticipant() {
                                     value={formik.values.status}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
-                                    autoComplete="off"
-                                    placeholder='Select Status'
                                 >
                                     <MenuItem value="Joined">Joined</MenuItem>
                                     <MenuItem value="Participated">Participated</MenuItem>

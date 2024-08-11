@@ -5,27 +5,38 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/staffauth');
 
-// POST: Create an event
 router.post("/", validateToken, async (req, res) => {
     let data = req.body;
     console.log('Received data:', data); // Log received data from frontend
     data.staffId = req.staff.id;
+    
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100).required(),
-        description: yup.string().trim().min(3).max(500).required(),
-        category: yup.string().oneOf(['Sustainable', 'Sports', 'Community', 'Workshop', 'Others']).required(),
-        // Add validation for eventDate and eventTime if necessary
+        description: yup.string().trim().min(3).max(500),
+        eventDate: yup.date().required(),
+        endDate: yup.date().required(),
+        eventTime: yup.string().required(),
+        endTime: yup.string().required(),
+        category: yup.string().oneOf(['Sustainable', 'Sports', 'Community', 'Workshop', 'Others']).required()
     });
+    
     try {
         data = await validationSchema.validate(data, { abortEarly: false });
+
+        // Check for existing event with the same title
+        const existingEvent = await Event.findOne({ where: { title: data.title } });
+        if (existingEvent) {
+            return res.status(400).json({ errors: ['An event with this title already exists.'] });
+        }
+
         // Process valid data   
         let result = await Event.create(data);
         console.log('Event created:', result); // Log created event
         res.json(result);
     } catch (err) {
         console.error('Error creating event:', err); // Log validation or database errors
-        res.status(400).json({ errors: err.errors });
+        res.status(400).json({ errors: err.errors || ['An error occurred while creating the event.'] });
     }
 });
 
