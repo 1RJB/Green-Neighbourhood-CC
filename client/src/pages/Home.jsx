@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import './pages.css'; // Import the CSS file for styles
 
 const Home = () => {
@@ -33,7 +33,7 @@ const Home = () => {
                 const { data } = await http.get('/achievement/withnotice');
                 if (data.length > 0) {
                     await http.put('/achievement/resetnotices');
-                    toast.done("Congrats, you got a new achievement! You can view it on the Achievements page.");
+                    toast.success("Congrats, you got a new achievement! You can view it on the Achievements page.");
                 }
             } catch (err) {
                 console.error('Failed to fetch user achievements:', err.response?.data || err.message);
@@ -226,6 +226,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };
