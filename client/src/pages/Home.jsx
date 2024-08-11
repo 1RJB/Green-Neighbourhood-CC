@@ -2,12 +2,14 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Container, Typography, Grid, Card, CardContent, Box } from '@mui/material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
+import { toast, ToastContainer } from 'react-toastify';
 import './pages.css'; // Import the CSS file for styles
 
 const Home = () => {
     const [events, setEvents] = useState([]);
     const [rewards, setRewards] = useState([]);
     const { user, setUser } = useContext(UserContext);
+    const [userCount, setUserCount] = useState(0);
     const [currentEventIndex, setCurrentEventIndex] = useState(0);
     const [currentRewardIndex, setCurrentRewardIndex] = useState(0);
 
@@ -18,6 +20,26 @@ const Home = () => {
                 setUser(data);
             } catch (err) {
                 console.error('Failed to fetch user data:', err.response?.data || err.message);
+            }
+        };
+
+        fetchUserData();
+    }, [setUser]);
+
+    useEffect(() => {
+        const fetchUserAchievements = async () => {
+            if (!user) return;
+
+            try {
+                const { data } = await http.get('/achievement/withnotice'); // Use the new route
+                if (data.length > 0) {
+                    // Reset the notice field
+                    await http.put('/achievement/resetnotices');
+                    toast.success("You got a new achievement! Check your achievements page to view it.");
+
+                }
+            } catch (err) {
+                console.error('Failed to fetch user achievements:', err.response?.data || err.message);
             }
         };
 
@@ -39,18 +61,31 @@ const Home = () => {
             }
         };
 
-        if (user) {
-            fetchUserData();
+        const fetchUserCount = async () => {
+            try {
+                const { data } = await http.get('/user/count');
+                setUserCount(data.count);
+            } catch (err) {
+                console.error('Failed to fetch user count:', err);
+            };
         }
 
         fetchEvents();
         fetchRewards();
-    }, []);
+
+        if (user) {
+            fetchUserAchievements();
+        }
+
+        if (user && user.usertype === 'staff') {
+            fetchUserCount();
+        }
+    }, [user]);
 
     useEffect(() => {
         const eventInterval = setInterval(() => {
             setCurrentEventIndex((prevIndex) => (events.length > 0 ? (prevIndex + 1) % events.length : 0));
-        }, 3000); // Change event every 3 seconds
+        }, 5000); // Change event every 3 seconds
 
         const rewardInterval = setInterval(() => {
             setCurrentRewardIndex((prevIndex) => (rewards.length > 0 ? (prevIndex + 1) % rewards.length : 0));
@@ -139,6 +174,9 @@ const Home = () => {
                             <Typography variant="h4" component="h2" gutterBottom>
                                 Welcome, {user?.firstName || 'Guest'}!
                             </Typography>
+                            <Typography variant="h5" color={'secondary.light'}>
+                                Would you like to make a difference?
+                            </Typography>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -147,18 +185,31 @@ const Home = () => {
                 <Grid item xs={12} md={5} className="points-tile tile-small">
                     <Card sx={{ height: '100%' }}>
                         <CardContent>
-                            <Typography variant="h4" component="h2" textAlign={'left'} gutterBottom>
-                                Points
-                            </Typography>
-                            {user && (
-                                <Typography variant="body1">
-                                    You have {user?.points || 0} points.
-                                </Typography>
+                            {user && user.usertype === "user" && (
+                                <>
+                                    <Typography variant="h4" component="h2" textAlign={'left'} gutterBottom>
+                                        Points
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        You have {user?.points || 0} points.
+                                    </Typography>
+                                </>
+                            )}
+                            {user && user.usertype === "staff" && (
+                                <>
+                                    <Typography variant="h4" component="h2" textAlign={'left'} gutterBottom>
+                                        No. of Users
+                                    </Typography>
+                                    <Typography variant="body1">
+                                        We have {userCount || 0} users.
+                                    </Typography>
+                                </>
                             )}
                         </CardContent>
                     </Card>
                 </Grid>
             </Grid>
+            <ToastContainer />
         </Container>
     );
 };
