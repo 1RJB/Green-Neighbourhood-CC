@@ -4,6 +4,11 @@ import { Edit, Delete, Add, WorkspacePremium } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { toast } from 'react-toastify';
+import emailjs from 'emailjs-com'; // Import EmailJS
+
+// EmailJS public key (replace with your actual key)
+const EMAILJS_PUBLIC_KEY = 'cjdyxWCfcHYahHas1';
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 function Achievements() {
     const [allAchievements, setAllAchievements] = useState([]);
@@ -144,14 +149,40 @@ function Achievements() {
     };
 
     const handleAward = () => {
+        const achievementTitle = allAchievements.find(ach => ach.id === selectedAchievement)?.title || 'Achievement';
+        const userEmail = selectedUser;
+
         http.post('/staffachievement/award', {
-            userEmail: selectedUser,
+            userEmail,
             achievementId: selectedAchievement,
             conditionChecked
         })
             .then(() => {
+                // Fetch user details to get first name
+                http.get(`/user/userByEmail/${userEmail}`)
+                    .then(response => {
+                        const userFirstName = response.data.firstName;
+
+                        // Send email notification via EmailJS
+                        emailjs.send('service_ktmad4e', 'template_5vf2vow', {
+                            userEmail,
+                            achievementTitle,
+                            userFirstName // Include first name in the data sent to EmailJS
+                        })
+                            .then(() => {
+                                toast.success('Achievement awarded and email sent successfully!');
+                            })
+                            .catch((error) => {
+                                console.error('Error sending email:', error);
+                                toast.error('Achievement awarded, but error sending email: ' + error.message);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user details:', error);
+                        toast.error('Error awarding achievement and fetching user details: ' + error.message);
+                    });
+
                 handleAwardDialogClose();
-                toast.success('Achievement awarded successfully!');
             })
             .catch((error) => {
                 console.error("Error awarding achievement:", error);
