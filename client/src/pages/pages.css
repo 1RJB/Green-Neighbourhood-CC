@@ -353,7 +353,7 @@ h2 {
 }
 
 .points-box {
-    background-color: #f8d7da; /* Change background color as needed */
+    background-color: #7c9982; /* Change background color as needed */
 }
 
 .volunteers-box {
@@ -366,7 +366,7 @@ h2 {
 
 .rewards-tile {
     grid-area: rewards;
-    background-color: rgb(200, 224, 228);
+    background-color: #b0d3bf;
     padding: 20px;
     border-radius: 8px;
     /* height: 380px; */
@@ -421,7 +421,7 @@ h2 {
     flex-direction: column;
     align-items: center; /* Centers content horizontally */
     text-align: center; /* Centers text inside the section */
-    background-color: rgb(234, 207, 235);
+    background-color: #c6dc93;
     padding: 20px;
     border-radius: 8px;
 }
