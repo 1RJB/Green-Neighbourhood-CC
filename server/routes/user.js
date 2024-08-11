@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User, Achievement, OTP } = require("../models");
+const { User, Achievement, OTP, ForgotOTP } = require("../models");
 
 const yup = require("yup");
 
@@ -315,6 +315,49 @@ router.get("/count", validateToken, async (req, res) => {
   }
 });
 
+router.post("/sendForgotOtp", async (req, res) => {
+  const { email } = req.body;
 
+  try {
+    const otp = generateOTP();
+    console.log("Generated OTP:", otp);
+
+    // Store OTP in the ForgotOTP table
+    const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // OTP expires in 1 minute
+    await ForgotOTP.create({ email, otp, expiresAt });
+
+    console.log("OTP saved to ForgotOTP database");
+
+    // Respond with a success message
+    res.json({ message: "OTP generated and stored successfully!", otp }); // Optional: send the OTP back to the client
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Failed to generate OTP. Please try again later." });
+  }
+});
+
+// Verify OTP and navigate to reset password
+router.post("/verifyForgotOtp", async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const validOtp = await ForgotOTP.findOne({ where: { email, otp } });
+
+    if (!validOtp || new Date() > validOtp.expiresAt) {
+      return res.status(400).json({ message: "Invalid or expired OTP." });
+    }
+
+    // If OTP is valid, proceed with password reset (not shown here)
+    // You might redirect or send a token back to the client
+
+    // Delete OTP after successful verification
+    await ForgotOTP.destroy({ where: { email } });
+
+    res.json({ message: "OTP verified successfully." });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Failed to verify OTP. Please try again later." });
+  }
+});
 
 module.exports = router;

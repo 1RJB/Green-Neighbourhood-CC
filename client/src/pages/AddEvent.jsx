@@ -30,17 +30,7 @@ function AddEvent() {
                 .trim()
                 .min(3, 'Title must be at least 3 characters')
                 .max(100, 'Title must be at most 100 characters')
-                .required('Title is required')
-                .test('is-unique-title', 'Title already exists', async (value) => {
-                    if (value) {
-                        const isUnique = await validateUniqueTitle(value);
-                        if (!isUnique) {
-                            toast.error('An event with this title already exists.'); // Show toast message
-                        }
-                        return isUnique;
-                    }
-                    return true; // Return true if no value
-                }),
+                .required('Title is required'),
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
@@ -66,7 +56,7 @@ function AddEvent() {
             category: yup.string().required('Category is required'),
             imageFile: yup.mixed().required('Image is required')
         }),
-        onSubmit: (data) => {
+        onSubmit: async (data) => {
             if (imageFile) {
                 data.imageFile = imageFile;
             }
@@ -74,14 +64,18 @@ function AddEvent() {
             data.description = data.description.trim();
             data.createdAt = `${data.eventDate} ${data.eventTime}`;
             data.endDetails = `${data.endDate}${data.endTime}`; // Adjust format as needed
-            http.post("/event", data)
-                .then((res) => {
-                    console.log(res.data);
-                    navigate("/events");
-                })
-                .catch((error) => {
-                    console.error('Error submitting form:', error);
-                });
+            
+            // Submit the form
+            try {
+                await http.post("/event", data);
+                navigate("/events");
+            } catch (error) {
+                if (error.response && error.response.data.errors) {
+                    toast.error(error.response.data.errors[0]); // Show toast message with server error
+                } else {
+                    toast.error(`${data.title} already exists.`); // Generic error message
+                }
+            }
         }
     });
 
