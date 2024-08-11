@@ -20,9 +20,11 @@ const categoryColors = {
 
 function Events() {
     const [eventList, setEventList] = useState([]);
+    const [pastEventList, setPastEventList] = useState([]);
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [timeFilter, setTimeFilter] = useState('All');
+    const [view, setView] = useState('events'); // State to toggle between 'events' and 'past'
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -52,7 +54,6 @@ function Events() {
             const oneMonthFromNow = now.add(1, 'month');
             const filteredEvents = res.data.filter(event => {
                 const eventDate = dayjs(event.eventDate);
-
                 if (timeFilter === 'Upcoming') {
                     return eventDate.isAfter(twoMonthsFromNow);
                 } else if (timeFilter === 'Current') {
@@ -64,7 +65,11 @@ function Events() {
                 }
             });
 
-            setEventList(filteredEvents);
+            const pastEvents = filteredEvents.filter(event => dayjs(event.endDate).isBefore(now));
+            const currentEvents = filteredEvents.filter(event => !dayjs(event.endDate).isBefore(now));
+
+            setEventList(currentEvents);
+            setPastEventList(pastEvents);
         }).catch((error) => {
             console.error("Error fetching events:", error);
         });
@@ -185,7 +190,7 @@ function Events() {
                         <MenuItem value="All">All Time</MenuItem>
                         <MenuItem value="Upcoming">Upcoming</MenuItem>
                         <MenuItem value="Current">Current</MenuItem>
-                        <MenuItem value="Past">Past Events</MenuItem>
+
                     </Select>
                 </Box>
 
@@ -197,11 +202,24 @@ function Events() {
                 )}
             </Box>
 
-            <Grid container spacing={2}>
-                {eventList.map((event) => {
-                    const now = dayjs();
-                    const eventDate = dayjs(event.eventDate);
+            <Box sx={{ mb: 5 }}>
+                <Button
+                    variant={view === 'events' ? 'contained' : 'outlined'}
+                    onClick={() => setView('events')}
+                >
+                    Events
+                </Button>
+                <Button
+                    variant={view === 'past' ? 'contained' : 'outlined'}
+                    onClick={() => setView('past')}
+                    sx={{ ml: 2 }}
+                >
+                    Past Events
+                </Button>
+            </Box>
 
+            <Grid container spacing={2}>
+                {(view === 'events' ? eventList : pastEventList).map((event) => {
                     return (
                         <Grid item xs={12} md={6} lg={4} key={event.id} sx={{ mb: 5 }}>
                             <Card>
@@ -247,9 +265,6 @@ function Events() {
                                             <Typography>
                                                 {event.endDate && event.endTime ? dayjs(`${event.endDate} ${event.endTime}`).format(global.datetimeFormat) : 'N/A'}
                                             </Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
-
                                         </Box>
                                         <Typography sx={{ whiteSpace: 'pre-wrap', mb: 1 }}>
                                             {truncateDescription(event.description)}

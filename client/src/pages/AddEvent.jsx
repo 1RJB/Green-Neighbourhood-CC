@@ -14,6 +14,15 @@ function AddEvent() {
     const [imageFile, setImageFile] = useState(null);
     dayjs.extend(isSameOrAfter);
 
+const validateUniqueTitle = async (title) => {
+    try {
+        const response = await http.get(`/event?search=${title}`);
+        return response.data.length === 0;
+    } catch (error) {
+        console.error('Error validating unique title:', error);
+        return false;
+    }
+};
     const formik = useFormik({
         initialValues: {
             title: "",
@@ -35,7 +44,7 @@ function AddEvent() {
                     if (value) {
                         const isUnique = await validateUniqueTitle(value);
                         if (!isUnique) {
-                            toast.error('An event with this title already exists.'); // Show toast message
+                            console.error('An event with this title already exists.'); // Show toast message
                         }
                         return isUnique;
                     }
@@ -73,16 +82,21 @@ function AddEvent() {
             data.title = data.title.trim();
             data.description = data.description.trim();
             data.createdAt = `${data.eventDate} ${data.eventTime}`;
-            data.endDetails = `${data.endDate}${data.endTime}`; // Adjust format as needed
+            data.endDetails = `${data.endDate} ${data.endTime}`;
+        
             http.post("/event", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/events");
+                    toast.success('Event added successfully');
+                    setTimeout(() => {
+                        navigate("/events"); // Navigate after the toast has had a chance to show
+                    }, 1000); // Adjust this timing as needed
                 })
                 .catch((error) => {
-                    console.error('Error submitting form:', error);
+                    toast.error('Error submitting form: ' + error.message);
                 });
         }
+        
     });
 
     const onFileChange = (e) => {
