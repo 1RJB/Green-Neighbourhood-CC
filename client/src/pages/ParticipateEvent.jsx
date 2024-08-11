@@ -13,7 +13,7 @@ const participantSchema = yup.object().shape({
     lastName: yup.string().required('Last name is required').min(3, 'Last name must be at least 3 characters'),
     email: yup.string().email('Invalid email format').required('Email is required'),
     gender: yup.string().oneOf(['Male', 'Female'], 'Gender is required').required('Gender is required'),
-    birthday: yup.date().max(new Date(), 'Birthday cannot be in the future').required('Birthday is required'),
+    birthday: yup.date().max(new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000), 'Participant must be at least 5 years old').required('Birthday is required'),
 });
 
 function ParticipateEvent() {

@@ -19,7 +19,7 @@ router.post("/", validateToken, async (req, res) => {
         lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters: ' - , ."),
         email: yup.string().trim().lowercase().email().max(50).required(),
         gender: yup.string().oneOf(["Male", "Female"]).required(),
-        birthday: yup.date().max(new Date()).required(),
+        birthday: yup.date().max(new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000)).required(),
         event: yup.string().trim().required(),
     });
 
@@ -39,7 +39,7 @@ router.post("/", validateToken, async (req, res) => {
             });
 
             if (existingParticipant) {
-                throw new Error(`${validatedData.firstName} ${validatedData.lastName} has already participated in this event.`);
+                throw new Error(`${validatedData.email} has already participated in this event.`);
             }
 
             validatedData.userId = userId;
@@ -131,6 +131,35 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
 });
 
+const deleteExpiredParticipants = async () => {
+    const currentDate = new Date();
+    
+    try {
+        const expiredParticipants = await Participant.findAll({
+            where: {
+                status: "Joined",
+                event: {
+                    [Op.in]: Sequelize.literal(`(
+                        SELECT title FROM Events WHERE DATE(endDate) + INTERVAL 1 DAY < '${currentDate.toISOString().split('T')[0]}'
+                    )`)
+                }
+            }
+        });
+
+        if (expiredParticipants.length > 0) {
+            const idsToDelete = expiredParticipants.map(participant => participant.id);
+            await Participant.destroy({ where: { id: idsToDelete } });
+            console.log(`Deleted ${expiredParticipants.length} expired participants.`);
+        } else {
+            console.log("No expired participants to delete.");
+        }
+    } catch (error) {
+        console.error("Error deleting expired participants:", error);
+    }
+};
+
+setInterval(deleteExpiredParticipants, 24 * 60 * 60 * 1000);
+
 // Get participant by ID
 router.get("/:id", validateToken, async (req, res) => {
     const id = req.params.id;
@@ -166,7 +195,7 @@ router.put("/:id", validateToken, async (req, res) => {
             lastName: yup.string().trim().min(3).max(25).required().matches(/^[a-zA-Z '-,.]+$/, "Name only allows letters, spaces, and characters:'-,."),
             email: yup.string().trim().lowercase().email().max(50).required(),
             gender: yup.string().oneOf(["Male", "Female"]).required(),
-            birthday: yup.date().max(new Date()).required(),
+            birthday: yup.date().max(new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000)).required(),
             event: yup.string().trim().required(),
             status: yup.string().oneOf(["Joined", "Participated"]).required(),
         });
