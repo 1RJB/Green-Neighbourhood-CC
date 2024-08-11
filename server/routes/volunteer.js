@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Volunteer, Achievement } = require('../models'); // Ensure correct import
+const { User, Volunteer, Achievement, UserAchievement } = require('../models'); // Ensure correct import
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
@@ -12,33 +12,44 @@ router.post("/", validateToken, async (req, res) => {
 
   // Validate request body
   let validationSchema = yup.object({
-    dateAvailable: yup.date().required(),
-    serviceType: yup.string().trim().max(100).required(),
-    comments: yup.string().trim().max(500).required(),
-    duration: yup.number().integer().min(0).nullable(),
-    contactInfo: yup.string().trim().max(100).nullable(),
-    photoPath: yup.string().trim().max(255).nullable(),
+      dateAvailable: yup.date().required(),
+      serviceType: yup.string().trim().max(100).required(),
+      comments: yup.string().trim().max(500).required(),
+      duration: yup.number().integer().min(0).nullable(),
+      contactInfo: yup.string().trim().max(100).nullable(),
+      photoPath: yup.string().trim().max(255).nullable(),
   });
 
   try {
-    data = await validationSchema.validate(data, { abortEarly: false });
-    let result = await Volunteer.create(data);
+      data = await validationSchema.validate(data, { abortEarly: false });
+      let result = await Volunteer.create(data);
 
-    // Check for first volunteer achievement
-    const user = await User.findByPk(req.user.id, { include: [{ model: Achievement, as: 'achievements' }] });
-    let newAchievement = false;
+      // Fetch the user associated with the volunteer event
+      const user = await User.findByPk(req.user.id, { include: [{ model: Achievement, as: 'achievements' }] });
+      let newAchievement = false;
 
-    if (!user.achievements.some(a => a.type === 'first_volunteer')) {
-      const firstVolunteerAchievement = await Achievement.findOne({ where: { type: 'first_volunteer' } });
-      if (firstVolunteerAchievement) {
-        await user.addAchievement(firstVolunteerAchievement);
-        newAchievement = true;
+      user.points += 15000;
+      await user.save();
+
+      // Check if this is the user's first volunteer event creation
+      if (!user.achievements.some(a => a.type === 'first_volunteer')) {
+          const firstVolunteerAchievement = await Achievement.findOne({ where: { type: 'first_volunteer' } });
+          if (firstVolunteerAchievement) {
+              await user.addAchievement(firstVolunteerAchievement);
+
+              // Update the notice field in userachievements table
+              await UserAchievement.update(
+                  { notice: 1 },
+                  { where: { userId: user.id, achievementId: firstVolunteerAchievement.id } }
+              );
+
+              newAchievement = true;
+          }
       }
-    }
 
-    res.json({ result, newAchievement });
+      res.json({ result, newAchievement, updatedPoints: user.points });
   } catch (err) {
-    res.status(400).json({ errors: err.errors });
+      res.status(400).json({ errors: err.errors });
   }
 });
 
