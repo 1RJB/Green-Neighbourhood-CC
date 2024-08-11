@@ -161,13 +161,20 @@ function Achievements() {
                 // Fetch user details to get first name
                 http.get(`/user/userByEmail/${userEmail}`)
                     .then(response => {
-                        const userFirstName = response.data.firstName;
+                        const userLastName = response.data.lastName;
+                        let salutation = ""
+                        if (response.data.gender === 'Female') {
+                            salutation = 'Mrs.';
+                        } else {
+                            salutation = 'Mr.';
+                        }
 
                         // Send email notification via EmailJS
                         emailjs.send('service_ktmad4e', 'template_5vf2vow', {
                             userEmail,
                             achievementTitle,
-                            userFirstName // Include first name in the data sent to EmailJS
+                            userLastName, // Include first name in the data sent to EmailJS
+                            salutation
                         })
                             .then(() => {
                                 toast.success('Achievement awarded and email sent successfully!');
