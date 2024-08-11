@@ -50,6 +50,10 @@ function AddVolunteer() {
                     if (res.data.newAchievement) {
                         toast.success("Congratulations! You've earned a new achievement!\n First Volunteer Registration !");
                     }
+                    if (res.data.updatedPoints) {
+                        toast.success(`Congratulations! You've earned 15000 points!\n Total Points: ${res.data.updatedPoints}`);
+                    }
+
                     // Delay navigation to allow toast to display
                     setTimeout(() => {
                         navigate("/Volunteers");
