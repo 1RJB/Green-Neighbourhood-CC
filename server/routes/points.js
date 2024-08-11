@@ -7,8 +7,7 @@ router.get('/points-info', async (req, res) => {
     try {
         // Fetch point info from the database or define it statically for now
         const pointsInfo = [
-            { title: 'Referral', description: 'Refer a friend to get points', points: 50, actionText: 'Refer Now' },
-            { title: 'Purchase', description: 'Make a purchase to get points', points: 10, actionText: 'Shop Now' },
+            { title: 'Referral', description: 'Refer a friend to get points', points: 5000, actionText: 'Refer Now' },
             // Add more ways to earn points here
         ];
         res.json(pointsInfo);
