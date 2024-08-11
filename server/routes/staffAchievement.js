@@ -97,31 +97,31 @@ router.post('/award', validateToken, async (req, res) => {
             notice: conditionChecked ? 1 : 0 // Set condition based on checkbox
         });
 
-        // Setup nodemailer transport
-        const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE, // e.g., 'gmail'
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // // Setup nodemailer transport
+        // const transporter = nodemailer.createTransport({
+        //     service: process.env.EMAIL_SERVICE, // e.g., 'gmail'
+        //     auth: {
+        //         user: process.env.EMAIL_USER,
+        //         pass: process.env.EMAIL_PASS
+        //     }
+        // });
 
-        // Email options
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: userEmail,
-            subject: 'Congratulations! You earned a new achievement!',
-            text: `Dear ${user.name},\n\nCongratulations! You have earned the achievement: ${achievement.title}.\n\nKeep up the great work!\n\nBest regards,\nGreen Neighbourhood Community Center Team`
-        };
+        // // Email options
+        // const mailOptions = {
+        //     from: process.env.EMAIL_USER,
+        //     to: userEmail,
+        //     subject: 'Congratulations! You earned a new achievement!',
+        //     text: `Dear ${user.name},\n\nCongratulations! You have earned the achievement: ${achievement.title}.\n\nKeep up the great work!\n\nBest regards,\nGreen Neighbourhood Community Center Team`
+        // };
 
-        // Send email
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-            } else {
-                console.log('Email sent:', info.response);
-            }
-        });
+        // // Send email
+        // transporter.sendMail(mailOptions, (error, info) => {
+        //     if (error) {
+        //         console.error('Error sending email:', error);
+        //     } else {
+        //         console.log('Email sent:', info.response);
+        //     }
+        // });
 
         res.status(201).json(newUserAchievement);
     } catch (error) {
