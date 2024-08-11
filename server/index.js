@@ -37,6 +37,7 @@ const pointsRoute = require('./routes/points');
 const achievementRoute = require("./routes/achievement");
 const staffAchievementRoute = require('./routes/staffAchievement');
 const staffVolunteerRoute = require('./routes/staffvolunteer');
+const ticketDetailsRoute = require('./routes/ticketdetails');
 
 
 app.use("/user", userRoute);
@@ -52,6 +53,7 @@ app.use("/points", pointsRoute);
 app.use("/achievement", achievementRoute);
 app.use('/staffachievement', staffAchievementRoute);
 app.use('/staffvolunteer', staffVolunteerRoute);
+app.use('/ticketdetails', ticketDetailsRoute);
 
 const db = require("./models");
 const createInitialAchievements = require('./scripts/createInitialAchievements');
