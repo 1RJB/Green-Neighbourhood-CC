@@ -16,10 +16,7 @@ function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
-  const otp = location.state?.otp;
-
-  console.log('Email:', email); // Debugging
-  console.log('OTP:', otp); // Debugging
+  const otp = location.state?.otp; // Ensure OTP is captured from the state
 
   const formik = useFormik({
     initialValues: {
@@ -44,15 +41,16 @@ function ResetPassword() {
     }),
     onSubmit: async (values) => {
       try {
-        const response = await axios.put("http://localhost:3000/user/resetPasswordByEmail", {
+        const response = await axios.put("http://localhost:3001/user/resetPasswordByEmail", {
           email: email,
-          otp: otp,
+          otp: otp,  // Ensure this is passed correctly
           newPassword: values.newPassword.trim(),
         });
         console.log("Password reset successful:", response.data);
         toast.success('Password reset successfully!');
         navigate("/login");
       } catch (error) {
+        console.error("Failed to reset password:", error);
         toast.error(`${error.response.data.message}`);
       }
     },

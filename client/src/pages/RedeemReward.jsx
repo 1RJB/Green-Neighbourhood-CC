@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Button, Card, CardContent, CardMedia,CircularProgress } from '@mui/material';
+import { Box, Typography, Button, Card, CardContent, CardMedia, CircularProgress } from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserContext from '../contexts/UserContext';
+import emailjs from 'emailjs-com'; // Import EmailJS
 
 const RedeemReward = () => {
     const { id } = useParams();
@@ -31,8 +32,29 @@ const RedeemReward = () => {
 
     const handleRedeem = async () => {
         try {
+            let salutation = ""
             const { data } = await http.post(`/redemption/redeem/${id}`);
             toast.success(data.message);
+
+            if (user.gender === 'Female') {
+                salutation = 'Mrs.';
+            } else {
+                salutation = 'Mr.';
+            };
+
+            // Send email
+            const templateParams = {
+                to_email: user.email,
+                salutation: salutation,
+                last_name: user.lastName,
+                reward_title: reward.title,
+                reward_description: reward.description,
+                reward_points: reward.points,
+            };
+
+            // Replace with your EmailJS service ID, template ID, and public key
+            await emailjs.send('service_ktmad4e', 'template_dddco9z', templateParams, 'cjdyxWCfcHYahHas1');
+            console.log('Email sent successfully');
 
             // Clear local storage or session storage if needed
             localStorage.removeItem('user'); // Or update accordingly
@@ -43,12 +65,14 @@ const RedeemReward = () => {
             if (data.newAchievement) {
                 toast.success("Congratulations! You've earned a new achievement!\n First Redemption !");
             }
+
             // Delay navigation to allow toast to display
             setTimeout(() => {
                 navigate("/rewards");
-            }, 5500); // 3 seconds delay
+            }, 5500); // 5.5 seconds delay
         } catch (error) {
             toast.error(error.response?.data?.error || 'Failed to redeem reward.');
+            console.error('Error sending email:', error);
         }
     };
 
@@ -98,7 +122,6 @@ const RedeemReward = () => {
                     )}
                 </CardContent>
             </Card>
-            <ToastContainer />
         </Box>
     );
 };
