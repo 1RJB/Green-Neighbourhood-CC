@@ -271,11 +271,17 @@ function Achievements() {
                 <DialogContent>
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Select User</InputLabel>
-                        <Select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
-                            {allUsers.map(user => (
-                                <MenuItem key={user.email} value={user.email}>{user.email}</MenuItem>
+                        <Select
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                        >
+                            {allUsers.filter((user) => user.usertype !== 'staff').map((user) => (
+                                <MenuItem key={user.email} value={user.email}>
+                                    {user.email}
+                                </MenuItem>
                             ))}
                         </Select>
+
                     </FormControl>
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Select Achievement</InputLabel>
