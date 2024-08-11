@@ -13,6 +13,7 @@ const UserProfile = () => {
     const [isFormEdited, setIsFormEdited] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openSaveDialog, setOpenSaveDialog] = useState(false);
+    const [referralLink, setReferralLink] = useState('');
 
     useEffect(() => {
         // Fetch user info from the /userInfo endpoint
@@ -20,6 +21,7 @@ const UserProfile = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         }).then((res) => {
             setUser(res.data);
+            setReferralLink(`${res.data.referral_code}`);
             formik.setValues({
                 firstName: res.data.firstName,
                 lastName: res.data.lastName,
@@ -63,15 +65,11 @@ const UserProfile = () => {
                 return;
             }
 
-            // Filter out empty password fields to avoid sending them if not changed
             const dataToSubmit = { ...values };
             if (!values.password) {
                 delete dataToSubmit.password;
                 delete dataToSubmit.confirmPassword;
             }
-
-            // Log the data being sent
-            console.log("Data being sent:", dataToSubmit);
 
             http.put(`/user/userInfo/${user.id}`, dataToSubmit, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
@@ -80,7 +78,6 @@ const UserProfile = () => {
                 setIsFormEdited(false);
                 toast.success("Profile updated successfully.");
             }).catch(error => {
-                // Log the error response for debugging
                 console.error("Failed to update user data:", error);
                 toast.error("Failed to update profile.");
                 if (error.response && error.response.data) {
@@ -107,7 +104,6 @@ const UserProfile = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         }).then((res) => {
             toast.success("Account deleted successfully.");
-            // Optionally, redirect or reset user context after deletion
             setUser(null);
         }).catch(error => {
             console.error("Failed to delete account:", error);
@@ -132,6 +128,16 @@ const UserProfile = () => {
         setOpenSaveDialog(false);
     };
 
+    const handleCopyReferralLink = () => {
+        navigator.clipboard.writeText(referralLink)
+            .then(() => {
+                toast.success("Referral link copied to clipboard!");
+            })
+            .catch(() => {
+                toast.error("Failed to copy referral link.");
+            });
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -146,6 +152,14 @@ const UserProfile = () => {
         <Box sx={{ marginTop: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 4 }}>
             <ToastContainer />
             <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h5">Your Referral Link:   {referralLink}</Typography>
+                        <Button variant="outlined" onClick={handleCopyReferralLink}>
+                            Copy Referral Link
+                        </Button>
+                    </Box>
+                </Grid>
                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Avatar src={user.pfp} alt={user.firstName} sx={{ width: 250, height: 250 }} />
                 </Grid>

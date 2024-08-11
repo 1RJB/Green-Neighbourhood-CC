@@ -46,7 +46,8 @@ function Register() {
       confirmPassword: "",
       birthday: "",
       gender: "",
-      otp: ""
+      otp: "",
+      referral_code: "", // New field for referral code
     },
     validationSchema: yup.object({
       firstName: yup
@@ -100,7 +101,8 @@ function Register() {
       otp: yup
         .string()
         .matches(/^\d{6}$/, "OTP must be exactly 6 digits")
-        .required('OTP is required'),
+        .required("OTP is required"),
+      referral_code: yup.string().trim(), // New validation for referral code
     }),
     onSubmit: async (values) => {
       try {
@@ -112,7 +114,8 @@ function Register() {
           confirmPassword: values.confirmPassword.trim(),
           birthday: values.birthday,
           gender: values.gender,
-          otp: values.otp
+          otp: values.otp,
+          referral_code: values.referral_code, // Include referral code in the request
         });
         console.log("Registration successful:", response.data);
         toast.success("Registration successful! Please log in.");
@@ -125,14 +128,12 @@ function Register() {
 
   const handleSendOtp = async () => {
     try {
-      // Generate OTP on the server and store it in the database
       const response = await axios.post("http://localhost:3001/user/sendOtp", {
         email: formik.values.email,
       });
 
       const otp = response.data.otp; // Assuming the server returns the OTP for demonstration
 
-      // Send OTP via email using EmailJS
       const templateParams = {
         to_email: formik.values.email,
         otp: otp,
@@ -141,7 +142,6 @@ function Register() {
       await emailjs.send('service_atajjxp', 'template_c8ziunu', templateParams, 'YNOWo8S4upqxTO_Tk');
       toast.success("OTP sent successfully!");
 
-      // Start cooldown
       setIsCooldown(true);
       setCooldownTime(60); // 1 minute cooldown
     } catch (error) {
@@ -234,6 +234,16 @@ function Register() {
             </Button>
           </Grid>
         </Grid>
+        <TextField
+          fullWidth
+          margin="dense"
+          autoComplete="off"
+          label="Referral Code (optional)"
+          name="referral_code"
+          value={formik.values.referral_code}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
         <TextField
           fullWidth
           margin="dense"

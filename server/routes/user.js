@@ -12,6 +12,10 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const generateReferralCode = (userId) => {
+  return `REF-${userId}-${Math.floor(Math.random() * 10000)}`;
+};
+
 // Send OTP and store in database
 router.post("/sendOtp", async (req, res) => {
   const { email } = req.body;
@@ -35,9 +39,8 @@ router.post("/sendOtp", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { firstName, lastName, email, password, confirmPassword, birthday, gender, otp } = req.body;
+  const { firstName, lastName, email, password, confirmPassword, birthday, gender, otp, referral_code } = req.body;
 
-  // Validation schema for registration
   const validationSchema = yup.object({
     firstName: yup
       .string()
@@ -47,7 +50,7 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^[a-zA-Z '-,.]+$/,
-        "name only allows letters, spaces and characters: ' - , ."
+        "First Name only allows letters, spaces, and characters: ' - , ."
       ),
     lastName: yup
       .string()
@@ -57,7 +60,7 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^[a-zA-Z '-,.]+$/,
-        "name only allows letters, spaces and characters: ' - , ."
+        "Last Name only allows letters, spaces, and characters: ' - , ."
       ),
     email: yup.string().trim().lowercase().email().max(50).required(),
     gender: yup.string().oneOf(["Male", "Female"]).required(),
@@ -70,17 +73,17 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-        "password must contain at least 1 letter and 1 number"
+        "Password must contain at least 1 letter and 1 number"
       ),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required(),
     otp: yup.string().required("OTP is required"),
+    referral_code: yup.string().trim(), // New validation for referral code
   });
 
   try {
-    // Validate data against the schema
     const data = await validationSchema.validate(req.body, { abortEarly: false });
 
     // Validate OTP
@@ -90,17 +93,15 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired OTP." });
     }
 
-    // Check if the email is already registered
-    const user = await User.findOne({ where: { email: data.email } });
+    const existingUser = await User.findOne({ where: { email: data.email } });
 
-    if (user) {
+    if (existingUser) {
       return res.status(400).json({ message: "Email already exists." });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Create user
+    // Create the new user
     const newUser = await User.create({
       firstName: data.firstName,
       lastName: data.lastName,
@@ -110,16 +111,32 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
+    // Generate and assign referral code after user creation
+    const referralCode = generateReferralCode(newUser.id);
+    newUser.referral_code = referralCode;
+
+    // If referred by someone, add points to the referrer
+    if (data.referral_code) {
+      const referrer = await User.findOne({ where: { referral_code: data.referral_code } });
+
+      if (referrer) {
+        newUser.referred_by = referrer.referral_code;
+        referrer.points += 50000; // Example: Add 10 points to the referrer
+        await referrer.save();
+      }
+    }
+
+    await newUser.save();
+
     // Delete OTP after successful registration
     await OTP.destroy({ where: { email: data.email } });
 
-    res.json({
-      message: `${newUser.email} was registered successfully.`,
-    });
+    res.json({ message: `${newUser.email} was registered successfully.` });
   } catch (err) {
     res.status(400).json({ errors: err.errors });
   }
 });
+
 
 
 router.post("/login", async (req, res) => {

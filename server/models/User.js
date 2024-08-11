@@ -35,7 +35,15 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 defaultValue: 0,
-            }
+            },
+                referral_code: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            referred_by: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: "users",
