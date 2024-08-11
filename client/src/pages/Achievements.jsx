@@ -159,17 +159,6 @@ function Achievements() {
             });
     };
 
-    const renderAdminActions = (achievement) => (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
-                <Edit />
-            </IconButton>
-            <IconButton color="error" onClick={() => handleDelete(achievement.id)}>
-                <Delete />
-            </IconButton>
-        </Box>
-    );
-
     const renderUserActions = (achievement) => {
         const earnedCount = achievementCounts[achievement.id] || 0;
         const percentage = userCount > 0 ? ((earnedCount / userCount) * 100).toFixed(2) : 0;
@@ -198,6 +187,25 @@ function Achievements() {
                 }}>
                     <CardContent>
                         <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
+                        <Typography variant="h6" align="center">{achievement.title}</Typography>
+                        <Typography variant="body2" align="center" color="textSecondary">
+                            {achievement.description}
+                        </Typography>
+                        {user?.usertype === 'staff' && (
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                                <Typography variant="caption">
+                                    User's Earned: {achievementCounts[achievement.id] || 0} times
+                                </Typography>
+                                <Box>
+                                    <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton color="error" onClick={() => handleDelete(achievement.id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        )}
                     </CardContent>
                 </Card>
             </Tooltip>
@@ -218,7 +226,7 @@ function Achievements() {
                     <Button variant="contained" color="secondary" sx={{ ml: 2 }} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
                         Award Achievement
                     </Button>
-                    <Typography variant="h6" sx={{ mt: 2 }}>
+                    <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
                         Total Achievements Earned: {totalEarned || 0}
                     </Typography>
                 </Box>
@@ -228,10 +236,6 @@ function Achievements() {
                     <Grid item xs={12} sm={6} md={3} key={achievement.id}>
                         {user?.usertype === 'staff' ? (
                             <Box>
-                                {renderAdminActions(achievement)}
-                                <Typography variant="subtitle2">
-                                    Earned: {achievementCounts[achievement.id] || 0} times
-                                </Typography>
                                 {renderUserActions(achievement)}
                             </Box>
                         ) : renderUserActions(achievement)}
