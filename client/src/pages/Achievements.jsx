@@ -9,16 +9,11 @@ function Achievements() {
     const [earnedAchievements, setEarnedAchievements] = useState([]);
     const [totalEarned, setTotalEarned] = useState(0);
     const [achievementCounts, setAchievementCounts] = useState({});
-    const [userCounts, setUserCounts] = useState(0); // Total number of users
+    const [userCount, setUserCount] = useState(0); // Total number of users
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState('create');
     const [currentAchievement, setCurrentAchievement] = useState(null);
-    const [newAchievement, setNewAchievement] = useState({
-        title: '',
-        description: '',
-        type: '',
-        imageFile: ''
-    });
+    const [newAchievement, setNewAchievement] = useState({ title: '', description: '', type: '', imageFile: '', condition: '' });
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [achievementToDelete, setAchievementToDelete] = useState(null);
     const { user } = useContext(UserContext);
@@ -26,35 +21,43 @@ function Achievements() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (user?.usertype === 'staff') {
-                    const achievementsRes = await http.get('/staff/achievement');
-                    const achievements = achievementsRes.data;
-                    setAllAchievements(achievements);
-    
-                    const userCountRes = await http.get('/user/count');
-                    setUserCounts(userCountRes.data.count);
-    
-                    const counts = achievements.reduce((acc, achievement) => {
-                        acc[achievement.id] = (acc[achievement.id] || 0) + achievement.earnedCount;
-                        return acc;
-                    }, {});
-    
-                    setTotalEarned(Object.values(counts).reduce((sum, count) => sum + count, 0));
-                    setAchievementCounts(counts);
-                } else {
-                    const achievementsRes = await http.get('/achievement/all');
-                    setAllAchievements(achievementsRes.data);
-    
+                // Fetch all achievements
+                const achievementsRes = await http.get('/staffachievement');
+                console.log('Achievements Response:', achievementsRes.data);
+                const achievements = achievementsRes.data;
+                setAllAchievements(achievements);
+
+                // Fetch user count
+                const userCountRes = await http.get('/user/count');
+                console.log('User Count Response:', userCountRes.data);
+                setUserCount(userCountRes.data.count);
+
+                // Fetch total earned achievements count for all users
+                const totalAchievementsRes = await http.get('/staffachievement/totalcount');
+                console.log('Total Achievements Response:', totalAchievementsRes.data);
+                setTotalEarned(totalAchievementsRes.data.totalAchievements);
+
+                // Fetch earned achievements counts (this should be available to everyone)
+                try {
+                    const countsRes = await http.get('/staffachievement/counts');
+                    console.log('Achievement Counts Response:', countsRes.data);
+                    setAchievementCounts(countsRes.data);
+                } catch (err) {
+                    console.error('Error fetching achievement counts:', err);
+                }
+
+                // Fetch earned achievements for users if not staff
+                if (user?.usertype !== 'staff') {
                     const earnedRes = await http.get('/achievement');
+                    console.log('Earned Achievements Response:', earnedRes.data);
                     setEarnedAchievements(earnedRes.data);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-    
         fetchData();
-    }, [user]);    
+    }, [user]);
 
     const findEarnedAchievement = (achievementId) => {
         return earnedAchievements.find((ach) => ach.id === achievementId);
@@ -63,12 +66,7 @@ function Achievements() {
     const handleDialogOpen = (mode, achievement = null) => {
         setDialogMode(mode);
         setCurrentAchievement(achievement);
-        setNewAchievement({
-            title: achievement?.title || '',
-            description: achievement?.description || '',
-            type: achievement?.type || '',
-            imageFile: achievement?.imageFile || ''
-        });
+        setNewAchievement({ title: achievement?.title || '', description: achievement?.description || '', type: achievement?.type || '', imageFile: achievement?.imageFile || '', condition: achievement?.condition || '' });
         setIsDialogOpen(true);
     };
 
@@ -78,15 +76,13 @@ function Achievements() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewAchievement(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+        setNewAchievement(prevState => ({ ...prevState, [name]: value }));
     };
 
     const handleCreateOrUpdate = () => {
+        const achievementData = { ...newAchievement, condition: JSON.parse(newAchievement.condition) }; // Convert JSON string to object
         if (dialogMode === 'create') {
-            http.post('/staff/achievement', newAchievement)
+            http.post('/staffachievement', achievementData)
                 .then((res) => {
                     setAllAchievements([...allAchievements, res.data]);
                     handleDialogClose();
@@ -95,7 +91,7 @@ function Achievements() {
                     console.error("Error creating achievement:", error);
                 });
         } else if (dialogMode === 'edit' && currentAchievement) {
-            http.put(`/staff/achievement/${currentAchievement.id}`, newAchievement)
+            http.put(`/staffachievement/${currentAchievement.id}`, achievementData)
                 .then((res) => {
                     setAllAchievements(allAchievements.map(ach => ach.id === currentAchievement.id ? res.data : ach));
                     handleDialogClose();
@@ -113,12 +109,12 @@ function Achievements() {
     };
 
     const confirmDelete = () => {
-        http.delete(`/staff/achievement/${achievementToDelete.id}`)
-           .then(() => {
+        http.delete(`/staffachievement/${achievementToDelete.id}`)
+            .then(() => {
                 setAllAchievements(allAchievements.filter(ach => ach.id !== achievementToDelete.id));
                 setIsConfirmDialogOpen(false);
             })
-           .catch((error) => {
+            .catch((error) => {
                 console.error("Error deleting achievement:", error);
             });
     };
@@ -136,45 +132,32 @@ function Achievements() {
 
     const renderUserActions = (achievement) => {
         const earnedCount = achievementCounts[achievement.id] || 0;
-        const percentage = userCounts > 0 ? ((earnedCount / userCounts) * 100).toFixed(2) : 0;
-
+        const percentage = userCount > 0 ? ((earnedCount / userCount) * 100).toFixed(2) : 0;
         return (
-            <Tooltip
-                title={
-                    <>
-                        <Typography variant="h6">{achievement.title}</Typography>
-                        <Typography>{achievement.description}</Typography>
-                        {user?.usertype !== 'staff' && (
-                            <Typography variant="caption">
-                                {findEarnedAchievement(achievement.id)
-                                    ? `Earned on: ${new Date(findEarnedAchievement(achievement.id).createdAt).toLocaleDateString()}`
-                                    : 'Not Earned'}
-                            </Typography>
-                        )}
+            <Tooltip title={
+                <>
+                    <Typography variant="h6">{achievement.title}</Typography>
+                    <Typography>{achievement.description}</Typography>
+                    {user?.usertype !== 'staff' && (
                         <Typography variant="caption">
-                            <br />
-                            {percentage}% of users have earned this achievement
+                            {findEarnedAchievement(achievement.id) ? `Earned on: ${new Date(findEarnedAchievement(achievement.id).createdAt).toLocaleDateString()}` : 'Not Earned'}
                         </Typography>
-                    </>
-                }
-                arrow
-            >
-                <Card
-                    sx={{
-                        cursor: 'pointer',
-                        filter: user?.usertype === 'staff' ? 'none' : (findEarnedAchievement(achievement.id) ? 'none' : 'grayscale(100%)'),
-                        '&:hover': {
-                            transform: user?.usertype === 'staff' || findEarnedAchievement(achievement.id) ? 'scale(1.05)' : 'none',
-                            transition: user?.usertype === 'staff' || findEarnedAchievement(achievement.id) ? 'transform 0.3s ease-in-out' : 'none',
-                        },
-                    }}
-                >
+                    )}
+                    <Typography variant="caption">
+                        <br /> {percentage}% of users have earned this achievement
+                    </Typography>
+                </>
+            } arrow>
+                <Card sx={{
+                    cursor: 'pointer',
+                    filter: user?.usertype === 'staff' ? 'none' : (findEarnedAchievement(achievement.id) ? 'none' : 'grayscale(100%)'),
+                    '&:hover': {
+                        transform: user?.usertype === 'staff' || findEarnedAchievement(achievement.id) ? 'scale(1.05)' : 'none',
+                        transition: user?.usertype === 'staff' || findEarnedAchievement(achievement.id) ? 'transform 0.3s ease-in-out' : 'none',
+                    },
+                }}>
                     <CardContent>
-                        <img
-                            src={`/achievements/${achievement.imageFile}`}
-                            alt={achievement.title}
-                            style={{ maxWidth: '100%', borderRadius: '170px' }}
-                        />
+                        <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
                     </CardContent>
                 </Card>
             </Tooltip>
@@ -189,7 +172,7 @@ function Achievements() {
             {user?.usertype === 'staff' && (
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="h6" sx={{ mb: 1 }}>
-                        Total Achievements Earned: {totalEarned}
+                        Total Achievements Earned: {totalEarned || 0}
                     </Typography>
                     <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => handleDialogOpen('create')}>
                         Add Achievement
@@ -214,62 +197,29 @@ function Achievements() {
             <Dialog open={isDialogOpen} onClose={handleDialogClose}>
                 <DialogTitle>{dialogMode === 'create' ? 'Create Achievement' : 'Edit Achievement'}</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        name="title"
-                        label="Title"
-                        fullWidth
-                        margin="normal"
-                        value={newAchievement.title}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        name="description"
-                        label="Description"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                        value={newAchievement.description}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        name="type"
-                        label="Type"
-                        fullWidth
-                        margin="normal"
-                        value={newAchievement.type}
-                        onChange={handleInputChange}
-                    />
-                    <TextField
-                        name="imageFile"
-                        label="Image File"
-                        fullWidth
-                        margin="normal"
-                        value={newAchievement.imageFile}
-                        onChange={handleInputChange}
-                    />
+                    <TextField name="title" label="Title" fullWidth margin="normal" value={newAchievement.title} onChange={handleInputChange} />
+                    <TextField name="description" label="Description" fullWidth margin="normal" value={newAchievement.description} onChange={handleInputChange} />
+                    <TextField name="type" label="Type" fullWidth margin="normal" value={newAchievement.type} onChange={handleInputChange} />
+                    <TextField name="imageFile" label="Image File" fullWidth margin="normal" value={newAchievement.imageFile} onChange={handleInputChange} />
+                    <TextField name="condition" label="Condition (JSON)" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={handleCreateOrUpdate} variant="contained" color="primary">
+                    <Button onClick={handleCreateOrUpdate}>
                         {dialogMode === 'create' ? 'Create' : 'Update'}
                     </Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={isConfirmDialogOpen} onClose={() => setIsConfirmDialogOpen(false)}>
-                <DialogTitle>Delete Achievement</DialogTitle>
+                <DialogTitle>Confirm Deletion</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete the {achievementToDelete?.title} achievement?
+                        Are you sure you want to delete the achievement "{achievementToDelete?.title}"?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" color="inherit" onClick={() => setIsConfirmDialogOpen(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" color="error" onClick={confirmDelete}>
-                        Delete
-                    </Button>
+                    <Button onClick={() => setIsConfirmDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={confirmDelete} color="error">Delete</Button>
                 </DialogActions>
             </Dialog>
         </Box>
