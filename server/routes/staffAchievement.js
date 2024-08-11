@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { Achievement, UserAchievements, sequelize } = require('../models');
+const { Achievement, UserAchievements, User, sequelize } = require('../models');
 const { validateToken } = require('../middlewares/staffauth');
+const nodemailer = require('nodemailer');
 
 // Get all achievements
 router.get('/', async (req, res) => {
@@ -16,8 +17,8 @@ router.get('/', async (req, res) => {
 // Create a new achievement
 router.post('/', validateToken, async (req, res) => {
     try {
-        const { title, description, type, imageFile } = req.body;
-        const newAchievement = await Achievement.create({ title, description, type, imageFile });
+        const { title, description, type, imageFile, condition } = req.body;
+        const newAchievement = await Achievement.create({ title, description, type, imageFile, condition });
         res.status(201).json(newAchievement);
     } catch (error) {
         res.status(400).json({ message: 'Error creating achievement', error: error.message });
@@ -28,8 +29,8 @@ router.post('/', validateToken, async (req, res) => {
 router.put('/:id', validateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description, type, imageFile } = req.body;
-        const [updated] = await Achievement.update({ title, description, type, imageFile }, { where: { id } });
+        const { title, description, type, imageFile, condition } = req.body;
+        const [updated] = await Achievement.update({ title, description, type, imageFile, condition }, { where: { id } });
         if (updated) {
             const updatedAchievement = await Achievement.findByPk(id);
             res.json(updatedAchievement);
@@ -62,8 +63,8 @@ router.post('/award', validateToken, async (req, res) => {
         const { userEmail, achievementId, conditionChecked } = req.body;
 
         // Validate input
-        if (!userEmail || !achievementId) {
-            return res.status(400).json({ message: 'User email and achievement ID are required' });
+        if (!userEmail || !achievementId || !conditionChecked) {
+            return res.status(400).json({ message: 'User email, achievement, and checked condition are required' });
         }
 
         // Check if user exists
@@ -78,12 +79,54 @@ router.post('/award', validateToken, async (req, res) => {
             return res.status(404).json({ message: 'Achievement not found' });
         }
 
+        // Check if user has already earned this achievement
+        const existingAchievement = await UserAchievements.findOne({
+            where: {
+                userId: user.id,
+                achievementId: achievement.id
+                }
+            });
+                if (existingAchievement) {
+                    return res.status(400).json({ message: 'User has already earned this achievement' });
+                }
+
+
+
         // Create a new user achievement
         const newUserAchievement = await UserAchievements.create({
             userId: user.id,
             achievementId,
-            condition: conditionChecked ? 1 : 0 // Set condition based on checkbox
+            notice: conditionChecked ? 1 : 0 // Set condition based on checkbox
         });
+
+        // // Send email notification to the user
+        // const mailOptions = {
+        //     from: process.env.EMAIL_USER,
+        //     to: userEmail,
+        //     subject: 'Congratulations! You’ve Earned an Achievement!',
+        //     text: `Hi ${user.firstName},\n\nCongratulations! You’ve earned the "${achievement.title}" achievement.\n\nDescription: ${achievement.description}\n\nKeep up the great work!\n\nBest regards,\nYour Team`,
+        //     html: `<p>Hi ${user.firstName},</p>
+        //                    <p>Congratulations! You’ve earned the <strong>${achievement.title}</strong> achievement.</p>
+        //                    <p>Description: ${achievement.description}</p>
+        //                    <p>Keep up the great work!</p>
+        //                    <p>Best regards,<br>Green Neighbourhood Community Center Team</p>`
+        // };
+
+        // const transporter = nodemailer.createTransport({
+        //     service: 'Gmail',
+        //     auth: {
+        //         user: process.env.EMAIL_USER,
+        //         pass: process.env.EMAIL_PASS,
+        //     },
+        // });
+
+        // transporter.sendMail(mailOptions, (error, info) => {
+        //     if (error) {
+        //         console.error('Error sending email:', error);
+        //         return res.status(500).json({ message: 'Achievement awarded but error sending email', error: error.message });
+        //     }
+        //     console.log('Email sent:', info.response);
+        // });
 
         res.status(201).json(newUserAchievement);
     } catch (error) {

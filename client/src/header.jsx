@@ -108,9 +108,6 @@ const Header = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
-                  <Nav.Link as={Link} to="/userprofile" style={{ color: 'black' }}>Profile</Nav.Link>
-                </Dropdown.Item>
-                <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                   <Nav.Link as={Link} to="/dashboard" style={{ color: 'black' }}>Dashboard</Nav.Link>
                 </Dropdown.Item>
                 <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>

@@ -75,7 +75,7 @@ const validateUniqueTitle = async (title) => {
             category: yup.string().required('Category is required'),
             imageFile: yup.mixed().required('Image is required')
         }),
-        onSubmit: (data) => {
+        onSubmit: async (data) => {
             if (imageFile) {
                 data.imageFile = imageFile;
             }

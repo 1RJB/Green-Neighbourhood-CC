@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, 
 import { Edit, Delete, Add, CardGiftcard } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
+import { toast, ToastContainer } from 'react-toastify';
 
 function Achievements() {
     const [allAchievements, setAllAchievements] = useState([]);
@@ -150,22 +151,13 @@ function Achievements() {
         })
             .then(() => {
                 handleAwardDialogClose();
+                toast.success('Achievement awarded successfully!');
             })
             .catch((error) => {
                 console.error("Error awarding achievement:", error);
+                toast.error('Error awarding achievement: ' + error.response.data.message);
             });
     };
-
-    const renderAdminActions = (achievement) => (
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
-                <Edit />
-            </IconButton>
-            <IconButton color="error" onClick={() => handleDelete(achievement.id)}>
-                <Delete />
-            </IconButton>
-        </Box>
-    );
 
     const renderUserActions = (achievement) => {
         const earnedCount = achievementCounts[achievement.id] || 0;
@@ -195,6 +187,25 @@ function Achievements() {
                 }}>
                     <CardContent>
                         <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
+                        <Typography variant="h6" align="center">{achievement.title}</Typography>
+                        <Typography variant="body2" align="center" color="textSecondary">
+                            {achievement.description}
+                        </Typography>
+                        {user?.usertype === 'staff' && (
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                                <Typography variant="caption">
+                                    No.  of users earned: {achievementCounts[achievement.id] || 0}
+                                </Typography>
+                                <Box>
+                                    <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton color="error" onClick={() => handleDelete(achievement.id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        )}
                     </CardContent>
                 </Card>
             </Tooltip>
@@ -207,15 +218,15 @@ function Achievements() {
                 Achievements
             </Typography>
             {user?.usertype === 'staff' && (
-                <Box sx={{ }}>
+                <Box>
 
                     <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => handleDialogOpen('create')}>
                         Add Achievement
                     </Button>
-                    <Button variant="contained" color="secondary" sx={{ ml: 2}} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
+                    <Button variant="contained" color="secondary" sx={{ ml: 2 }} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
                         Award Achievement
                     </Button>
-                    <Typography variant="h6" sx={{ mt: 2 }}>
+                    <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
                         Total Achievements Earned: {totalEarned || 0}
                     </Typography>
                 </Box>
@@ -225,10 +236,6 @@ function Achievements() {
                     <Grid item xs={12} sm={6} md={3} key={achievement.id}>
                         {user?.usertype === 'staff' ? (
                             <Box>
-                                {renderAdminActions(achievement)}
-                                <Typography variant="subtitle2">
-                                    Earned: {achievementCounts[achievement.id] || 0} times
-                                </Typography>
                                 {renderUserActions(achievement)}
                             </Box>
                         ) : renderUserActions(achievement)}
@@ -242,7 +249,7 @@ function Achievements() {
                     <TextField name="description" label="Description" fullWidth margin="normal" value={newAchievement.description} onChange={handleInputChange} />
                     <TextField name="type" label="Type" fullWidth margin="normal" value={newAchievement.type} onChange={handleInputChange} />
                     <TextField name="imageFile" label="Image File" fullWidth margin="normal" value={newAchievement.imageFile} onChange={handleInputChange} />
-                    <TextField name="condition" label="Condition (JSON)" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
+                    <TextField name="condition" label="Condition" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
@@ -267,25 +274,31 @@ function Achievements() {
                 <DialogTitle>Award Achievement</DialogTitle>
                 <DialogContent>
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>Achievement</InputLabel>
+                        <InputLabel>Select User</InputLabel>
+                        <Select
+                            value={selectedUser}
+                            onChange={(e) => setSelectedUser(e.target.value)}
+                        >
+                            {allUsers.filter((user) => user.usertype !== 'staff').map((user) => (
+                                <MenuItem key={user.email} value={user.email}>
+                                    {user.email}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Select Achievement</InputLabel>
                         <Select value={selectedAchievement} onChange={(e) => setSelectedAchievement(e.target.value)}>
                             {allAchievements.map(ach => (
                                 <MenuItem key={ach.id} value={ach.id}>{ach.title}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>User</InputLabel>
-                        <Select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
-                            {allUsers.map(user => (
-                                <MenuItem key={user.email} value={user.email}>{user.email}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
                     <Box sx={{ mt: 2 }}>
                         <FormControlLabel
                             control={<Checkbox checked={conditionChecked} onChange={(e) => setConditionChecked(e.target.checked)} />}
-                            label="Condition Checked"
+                            label={`Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || 'N/A'}`}
                         />
                     </Box>
                 </DialogContent>
@@ -294,6 +307,7 @@ function Achievements() {
                     <Button onClick={handleAward} color="primary">Award</Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer />
         </Box>
     );
 }
