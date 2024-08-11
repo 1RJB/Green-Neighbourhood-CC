@@ -3,7 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, 
 import { Edit, Delete, Add, WorkspacePremium } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function Achievements() {
     const [allAchievements, setAllAchievements] = useState([]);
@@ -307,7 +307,6 @@ function Achievements() {
                     <Button onClick={handleAward} color="primary">Award</Button>
                 </DialogActions>
             </Dialog>
-            <ToastContainer />
         </Box>
     );
 }

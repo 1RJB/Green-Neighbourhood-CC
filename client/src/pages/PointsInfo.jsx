@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Grid, Card, CardContent, Button } from '@mui/material';
 import { Forest, EmojiEvents } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { keyframes } from '@emotion/react';
@@ -8,6 +9,7 @@ import { keyframes } from '@emotion/react';
 const Points = () => {
     const [pointsInfo, setPointsInfo] = useState([]);
     const { user, setUser } = useContext(UserContext);
+    const navigate = useNavigate(); // Initialize useNavigate hook
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -41,20 +43,31 @@ const Points = () => {
     100% { transform: perspective(700px) rotateX(${Math.random() * 360}deg) rotateY(${Math.random() * 360}deg) rotateZ(${Math.random() * 360}deg) scale(1); }
   `;
 
+    const handleButtonClick = (title) => {
+        if (title === 'Events') {
+            navigate('/events');
+        } else if (title === 'Volunteers') {
+            navigate('/volunteers');
+        } else if (title === '') {
+            navigate('/referral');
+        }
+    };
+
     return (
         <Box>
-            <Typography variant="h5" sx={{ my: 2 }}>
-                Your Points
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', mb: 2 }}>
+                <Typography variant="h5" sx={{ mr: 2, mb: 3 }}>
+                    You have
+                </Typography>
                 <Forest
                     sx={{
                         mr: 1,
                         animation: `${spinCombined} 8s infinite`,
+                        mb: 2,
                     }}
                     color="primary"
                 />
-                <Typography variant="h4">
+                <Typography variant="h4" sx={{ mb: 3 }}>
                     {user?.points || 0} Points
                 </Typography>
             </Box>
@@ -82,7 +95,7 @@ const Points = () => {
                                     variant="contained"
                                     color="primary"
                                     sx={{ mt: 2 }}
-                                    onClick={() => {/* Handle action */}}
+                                    onClick={() => handleButtonClick(info.title)} // Update onClick to handle navigation
                                 >
                                     {info.actionText}
                                 </Button>

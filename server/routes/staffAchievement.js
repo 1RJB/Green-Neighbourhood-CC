@@ -84,13 +84,11 @@ router.post('/award', validateToken, async (req, res) => {
             where: {
                 userId: user.id,
                 achievementId: achievement.id
-                }
-            });
-                if (existingAchievement) {
-                    return res.status(400).json({ message: 'User has already earned this achievement' });
-                }
-
-
+            }
+        });
+        if (existingAchievement) {
+            return res.status(400).json({ message: 'User has already earned this achievement' });
+        }
 
         // Create a new user achievement
         const newUserAchievement = await UserAchievements.create({
@@ -99,34 +97,31 @@ router.post('/award', validateToken, async (req, res) => {
             notice: conditionChecked ? 1 : 0 // Set condition based on checkbox
         });
 
-        // // Send email notification to the user
-        // const mailOptions = {
-        //     from: process.env.EMAIL_USER,
-        //     to: userEmail,
-        //     subject: 'Congratulations! You’ve Earned an Achievement!',
-        //     text: `Hi ${user.firstName},\n\nCongratulations! You’ve earned the "${achievement.title}" achievement.\n\nDescription: ${achievement.description}\n\nKeep up the great work!\n\nBest regards,\nYour Team`,
-        //     html: `<p>Hi ${user.firstName},</p>
-        //                    <p>Congratulations! You’ve earned the <strong>${achievement.title}</strong> achievement.</p>
-        //                    <p>Description: ${achievement.description}</p>
-        //                    <p>Keep up the great work!</p>
-        //                    <p>Best regards,<br>Green Neighbourhood Community Center Team</p>`
-        // };
+        // Setup nodemailer transport
+        const transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE, // e.g., 'gmail'
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
 
-        // const transporter = nodemailer.createTransport({
-        //     service: 'Gmail',
-        //     auth: {
-        //         user: process.env.EMAIL_USER,
-        //         pass: process.env.EMAIL_PASS,
-        //     },
-        // });
+        // Email options
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: userEmail,
+            subject: 'Congratulations! You earned a new achievement!',
+            text: `Dear ${user.name},\n\nCongratulations! You have earned the achievement: ${achievement.title}.\n\nKeep up the great work!\n\nBest regards,\nGreen Neighbourhood Community Center Team`
+        };
 
-        // transporter.sendMail(mailOptions, (error, info) => {
-        //     if (error) {
-        //         console.error('Error sending email:', error);
-        //         return res.status(500).json({ message: 'Achievement awarded but error sending email', error: error.message });
-        //     }
-        //     console.log('Email sent:', info.response);
-        // });
+        // Send email
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
 
         res.status(201).json(newUserAchievement);
     } catch (error) {

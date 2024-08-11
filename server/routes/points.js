@@ -9,8 +9,7 @@ router.get('/points-info', async (req, res) => {
         const pointsInfo = [
             { title: 'Referral', description: 'Refer a friend to get points', points: 5000, actionText: 'Refer Now' },
             { title: 'Events', description: 'Take part in events', points: 10000, actionText: 'Participate Now' },
-            { title: 'Volunteers', description: 'Volunteer for a cause', points: 15000, actionText: 'Volunteer Now' },
-            { title: 'Quizzes', description: 'Take quizzes to earn points', points: 5000, actionText: 'Take Quiz Now' },
+            { title: 'Volunteers', description: 'Volunteer for a cause', points: 15000, actionText: 'Volunteer Now' }
             // Add more ways to earn points here
         ];
         res.json(pointsInfo);
