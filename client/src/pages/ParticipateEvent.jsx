@@ -7,6 +7,7 @@ import { useFormik } from 'formik';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 const participantSchema = yup.object().shape({
     firstName: yup.string().required('First name is required').min(3, 'First name must be at least 3 characters'),
@@ -168,13 +169,13 @@ function ParticipateEvent() {
     };
 
     return (
-        <Box>
+        <Box className="container mt-4"> {/* Added Bootstrap container class */}
             <Typography variant="h5" sx={{ my: 2 }}>
                 Participate in {eventTitle || 'Event'}
             </Typography>
             <Box component="form" onSubmit={formik.handleSubmit}>
                 {participants.map((participant, index) => (
-                    <Box key={index} sx={{ border: '1px solid #ccc', borderRadius: '4px', padding: 2, mb: 2 }}>
+                    <Box key={index} className="border rounded p-3 mb-3"> {/* Bootstrap styling for each participant box */}
                         <Typography variant="h6" sx={{ mb: 1 }}>
                             Member {index + 1}
                         </Typography>

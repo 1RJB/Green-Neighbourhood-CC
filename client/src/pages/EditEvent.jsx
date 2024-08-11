@@ -7,11 +7,13 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function EditEvent() {
     const { id } = useParams();
     const navigate = useNavigate();
-    dayjs.extend(isSameOrAfter); 
+    dayjs.extend(isSameOrAfter);
     const [event, setEvent] = useState({
         title: "",
         description: "",
@@ -70,7 +72,13 @@ function EditEvent() {
             http.put(`/event/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/events");
+                    toast.success('Event was editied successfully');
+                    setTimeout(() => {
+                        navigate("/events"); // Navigate after the toast has had a chance to show
+                    }, 1000); // Adjust this timing as needed
+                })
+                .catch((error) => {
+                    toast.error('Error submitting form: ' + error.message);
                 });
         }
     });
@@ -98,7 +106,7 @@ function EditEvent() {
         if (file) {
             if (file.size > 1024 * 1024) {
                 // Assuming you have a toast mechanism in place
-                // toast.error('Maximum file size is 1MB');
+                toast.error('Maximum file size is 1MB');
                 return;
             }
 
@@ -287,6 +295,7 @@ function EditEvent() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer />
         </Box>
     );
 }

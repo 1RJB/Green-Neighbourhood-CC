@@ -114,10 +114,10 @@ router.get("/currentEvents", validateToken, async (req, res) => {
                     model: Event, // Include Event model to access its title and endDate
                     as: "event",
                     attributes: ['title', 'endDate'], // Include the title and endDate of the event
-                    required: false, // Change to false to include participants without valid events
+                    required: true, // Change to false to include participants without valid events
                     where: {
                         endDate: {
-                            [Op.lte]: currentDate // Filter events that have ended
+                            [Op.gte]: currentDate // Filter events that have ended
                         }
                     }
                 }
@@ -181,8 +181,21 @@ router.get("/pastEvents", validateToken, async (req, res) => {
             ],
             logging: console.log // Log the SQL query for debugging
         });
+
+        // Delete participants with status "Joined"
+        const deletePromises = list.map(participant => {
+            if (participant.status === "Joined") {
+                return Participant.destroy({ where: { id: participant.id } });
+            }
+            return null; // Return null for participants not deleted
+        });
+
+        await Promise.all(deletePromises); // Wait for all delete operations to complete
         
-        res.json(list);
+        // Optionally, you can filter the list again if you want to return only the remaining participants
+        const filteredList = list.filter(participant => participant.status !== "Joined");
+        
+        res.json(filteredList); // Return the remaining participants
     } catch (error) {
         console.error("Error fetching participants:", error);
         res.status(500).json({ message: "Error fetching participants" });
@@ -212,35 +225,6 @@ router.delete("/:id", validateToken, async (req, res) => {
         res.status(500).json({ message: "Error deleting participant" });
     }
 });
-
-const deleteExpiredParticipants = async () => {
-    const currentDate = new Date();
-    
-    try {
-        const expiredParticipants = await Participant.findAll({
-            where: {
-                status: "Joined",
-                eventId: {
-                    [Op.in]: Sequelize.literal(`(
-                        SELECT id FROM Events WHERE DATE(endDate) < '${currentDate.toISOString().split('T')[0]}'
-                    )`)
-                }
-            }
-        });
-
-        if (expiredParticipants.length > 0) {
-            const idsToDelete = expiredParticipants.map(participant => participant.id);
-            await Participant.destroy({ where: { id: idsToDelete } });
-            console.log(`Deleted ${expiredParticipants.length} expired participants.`);
-        } else {
-            console.log("No expired participants to delete.");
-        }
-    } catch (error) {
-        console.error("Error deleting expired participants:", error);
-    }
-};
-
-setInterval(deleteExpiredParticipants, 24 * 60 * 60 * 1000);
 
 // Get participant by ID
 router.get("/:id", validateToken, async (req, res) => {
