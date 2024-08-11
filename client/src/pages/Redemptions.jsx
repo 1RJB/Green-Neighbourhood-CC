@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import http from '../http';
 import { Link } from 'react-router-dom';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 
 const Redemptions = () => {
     const [redemptionList, setRedemptionList] = useState([]);
@@ -17,7 +17,6 @@ const Redemptions = () => {
     const [status, setStatus] = useState('All');
     const [order, setOrder] = useState('DESC');
     const [open, setOpen] = useState(false); // Dialog open state
-    const [selectedRedemption, setSelectedRedemption] = useState(null); // Selected redemption to delete
 
     const getRedemptions = async () => {
         try {
@@ -46,21 +45,6 @@ const Redemptions = () => {
         getRedemptions();
     }, []);
 
-    const deleteRedemption = async () => {
-        if (selectedRedemption) {
-            try {
-                await http.delete(`/redemption/${selectedRedemption.id}`);
-                setRedemptionList(redemptionList.filter(redemption => redemption.id !== selectedRedemption.id));
-                console.log(`Redemption with ID ${selectedRedemption.id} deleted successfully.`);
-            } catch (error) {
-                console.error('Error deleting redemption:', error);
-            } finally {
-                setOpen(false); // Close dialog after operation
-                setSelectedRedemption(null); // Clear selected redemption
-            }
-        }
-    };
-
     const handleOpen = (redemption) => {
         setSelectedRedemption(redemption);
         setOpen(true);
@@ -78,7 +62,7 @@ const Redemptions = () => {
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
             <Box display="flex" justifyContent="space-between" mb={3}>
                 <TextField
-                    label="Filter by Reward Name"
+                    label="Filter by Reward Title"
                     value={rewardTitle}
                     onChange={(e) => setRewardTitle(e.target.value)}
                     variant="outlined"
@@ -98,7 +82,7 @@ const Redemptions = () => {
                     sx={{ mr: 2 }}
                 >
                     <MenuItem value="redeemedAt">Redeemed At</MenuItem>
-                    <MenuItem value="rewardTitle">Reward Name</MenuItem>
+                    <MenuItem value="rewardTitle">Reward Title</MenuItem>
                     <MenuItem value="userName">User Name</MenuItem>
                     <MenuItem value="status">Status</MenuItem>
                 </Select>
@@ -142,7 +126,7 @@ const Redemptions = () => {
                             <TableCell>Redeemed At</TableCell>
                             <TableCell>Collect By</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Actions</TableCell>
+                            <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -161,31 +145,12 @@ const Redemptions = () => {
                                             <Edit />
                                         </IconButton>
                                     </Link>
-                                    <IconButton variant="contained" color="error" sx={{ ml: 2 }} onClick={() => handleOpen({ id, reward, user })}>
-                                        <Delete />
-                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         )) : <TableRow><TableCell colSpan={8}>No redemptions made</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Delete Redemption</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete this redemption for {selectedRedemption?.reward.title} by user {selectedRedemption?.user.firstName} {selectedRedemption?.user.lastName} with Redemption ID {selectedRedemption?.id}?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" color="inherit" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" color="error" onClick={deleteRedemption}>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 };
