@@ -15,17 +15,6 @@ function AddEvent() {
     const [imageFile, setImageFile] = useState(null);
     dayjs.extend(isSameOrAfter);
 
-    const validateUniqueTitle = async (title) => {
-        try {
-            const response = await http.get(`/event/check-title?title=${title}`);
-            return !response.data.exists; // Assuming the API returns { exists: true/false }
-        } catch (error) {
-            console.error('Error checking title uniqueness:', error);
-            return false; // Handle error case as needed
-        }
-    };
-
-
     const formik = useFormik({
         initialValues: {
             title: "",
