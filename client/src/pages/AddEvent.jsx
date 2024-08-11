@@ -14,6 +14,15 @@ function AddEvent() {
     const [imageFile, setImageFile] = useState(null);
     dayjs.extend(isSameOrAfter);
 
+const validateUniqueTitle = async (title) => {
+    try {
+        const response = await http.get(`/event?search=${title}`);
+        return response.data.length === 0;
+    } catch (error) {
+        console.error('Error validating unique title:', error);
+        return false;
+    }
+};
     const formik = useFormik({
         initialValues: {
             title: "",
@@ -30,7 +39,17 @@ function AddEvent() {
                 .trim()
                 .min(3, 'Title must be at least 3 characters')
                 .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
+                .required('Title is required')
+                .test('is-unique-title', 'Title already exists', async (value) => {
+                    if (value) {
+                        const isUnique = await validateUniqueTitle(value);
+                        if (!isUnique) {
+                            console.error('An event with this title already exists.'); // Show toast message
+                        }
+                        return isUnique;
+                    }
+                    return true; // Return true if no value
+                }),
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
@@ -63,20 +82,21 @@ function AddEvent() {
             data.title = data.title.trim();
             data.description = data.description.trim();
             data.createdAt = `${data.eventDate} ${data.eventTime}`;
-            data.endDetails = `${data.endDate}${data.endTime}`; // Adjust format as needed
-            
-            // Submit the form
-            try {
-                await http.post("/event", data);
-                navigate("/events");
-            } catch (error) {
-                if (error.response && error.response.data.errors) {
-                    toast.error(error.response.data.errors[0]); // Show toast message with server error
-                } else {
-                    toast.error(`${data.title} already exists.`); // Generic error message
-                }
-            }
+            data.endDetails = `${data.endDate} ${data.endTime}`;
+        
+            http.post("/event", data)
+                .then((res) => {
+                    console.log(res.data);
+                    toast.success('Event added successfully');
+                    setTimeout(() => {
+                        navigate("/events"); // Navigate after the toast has had a chance to show
+                    }, 1000); // Adjust this timing as needed
+                })
+                .catch((error) => {
+                    toast.error('Error submitting form: ' + error.message);
+                });
         }
+        
     });
 
     const onFileChange = (e) => {

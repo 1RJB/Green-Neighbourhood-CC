@@ -33,7 +33,7 @@ function ViewEvent() {
     const now = dayjs();
     const eventDate = dayjs(event.eventDate);
     const oneMonthBefore = eventDate.subtract(1, 'month');
-    const showParticipateButton = now.isAfter(oneMonthBefore) && now.isBefore(eventDate);
+    const showParticipateButton = user && user.usertype === 'user' && now.isAfter(oneMonthBefore) && now.isBefore(eventDate);
     const showAddToCalendarButton = now.isBefore(eventDate) || now.isSame(eventDate, 'day');
 
     const handleParticipate = () => {
