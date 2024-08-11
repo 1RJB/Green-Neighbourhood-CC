@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Participant, Achievement, UserAchievement } = require('../models');
+const { User, Participant, Achievement, UserAchievement, Event } = require('../models'); // Make sure to include Event model
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
@@ -20,7 +20,7 @@ router.post("/", validateToken, async (req, res) => {
         email: yup.string().trim().lowercase().email().max(50).required(),
         gender: yup.string().oneOf(["Male", "Female"]).required(),
         birthday: yup.date().max(new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000)).required(),
-        event: yup.string().trim().required(),
+        eventId: yup.number().required(), // Changed from event to eventId
     });
 
     try {
@@ -34,12 +34,12 @@ router.post("/", validateToken, async (req, res) => {
             const existingParticipant = await Participant.findOne({
                 where: {
                     email: validatedData.email,
-                    event: validatedData.event,
+                    eventId: validatedData.eventId, 
                 }
             });
 
             if (existingParticipant) {
-                throw new Error(`${validatedData.email} has already participated in this event.`);
+                throw new Error(`${validatedData.email} has already been used to participate in this event.`);
             }
 
             validatedData.userId = userId;
@@ -76,37 +76,119 @@ router.post("/", validateToken, async (req, res) => {
     }
 });
 
-router.get("/", validateToken, async (req, res) => {
+router.get("/currentEvents", validateToken, async (req, res) => {
     const { search } = req.query;
     const userId = req.user.id; // ID of the user making the request
     const userType = req.user.usertype; // User type (staff or user)
 
     const condition = {};
-
+    
     // Add search condition
     if (search) {
         condition[Op.or] = [
             { firstName: { [Op.like]: `%${search}%` } },
             { lastName: { [Op.like]: `%${search}%` } },
-            { event: { [Op.like]: `%${search}%` } }
+            {
+                '$event.title$': { [Op.like]: `%${search}%` } // Search by event title
+            }
         ];
     }
 
     if (userType !== 'staff') {
         condition.userId = userId;
     }
+
     try {
+        const currentDate = new Date();
+        
         const list = await Participant.findAll({
             where: condition,
             order: [['createdAt', 'DESC']],
-            include: { model: User, as: "user", attributes: ['firstName', 'lastName'] }
+            include: [
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ['firstName', 'lastName']
+                },
+                {
+                    model: Event, // Include Event model to access its title and endDate
+                    as: "event",
+                    attributes: ['title', 'endDate'], // Include the title and endDate of the event
+                    required: false, // Change to false to include participants without valid events
+                    where: {
+                        endDate: {
+                            [Op.lte]: currentDate // Filter events that have ended
+                        }
+                    }
+                }
+            ],
+            logging: console.log // Log the SQL query for debugging
         });
+        
         res.json(list);
     } catch (error) {
         console.error("Error fetching participants:", error);
         res.status(500).json({ message: "Error fetching participants" });
     }
 });
+
+
+router.get("/pastEvents", validateToken, async (req, res) => {
+    const { search } = req.query;
+    const userId = req.user.id; // ID of the user making the request
+    const userType = req.user.usertype; // User type (staff or user)
+
+    const condition = {};
+    
+    // Add search condition
+    if (search) {
+        condition[Op.or] = [
+            { firstName: { [Op.like]: `%${search}%` } },
+            { lastName: { [Op.like]: `%${search}%` } },
+            {
+                '$event.title$': { [Op.like]: `%${search}%` } // Search by event title
+            }
+        ];
+    }
+
+    if (userType !== 'staff') {
+        condition.userId = userId;
+    }
+
+    try {
+        const currentDate = new Date();
+        
+        const list = await Participant.findAll({
+            where: condition,
+            order: [['createdAt', 'DESC']],
+            include: [
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ['firstName', 'lastName']
+                },
+                {
+                    model: Event, // Include Event model to access its title and endDate
+                    as: "event",
+                    attributes: ['title', 'endDate'], // Include the title and endDate of the event
+                    required: true, // Change to false to include participants without valid events
+                    where: {
+                        endDate: {
+                            [Op.lte]: currentDate // Filter events that have ended
+                        }
+                    }
+                }
+            ],
+            logging: console.log // Log the SQL query for debugging
+        });
+        
+        res.json(list);
+    } catch (error) {
+        console.error("Error fetching participants:", error);
+        res.status(500).json({ message: "Error fetching participants" });
+    }
+});
+
 
 // Delete participant by ID
 router.delete("/:id", validateToken, async (req, res) => {
@@ -138,9 +220,9 @@ const deleteExpiredParticipants = async () => {
         const expiredParticipants = await Participant.findAll({
             where: {
                 status: "Joined",
-                event: {
+                eventId: {
                     [Op.in]: Sequelize.literal(`(
-                        SELECT title FROM Events WHERE DATE(endDate) + INTERVAL 1 DAY < '${currentDate.toISOString().split('T')[0]}'
+                        SELECT id FROM Events WHERE DATE(endDate) < '${currentDate.toISOString().split('T')[0]}'
                     )`)
                 }
             }
@@ -196,7 +278,7 @@ router.put("/:id", validateToken, async (req, res) => {
             email: yup.string().trim().lowercase().email().max(50).required(),
             gender: yup.string().oneOf(["Male", "Female"]).required(),
             birthday: yup.date().max(new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000)).required(),
-            event: yup.string().trim().required(),
+            eventId: yup.number().required(), // Changed from event to eventId
             status: yup.string().oneOf(["Joined", "Participated"]).required(),
         });
 

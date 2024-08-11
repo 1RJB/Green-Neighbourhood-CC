@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
-
 function AddEvent() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
@@ -20,17 +19,28 @@ function AddEvent() {
             title: "",
             description: "",
             eventDate: "",
-            endDate: "", // Make sure this is consistent
+            endDate: "",
             eventTime: "",
-            endTime: "", // Make sure this is consistent
+            endTime: "",
             category: "",
             imageFile: null
         },
         validationSchema: yup.object({
-            title: yup.string().trim()
+            title: yup.string()
+                .trim()
                 .min(3, 'Title must be at least 3 characters')
                 .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
+                .required('Title is required')
+                .test('is-unique-title', 'Title already exists', async (value) => {
+                    if (value) {
+                        const isUnique = await validateUniqueTitle(value);
+                        if (!isUnique) {
+                            toast.error('An event with this title already exists.'); // Show toast message
+                        }
+                        return isUnique;
+                    }
+                    return true; // Return true if no value
+                }),
             description: yup.string().trim()
                 .min(3, 'Description must be at least 3 characters')
                 .max(500, 'Description must be at most 500 characters')
@@ -41,19 +51,16 @@ function AddEvent() {
                     return date.isValid() && date.isAfter(dayjs(), 'day');
                 }),
             endDate: yup.string().required('End date is required')
-                .test('is-future-date', 'Event date must be in the future', (value) => {
+                .test('is-future-date', 'End date must be in the future', (value) => {
                     const date = dayjs(value);
-                    console.log('Event Date:', value, 'Parsed Date:', date.format());
                     return date.isValid() && date.isAfter(dayjs(), 'day');
                 })
-
                 .test('is-after-event-date', 'End date must be after event date', function (value) {
                     const { eventDate } = this.parent;
                     const endDate = dayjs(value);
                     const startDate = dayjs(eventDate);
                     return endDate.isValid() && startDate.isValid() && endDate.isSameOrAfter(startDate, 'day');
                 }),
-
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('End time is required'),
             category: yup.string().required('Category is required'),
@@ -66,9 +73,7 @@ function AddEvent() {
             data.title = data.title.trim();
             data.description = data.description.trim();
             data.createdAt = `${data.eventDate} ${data.eventTime}`;
-            data.endDetails = `${data.endDate}${data.endTime}`;// Adjust format as needed
-            data.eventTime = data.eventTime;
-            data.endDate = data.endDate;
+            data.endDetails = `${data.endDate}${data.endTime}`; // Adjust format as needed
             http.post("/event", data)
                 .then((res) => {
                     console.log(res.data);
@@ -235,7 +240,7 @@ function AddEvent() {
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
-                        <Box sx={{ textAlign: 'center', mt: 2 }} >
+                        <Box sx={{ textAlign: 'center', mt: 2 }}>
                             <Button variant="contained" component="label">
                                 Upload Image
                                 <input hidden accept="image/*" type="file" onChange={onFileChange} />

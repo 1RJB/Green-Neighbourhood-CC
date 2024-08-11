@@ -26,23 +26,26 @@ function ParticipateEvent() {
         email: '',
         gender: '',
         birthday: '',
-        event: location.state?.event || '',
+        eventId: '', // Initialize with empty string for eventId
         createdBy: user.id,
     }]);
     const [eventTitle, setEventTitle] = useState('');
+    const eventId = location.state?.event; // Get eventId from location state
 
     useEffect(() => {
-        if (location.state?.event) {
+        if (eventId) {
             // Fetch event details to get the event title
-            http.get(`/event/${location.state.event}`)
+            http.get(`/event/${eventId}`)
                 .then((res) => {
                     setEventTitle(res.data.title);
+                    // Update participants with the eventId
+                    setParticipants(prevParticipants => prevParticipants.map(p => ({ ...p, eventId })));
                 })
                 .catch((error) => {
                     console.error('Error fetching event details:', error);
                 });
         }
-    }, [location.state?.event]);
+    }, [eventId]);
 
     const handleAddParticipant = async () => {
         const currentIndex = participants.length - 1;
@@ -51,8 +54,8 @@ function ParticipateEvent() {
         try {
             // Validate the current participant
             await participantSchema.validate(currentParticipant, { abortEarly: false });
-            setParticipants([...participants, { firstName: '', lastName: '', email: '', gender: '', birthday: '', event: location.state?.event || '', createdBy: user.id }]);
-            formik.setFieldValue(`participants`, [...participants, { firstName: '', lastName: '', email: '', gender: '', birthday: '', event: location.state?.event || '', createdBy: user.id }]);
+            setParticipants([...participants, { firstName: '', lastName: '', email: '', gender: '', birthday: '', eventId, createdBy: user.id }]);
+            formik.setFieldValue(`participants`, [...participants, { firstName: '', lastName: '', email: '', gender: '', birthday: '', eventId, createdBy: user.id }]);
         } catch (error) {
             // Handle validation errors
             error.inner.forEach((err) => {
@@ -81,7 +84,7 @@ function ParticipateEvent() {
             const duplicates = [];
 
             values.participants.forEach(participant => {
-                const key = `${participant.email.trim().toLowerCase()}-${participant.event}`;
+                const key = `${participant.email.trim().toLowerCase()}-${participant.eventId}`;
 
                 // Check if the combination already exists
                 if (participantMap.has(key)) {
@@ -119,7 +122,6 @@ function ParticipateEvent() {
                 toast.error("An error occurred. Please try again.");
             }
             // Ensure no participants are submitted if an error is detected
-            // You may need additional logic here if there are any partial submissions
         }
     };
 
@@ -209,7 +211,7 @@ function ParticipateEvent() {
                                     helperText={formik.errors.participants?.[index]?.lastName}
                                 />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12}>
                                 <TextField
                                     fullWidth
                                     margin="dense"
@@ -238,11 +240,12 @@ function ParticipateEvent() {
                                     )}
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <TextField
                                     fullWidth
                                     margin="dense"
                                     type="date"
+                                    InputLabelProps={{ shrink: true }}
                                     label="Birthday"
                                     name={`participants[${index}].birthday`}
                                     value={participant.birthday}
@@ -251,34 +254,32 @@ function ParticipateEvent() {
                                     helperText={formik.errors.participants?.[index]?.birthday}
                                 />
                             </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    label="Event"
+                                    value={eventTitle} // Display the event title
+                                    disabled
+                                />
+                            </Grid>
                         </Grid>
-                        {participants.length > 1 && (
-                            <Button
-                                variant="contained"
-                                color="error"
-                                onClick={() => handleRemoveParticipant(index)}
-                                sx={{ mt: 2 }}
-                            >
-                                Remove Participant
+                        {/* Show Remove button only for members after the first */}
+                        {index > 0 && (
+                            <Button variant="outlined" color="error" onClick={() => handleRemoveParticipant(index)} sx={{ mt: 2 }}>
+                                Remove
                             </Button>
                         )}
                     </Box>
                 ))}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleAddParticipant}
-                    sx={{ mb: 2 }}
-                >
+                <Button variant="outlined" onClick={handleAddParticipant}>
                     Add Another Participant
                 </Button>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                >
-                    Submit
-                </Button>
+                <Box sx={{ mt: 2 }}>
+                    <Button variant="contained" type="submit">
+                        Participate
+                    </Button>
+                </Box>
             </Box>
             <ToastContainer />
         </Box>

@@ -46,7 +46,7 @@ function StaffVolunteer() {
     };
 
     const fetchUsers = () => {
-        http.get('/user')
+        http.get('/user/allUsers')
             .then((res) => {
                 // Build a map of userId to user object
                 const users = res.data.reduce((map, user) => {
@@ -56,6 +56,7 @@ function StaffVolunteer() {
                 setUserMap(users);
             })
             .catch((error) => console.error('Error fetching users:', error));
+            console.log(userMap);
     };
 
     const searchVolunteers = () => {
@@ -107,10 +108,7 @@ function StaffVolunteer() {
                 <IconButton color="primary" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
-                <Box sx={{ flexGrow: 1 }} />
-                <Link to="/add-volunteer">
-                    <Button variant="contained">Add</Button>
-                </Link>
+                
             </Box>
             <Grid container spacing={2}>
                 {volunteerList.length > 0 ? (
