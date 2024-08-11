@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
-import { FormControl } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -16,6 +15,16 @@ import 'react-toastify/dist/ReactToastify.css';
 function AddVolunteer() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
+
+    const serviceTypes = [
+        'All',
+        'Education',
+        'Healthcare',
+        'Environment',
+        'Animal Welfare',
+        'Community Service',
+        'Other'
+    ];
 
     const formik = useFormik({
         initialValues: {
@@ -107,17 +116,26 @@ function AddVolunteer() {
                             InputLabelProps={{ shrink: true }} // Ensure label is always visible
                             inputProps={{ 'aria-label': 'Date Available' }} // Accessible label
                         />
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            label="Service Type"
-                            name="serviceType"
-                            value={formik.values.serviceType}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.serviceType && Boolean(formik.errors.serviceType)}
-                            helperText={formik.touched.serviceType && formik.errors.serviceType}
-                        />
+                        <FormControl fullWidth margin="dense">
+                            <InputLabel id="serviceType-label">Service Type</InputLabel>
+                            <Select
+                                labelId="serviceType-label"
+                                name="serviceType"
+                                value={formik.values.serviceType}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.serviceType && Boolean(formik.errors.serviceType)}
+                            >
+                                {serviceTypes.map((type) => (
+                                    <MenuItem key={type} value={type}>
+                                        {type}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            {formik.touched.serviceType && formik.errors.serviceType && (
+                                <FormHelperText error>{formik.errors.serviceType}</FormHelperText>
+                            )}
+                        </FormControl>
                         <TextField
                             fullWidth
                             margin="dense"

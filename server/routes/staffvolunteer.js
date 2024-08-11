@@ -4,9 +4,10 @@ const { Volunteer, User } = require('../models');
 const { Op } = require('sequelize');
 const { validateToken } = require('../middlewares/staffauth');
 const nodemailer = require('nodemailer');
+const { isStaff } = require('../middlewares/roleauth'); // Import the role validation middleware
 
 // Get all volunteer tickets for staff to view
-router.get('/', validateToken, async (req, res) => {
+router.get('/', validateToken, isStaff, async (req, res) => {
   try {
     const volunteerTickets = await Volunteer.findAll({
       order: [['createdAt', 'DESC']],
@@ -19,7 +20,7 @@ router.get('/', validateToken, async (req, res) => {
 });
 
 // Accept a volunteer ticket
-router.put('/:id/accept', validateToken, async (req, res) => {
+router.put('/:id/accept', validateToken, isStaff, async (req, res) => {
   const volunteerId = req.params.id;
   const { message } = req.body;
 
