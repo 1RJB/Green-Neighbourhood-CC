@@ -72,7 +72,7 @@ function EditEvent() {
             http.put(`/event/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    toast.success('Event added successfully');
+                    toast.success('Event was editied successfully');
                     setTimeout(() => {
                         navigate("/events"); // Navigate after the toast has had a chance to show
                     }, 1000); // Adjust this timing as needed
