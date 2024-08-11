@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Typography, Grid, Card, CardContent, Box } from '@mui/material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import './pages.css'; // Import the CSS file for styles
 
 const Home = () => {
@@ -31,12 +30,10 @@ const Home = () => {
             if (!user) return;
 
             try {
-                const { data } = await http.get('/achievement/withnotice'); // Use the new route
+                const { data } = await http.get('/achievement/withnotice');
                 if (data.length > 0) {
-                    // Reset the notice field
                     await http.put('/achievement/resetnotices');
-                    toast.done("Congrats, you got a new achievement! You can view on the Acheivements page.");
-
+                    toast.done("Congrats, you got a new achievement! You can view it on the Achievements page.");
                 }
             } catch (err) {
                 console.error('Failed to fetch user achievements:', err.response?.data || err.message);
@@ -67,8 +64,8 @@ const Home = () => {
                 setUserCount(data.count);
             } catch (err) {
                 console.error('Failed to fetch user count:', err);
-            };
-        }
+            }
+        };
 
         fetchEvents();
         fetchRewards();
@@ -85,11 +82,11 @@ const Home = () => {
     useEffect(() => {
         const eventInterval = setInterval(() => {
             setCurrentEventIndex((prevIndex) => (events.length > 0 ? (prevIndex + 1) % events.length : 0));
-        }, 5000); // Change event every 3 seconds
+        }, 5000);
 
         const rewardInterval = setInterval(() => {
             setCurrentRewardIndex((prevIndex) => (rewards.length > 0 ? (prevIndex + 1) % rewards.length : 0));
-        }, 3000); // Change reward every 3 seconds
+        }, 3000);
 
         return () => {
             clearInterval(eventInterval);
@@ -97,7 +94,6 @@ const Home = () => {
         };
     }, [events, rewards]);
 
-    // Slice the rewards to display three at a time and cycle through them
     const getVisibleRewards = () => {
         if (rewards.length === 0) return [];
         const start = currentRewardIndex;
@@ -109,107 +105,128 @@ const Home = () => {
     };
 
     return (
-        <Container className="homepage">
-            <Grid container spacing={2}>
+        <div className="container mt-5" style={{ backgroundColor: '#eaf8ea', padding: '20px', borderRadius: '10px' }}>
+            <div className="text-center mb-4">
+                <h1 className="display-4 text-success">Welcome to Our Green Community!</h1>
+                <p className="lead text-muted">Together, we can make a difference for the environment.</p>
+            </div>
+            <div className="row">
                 {/* Big Tile - Events */}
-                <Grid item xs={12} md={7} className="tile-large">
-                    <Card sx={{ height: '100%' }}>
-                        <CardContent>
-                            <Typography variant="h4" component="h2" gutterBottom>
-                                Upcoming Events
-                            </Typography>
+                <div className="col-md-7 mb-4">
+                    <div className="card shadow-sm border-0">
+                        <div className="card-body">
+                            <h4 className="card-title">Upcoming Events</h4>
                             {events.length > 0 ? (
-                                <Box className="carousel">
-                                    <Box className="pages-image-container">
-                                        <img
-                                            alt="event"
-                                            src={`${import.meta.env.VITE_FILE_BASE_URL}${events[currentEventIndex].imageFile}`}
-                                            className="pages-image"
-                                        />
-                                    </Box>
-                                    <Typography variant="h6" component="h3" align="center">
-                                        {events[currentEventIndex].title}
-                                    </Typography>
-                                </Box>
+                                <div id="eventCarousel" className="carousel slide" data-ride="carousel">
+                                    <div className="carousel-inner">
+                                        {events.map((event, index) => (
+                                            <div className={`carousel-item ${index === currentEventIndex ? 'active' : ''}`} key={event.id}>
+                                                <img
+                                                    className="d-block w-100 rounded"
+                                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${event.imageFile}`}
+                                                    alt={event.title}
+                                                />
+                                                <div className="carousel-caption d-none d-md-block">
+                                                    <h5>{event.title}</h5>
+                                                    <p>{event.description}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <a className="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
+                                        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span className="sr-only">Previous</span>
+                                    </a>
+                                    <a className="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
+                                        <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span className="sr-only">Next</span>
+                                    </a>
+                                </div>
                             ) : (
-                                <Typography variant="body1">No events available</Typography>
+                                <p>No events available</p>
                             )}
-                        </CardContent>
-                    </Card>
-                </Grid>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Medium Tile - Rewards */}
-                <Grid item xs={12} md={4} className="tile-medium">
-                    <Card sx={{ height: '100%' }}>
-                        <CardContent>
-                            <Typography variant="h4" component="h2" gutterBottom>
-                                Rewards
-                            </Typography>
+                <div className="col-md-4 mb-4">
+                    <div className="card shadow-sm border-0">
+                        <div className="card-body">
+                            <h4 className="card-title">Rewards</h4>
                             {rewards.length > 0 ? (
-                                <Box className="reward-carousel">
+                                <div className="d-flex flex-wrap">
                                     {getVisibleRewards().map((reward) => (
-                                        <Box key={reward.id} className="reward-item">
+                                        <div key={reward.id} className="reward-item mx-2 text-center">
                                             <img
                                                 alt={reward.title}
                                                 src={`${import.meta.env.VITE_FILE_BASE_URL}${reward.imageFile}`}
-                                                className="reward-image"
+                                                className="img-fluid rounded"
+                                                style={{ width: '100px', height: '100px' }}
                                             />
-                                            <Typography variant="h6" component="h3" className="reward-title">
-                                                {reward.title}
-                                            </Typography>
-                                        </Box>
+                                            <h6 className="mt-2">{reward.title}</h6>
+                                        </div>
                                     ))}
-                                </Box>
+                                </div>
                             ) : (
-                                <Typography variant="body1">No rewards available</Typography>
+                                <p>No rewards available</p>
                             )}
-                        </CardContent>
-                    </Card>
-                </Grid>
+                        </div>
+                    </div>
+                </div>
 
-                {/* Slightly Smaller Tile - Welcome User */}
-                <Grid item xs={12} md={6} className="greeting-tile tile-small">
-                    <Card sx={{ height: '100%' }}>
-                        <CardContent>
-                            <Typography variant="h4" component="h2" gutterBottom>
-                                Welcome, {user?.firstName || 'Guest'}!
-                            </Typography>
-                            <Typography variant="h5" color={'secondary.light'}>
-                                Would you like to make a difference?
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                {/* Welcome User Tile */}
+                <div className="col-md-6 mb-4">
+                    <div className="card bg-info text-white shadow-sm border-0">
+                        <div className="card-body text-center">
+                            <h4 className="card-title">Welcome, {user?.firstName || 'Guest'}!</h4>
+                            <p className="card-text">Would you like to make a difference?</p>
+                        </div>
+                    </div>
+                </div>
 
-                {/* Small Tile - Points */}
-                <Grid item xs={12} md={5} className="points-tile tile-small">
-                    <Card sx={{ height: '100%' }}>
-                        <CardContent>
+                {/* Points / User Count Tile */}
+                <div className="col-md-5 mb-4">
+                    <div className="card bg-warning text-white shadow-sm border-0">
+                        <div className="card-body text-center">
                             {user && user.usertype === "user" && (
                                 <>
-                                    <Typography variant="h4" component="h2" textAlign={'left'} gutterBottom>
-                                        Points
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        You have {user?.points || 0} points.
-                                    </Typography>
+                                    <h4 className="card-title">Your Points</h4>
+                                    <p className="card-text">You have <strong>{user?.points || 0}</strong> points.</p>
                                 </>
                             )}
                             {user && user.usertype === "staff" && (
                                 <>
-                                    <Typography variant="h4" component="h2" textAlign={'left'} gutterBottom>
-                                        No. of Users
-                                    </Typography>
-                                    <Typography variant="body1">
-                                        We have {userCount || 0} users.
-                                    </Typography>
+                                    <h4 className="card-title">Total Users</h4>
+                                    <p className="card-text">We currently have <strong>{userCount || 0}</strong> users.</p>
                                 </>
                             )}
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-        </Container>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Environmentally Friendly Tips Tile */}
+                <div className="col-12 mb-4">
+                    <div className="card shadow-sm border-0">
+                        <div className="card-body">
+                            <h4 className="card-title text-success">🌿 Go Green: Tips for a Sustainable Lifestyle</h4>
+                            <p>Here are some simple ways you can help protect the environment:</p>
+                            <ul className="list-unstyled text-success">
+                                <li>🌱 Reduce, Reuse, and Recycle: Minimize waste by reusing items and recycling whenever possible.</li>
+                                <li>🚶‍♂️ Walk or Bike: Opt for walking, biking, or public transport instead of driving to reduce carbon emissions.</li>
+                                <li>💧 Save Water: Turn off the tap while brushing your teeth and fix leaks promptly.</li>
+                                <li>🌍 Support Local: Buy from local farmers and businesses to reduce the carbon footprint from transportation.</li>
+                                <li>🌿 Plant Trees: Participate in tree-planting events or plant trees in your community.</li>
+                            </ul>
+                            <p className="text-success">Join us in making a positive impact on our planet!</p>
+                            <button className="btn btn-success mt-3" onClick={() => toast.info("Thank you for your commitment to the environment!")}>
+                                Join the Movement
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

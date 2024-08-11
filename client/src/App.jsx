@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { Container, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';

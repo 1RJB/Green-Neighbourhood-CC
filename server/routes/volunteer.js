@@ -70,7 +70,22 @@ router.get("/", async (req, res) => {
   res.json(list);
 });
 
-// Get a single volunteer event by ID
+router.get("/my-tickets", validateToken, async (req, res) => {
+  try {
+      const userId = req.user.id; 
+      const volunteers = await Volunteer.findAll({
+          where: { userId },
+          order: [['createdAt', 'DESC']],
+          include: { model: User, as: 'User', attributes: ['firstName', 'lastName'] }
+      });
+      res.json(volunteers);
+  } catch (err) {
+      console.error("Failed to fetch user-specific tickets:", err);
+      res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Get a single volunteer ticket by ID
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
   let volunteer = await Volunteer.findByPk(id, {
