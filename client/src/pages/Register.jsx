@@ -1,11 +1,9 @@
-Register.jsx
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import React, { useState } from "react";
 import axios from "axios";
-import http from "../http";
-import emailjs from 'emailjs-com';
+import emailjs from "emailjs-com"; // Import emailjs
 import {
   Box,
   Typography,
@@ -20,28 +18,8 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-const sendOTP = async (email, otp) => {
-  const templateParams = {
-    to_email: email,
-    otp: otp,
-  };
-
-  try {
-    await emailjs.send('service_atajjxp', 'template_c8ziunu', templateParams, 'YNOWo8S4upqxTO_Tk');
-    toast.success('OTP sent successfully!');
-  } catch (error) {
-    console.error('Failed to send OTP', error);
-    toast.error('Failed to send OTP. Please try again later.');
-  }
-};
-
 function Register() {
   const navigate = useNavigate();
-  const [generatedOtp, setGeneratedOtp] = useState('');
 
   const formik = useFormik({
     initialValues: {
@@ -105,12 +83,11 @@ function Register() {
         .required("Confirm Password is required"),
       otp: yup
         .string()
-        .required('OTP is required')
-        .test('otp-match', 'Invalid OTP', value => value === generatedOtp),
+        .required('OTP is required'),
     }),
     onSubmit: async (values) => {
       try {
-        const response = await http.post("/user/register", {
+        const response = await axios.post("http://localhost:3001/user/register", {
           firstName: values.firstName.trim(),
           lastName: values.lastName.trim(),
           email: values.email.trim().toLowerCase(),
@@ -118,8 +95,10 @@ function Register() {
           confirmPassword: values.confirmPassword.trim(),
           birthday: values.birthday,
           gender: values.gender,
+          otp: values.otp
         });
         console.log("Registration successful:", response.data);
+        toast.success("Registration successful! Please log in.");
         navigate("/login");
       } catch (error) {
         toast.error(`${error.response.data.message}`);
@@ -128,9 +107,26 @@ function Register() {
   });
 
   const handleSendOtp = async () => {
-    const otp = generateOTP();
-    setGeneratedOtp(otp);
-    await sendOTP(formik.values.email, otp);
+    try {
+      // Generate OTP on the server and store it in the database
+      const response = await axios.post("http://localhost:3001/user/sendOtp", {
+        email: formik.values.email,
+      });
+
+      const otp = response.data.otp; // Assuming the server returns the OTP for demonstration
+
+      // Send OTP via email using EmailJS
+      const templateParams = {
+        to_email: formik.values.email,
+        otp: otp,
+      };
+
+      await emailjs.send('service_atajjxp', 'template_c8ziunu', templateParams, 'YNOWo8S4upqxTO_Tk');
+      toast.success("OTP sent successfully!");
+    } catch (error) {
+      console.error("Failed to send OTP", error);
+      toast.error("Failed to send OTP. Please try again later.");
+    }
   };
 
   return (
