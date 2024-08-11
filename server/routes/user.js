@@ -286,35 +286,6 @@ router.get("/allUsers", validateToken, async (req, res) => {
   }
 });
 
-// Get top 20 users by points
-router.get("/top20Users", validateToken, async (req, res) => {
-  try {
-    // Fetch all users, excluding staff
-    const users = await User.findAll({
-      attributes: { exclude: ['password'] },
-      where: { usertype: 'user' } // Assuming 'usertype' field distinguishes between users and staff
-    });
-
-    // Sort users by points in descending order and limit to top 20
-    const sortedUsers = users.sort((a, b) => b.points - a.points).slice(0, 20);
-
-    res.json(sortedUsers);
-  } catch (err) {
-    console.error("Failed to fetch users:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Get count of all users
-router.get("/count", validateToken, async (req, res) => {
-  try {
-      const count = await User.count();
-      res.json({ count });
-  } catch (err) {
-      res.status(500).json({ error: err.message });
-  }
-});
-
 router.post("/sendForgotOtp", async (req, res) => {
   const { email } = req.body;
 
@@ -360,6 +331,62 @@ router.post("/verifyForgotOtp", async (req, res) => {
   }
 });
 
+router.put("/resetPasswordByEmail", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the Users table
+    const updatedUser = await User.update(
+      { password: hashedPassword },
+      { where: { email } }
+    );
+
+    if (updatedUser[0] === 1) {
+      // Optionally: Delete OTP after successful password reset
+      await ForgotOTP.destroy({ where: { email } });
+
+      res.json({ message: "Password reset successfully!" });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  } catch (error) {
+    console.error("Failed to reset password:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+// Get top 20 users by points
+router.get("/top20Users", validateToken, async (req, res) => {
+  try {
+    // Fetch all users, excluding staff
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] },
+      where: { usertype: 'user' } // Assuming 'usertype' field distinguishes between users and staff
+    });
+
+    // Sort users by points in descending order and limit to top 20
+    const sortedUsers = users.sort((a, b) => b.points - a.points).slice(0, 20);
+
+    res.json(sortedUsers);
+  } catch (err) {
+    console.error("Failed to fetch users:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Get count of all users
+router.get("/count", validateToken, async (req, res) => {
+  try {
+    const count = await User.count();
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get user details by email - to help send email with first name
 router.get("/userByEmail/:email", validateToken, async (req, res) => {
   const { email } = req.params;
@@ -380,6 +407,5 @@ router.get("/userByEmail/:email", validateToken, async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 module.exports = router;
