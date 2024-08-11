@@ -161,7 +161,7 @@ const Home = () => {
                         <br></br>
                         🌿 Improve Your Resume: Add impressive experience to your career profile.
                     </p>
-                    <button onClick={handleVolunteerClick} className="volunteer-button">Volunteer Now</button>
+                    
                 </div>
 
             </div>

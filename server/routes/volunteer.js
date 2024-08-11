@@ -4,9 +4,10 @@ const { User, Volunteer, Achievement, UserAchievement } = require('../models'); 
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
+const { isVolunteer } = require('../middlewares/roleauth'); // Import the role validation middleware
 
 // Create a new volunteer event
-router.post("/", validateToken, async (req, res) => {
+router.post("/", validateToken, isVolunteer, async (req, res) => {
   let data = req.body;
   data.userId = req.user.id;
 
@@ -53,6 +54,7 @@ router.post("/", validateToken, async (req, res) => {
   }
 });
 
+// Get a list of volunteer events
 router.get("/", async (req, res) => {
   let condition = {};
   let search = req.query.search;
@@ -70,7 +72,8 @@ router.get("/", async (req, res) => {
   res.json(list);
 });
 
-router.get("/my-tickets", validateToken, async (req, res) => {
+// Get a list of the user's volunteer tickets
+router.get("/my-tickets", validateToken, isVolunteer, async (req, res) => {
   try {
       const userId = req.user.id; 
       const volunteers = await Volunteer.findAll({
@@ -99,7 +102,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a volunteer event
-router.put("/:id", validateToken, async (req, res) => {
+router.put("/:id", validateToken, isVolunteer, async (req, res) => {
   let id = req.params.id;
   // Check if id not found
   let volunteer = await Volunteer.findByPk(id);
@@ -138,7 +141,7 @@ router.put("/:id", validateToken, async (req, res) => {
 });
 
 // Delete a volunteer event
-router.delete("/:id", validateToken, async (req, res) => {
+router.delete("/:id", validateToken, isVolunteer, async (req, res) => {
   let id = req.params.id;
   // Check if id not found
   let volunteer = await Volunteer.findByPk(id);
