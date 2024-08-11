@@ -58,7 +58,7 @@ function ForgotPassword() {
 
         console.log("OTP verified successfully:", response.data);
         toast.success("OTP verified successfully! Proceeding to reset password.");
-        navigate("/resetPassword", { state: { email: values.email } });
+        navigate("/resetPassword", { state: { email: values.email, otp: values.otp } });
       } catch (error) {
         toast.error(`${error.response.data.message}`);
       }
