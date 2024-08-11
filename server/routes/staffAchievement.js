@@ -56,6 +56,42 @@ router.delete('/:id', validateToken, async (req, res) => {
     }
 });
 
+// Award an achievement to a user
+router.post('/award', validateToken, async (req, res) => {
+    try {
+        const { userEmail, achievementId, conditionChecked } = req.body;
+
+        // Validate input
+        if (!userEmail || !achievementId) {
+            return res.status(400).json({ message: 'User email and achievement ID are required' });
+        }
+
+        // Check if user exists
+        const user = await User.findOne({ where: { email: userEmail } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if achievement exists
+        const achievement = await Achievement.findByPk(achievementId);
+        if (!achievement) {
+            return res.status(404).json({ message: 'Achievement not found' });
+        }
+
+        // Create a new user achievement
+        const newUserAchievement = await UserAchievements.create({
+            userId: user.id,
+            achievementId,
+            condition: conditionChecked ? 1 : 0 // Set condition based on checkbox
+        });
+
+        res.status(201).json(newUserAchievement);
+    } catch (error) {
+        console.error("Error awarding achievement:", error);
+        res.status(500).json({ message: 'Error awarding achievement', error: error.message });
+    }
+});
+
 // Count total number of achievements earned by all users
 router.get('/totalcount', async (req, res) => {
     try {

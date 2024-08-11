@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, DialogContentText } from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
+import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, DialogContentText, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox } from '@mui/material';
+import { Edit, Delete, Add, CardGiftcard } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 
@@ -16,6 +16,11 @@ function Achievements() {
     const [newAchievement, setNewAchievement] = useState({ title: '', description: '', type: '', imageFile: '', condition: '' });
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [achievementToDelete, setAchievementToDelete] = useState(null);
+    const [isAwardDialogOpen, setIsAwardDialogOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState('');
+    const [selectedAchievement, setSelectedAchievement] = useState('');
+    const [allUsers, setAllUsers] = useState([]);
+    const [conditionChecked, setConditionChecked] = useState(false);
     const { user } = useContext(UserContext);
 
     useEffect(() => {
@@ -52,6 +57,13 @@ function Achievements() {
                     console.log('Earned Achievements Response:', earnedRes.data);
                     setEarnedAchievements(earnedRes.data);
                 }
+
+                // Fetch all users for awarding achievements
+                if (user?.usertype === 'staff') {
+                    const usersRes = await http.get('/user/allUsers');
+                    console.log('Users Response:', usersRes.data);
+                    setAllUsers(usersRes.data);
+                }
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -72,6 +84,17 @@ function Achievements() {
 
     const handleDialogClose = () => {
         setIsDialogOpen(false);
+    };
+
+    const handleAwardDialogOpen = () => {
+        setIsAwardDialogOpen(true);
+        setSelectedUser('');
+        setSelectedAchievement('');
+        setConditionChecked(false);
+    };
+
+    const handleAwardDialogClose = () => {
+        setIsAwardDialogOpen(false);
     };
 
     const handleInputChange = (e) => {
@@ -119,9 +142,23 @@ function Achievements() {
             });
     };
 
+    const handleAward = () => {
+        http.post('/staffachievement/award', {
+            userEmail: selectedUser,
+            achievementId: selectedAchievement,
+            conditionChecked
+        })
+            .then(() => {
+                handleAwardDialogClose();
+            })
+            .catch((error) => {
+                console.error("Error awarding achievement:", error);
+            });
+    };
+
     const renderAdminActions = (achievement) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <IconButton color="primary" onClick={() => handleDialogOpen('edit', achievement)}>
+            <IconButton color="secondary" onClick={() => handleDialogOpen('edit', achievement)}>
                 <Edit />
             </IconButton>
             <IconButton color="error" onClick={() => handleDelete(achievement.id)}>
@@ -170,13 +207,17 @@ function Achievements() {
                 Achievements
             </Typography>
             {user?.usertype === 'staff' && (
-                <Box sx={{ mb: 2 }}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>
-                        Total Achievements Earned: {totalEarned || 0}
-                    </Typography>
+                <Box sx={{ }}>
+
                     <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => handleDialogOpen('create')}>
                         Add Achievement
                     </Button>
+                    <Button variant="contained" color="secondary" sx={{ ml: 2}} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
+                        Award Achievement
+                    </Button>
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                        Total Achievements Earned: {totalEarned || 0}
+                    </Typography>
                 </Box>
             )}
             <Grid container spacing={2}>
@@ -220,6 +261,37 @@ function Achievements() {
                 <DialogActions>
                     <Button onClick={() => setIsConfirmDialogOpen(false)}>Cancel</Button>
                     <Button onClick={confirmDelete} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={isAwardDialogOpen} onClose={handleAwardDialogClose}>
+                <DialogTitle>Award Achievement</DialogTitle>
+                <DialogContent>
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Achievement</InputLabel>
+                        <Select value={selectedAchievement} onChange={(e) => setSelectedAchievement(e.target.value)}>
+                            {allAchievements.map(ach => (
+                                <MenuItem key={ach.id} value={ach.id}>{ach.title}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>User</InputLabel>
+                        <Select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+                            {allUsers.map(user => (
+                                <MenuItem key={user.email} value={user.email}>{user.email}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <Box sx={{ mt: 2 }}>
+                        <FormControlLabel
+                            control={<Checkbox checked={conditionChecked} onChange={(e) => setConditionChecked(e.target.checked)} />}
+                            label="Condition Checked"
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAwardDialogClose}>Cancel</Button>
+                    <Button onClick={handleAward} color="primary">Award</Button>
                 </DialogActions>
             </Dialog>
         </Box>

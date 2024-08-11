@@ -17,9 +17,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(100)
         },
         condition: {
-            type: DataTypes.JSON,
-            allowNull: true,
-            defaultValue: {}
+            type: DataTypes.TEXT,
+            allowNull: false,
         }
     }, {
         tableName: 'achievements'
