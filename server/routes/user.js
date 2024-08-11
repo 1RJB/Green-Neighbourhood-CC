@@ -360,4 +360,31 @@ router.post("/verifyForgotOtp", async (req, res) => {
   }
 });
 
+router.put("/resetPasswordByEmail", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the Users table
+    const updatedUser = await User.update(
+      { password: hashedPassword },
+      { where: { email } }
+    );
+
+    if (updatedUser[0] === 1) {
+      // Optionally: Delete OTP after successful password reset
+      await ForgotOTP.destroy({ where: { email } });
+
+      res.json({ message: "Password reset successfully!" });
+    } else {
+      res.status(404).json({ message: "User not found." });
+    }
+  } catch (error) {
+    console.error("Failed to reset password:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
 module.exports = router;
