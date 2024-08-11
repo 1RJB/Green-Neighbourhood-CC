@@ -21,24 +21,22 @@ router.post("/", validateToken, async (req, res) => {
         category: yup.string().oneOf(['Sustainable', 'Sports', 'Community', 'Workshop', 'Others']).required()
     });
     
-    try {
-        data = await validationSchema.validate(data, { abortEarly: false });
+    data = await validationSchema.validate(data, { abortEarly: false });
 
-        // Check for existing event with the same title
-        const existingEvent = await Event.findOne({ where: { title: data.title } });
-        if (existingEvent) {
-            return res.status(400).json({ errors: ['An event with this title already exists.'] });
-        }
-
-        // Process valid data   
-        let result = await Event.create(data);
-        console.log('Event created:', result); // Log created event
-        res.json(result);
-    } catch (err) {
-        console.error('Error creating event:', err); // Log validation or database errors
-        res.status(400).json({ errors: err.errors || ['An error occurred while creating the event.'] });
-    }
+    // Check for existing event with the same title
+    const existingEvent = await Event.findOne({ where: { title: data.title } });
+    if (existingEvent) {
+        return res.status(400).json({ 
+            errors: [`The event title "${data.title}" already exists.`] 
+        });
+    }        
+    
+    // Process valid data   
+    let result = await Event.create(data);
+    console.log('Event created:', result); // Log created event
+    res.json(result);
 });
+
 
 // GET: List events with optional search and category filtering
 router.get("/", async (req, res) => {
