@@ -35,12 +35,22 @@ function Volunteers() {
     }, [setUser]);
 
     const getVolunteers = () => {
-        http.get('/volunteer')
-            .then((res) => {
-                setVolunteerList(res.data);
-            })
-            .catch((error) => console.error('Error fetching volunteers:', error));
+        setLoading(true);
+        http.get('/volunteer/my-tickets', {
+            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+        })
+        .then((res) => {
+            console.log('Response data:', res.data); // Debugging statement
+            setVolunteerList(res.data);
+            setLoading(false);
+        })
+        .catch((error) => {
+            console.error('Error fetching volunteers:', error);
+            toast.error("Failed to load tickets.");
+            setLoading(false);
+        });
     };
+    
 
     const searchVolunteers = () => {
         http.get(`/volunteer?search=${search}`)
@@ -82,18 +92,6 @@ function Volunteers() {
                 Your Tickets
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input
-                    value={search}
-                    placeholder="Search"
-                    onChange={onSearchChange}
-                    onKeyDown={onSearchKeyDown}
-                />
-                <IconButton color="primary" onClick={onClickSearch}>
-                    <Search />
-                </IconButton>
-                <IconButton color="primary" onClick={onClickClear}>
-                    <Clear />
-                </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
                 {user && (
                     <Link to="/add-volunteer">
@@ -118,7 +116,7 @@ function Volunteers() {
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccountCircle sx={{ mr: 1 }} />
-                                    <Typography>{volunteer.userName || 'Unknown User'}</Typography>
+                                    <Typography>{fullName || 'Unknown User'}</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                     <AccessTime sx={{ mr: 1 }} />
