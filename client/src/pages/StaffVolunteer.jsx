@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
-import { AccountCircle, AccessTime, Event, Search, Clear, Edit } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Event, Search, Clear } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { format } from 'date-fns';
 import UserContext from '../contexts/UserContext';
 
-// Function to format 24-hour time to 12-hour time
 function formatTime24to12(time24hr) {
     const [hours, minutes] = time24hr.split(':');
     const date = new Date();
@@ -18,16 +17,15 @@ function formatTime24to12(time24hr) {
 function StaffVolunteer() {
     const [volunteerList, setVolunteerList] = useState([]);
     const [search, setSearch] = useState('');
-    const [userMap, setUserMap] = useState({}); // Map to store user info
+    const [userMap, setUserMap] = useState({});
     const { user, setUser } = useContext(UserContext);
 
     useEffect(() => {
         getVolunteers();
-        fetchUsers(); // Fetch users to build the map
+        fetchUsers();
     }, []);
 
     useEffect(() => {
-        // Fetch user info from the /userInfo endpoint
         http.get('/user/userInfo', {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
         }).then((res) => {
@@ -48,7 +46,6 @@ function StaffVolunteer() {
     const fetchUsers = () => {
         http.get('/user/allUsers')
             .then((res) => {
-                // Build a map of userId to user object
                 const users = res.data.reduce((map, user) => {
                     map[user.id] = user;
                     return map;
@@ -56,7 +53,6 @@ function StaffVolunteer() {
                 setUserMap(users);
             })
             .catch((error) => console.error('Error fetching users:', error));
-            console.log(userMap);
     };
 
     const searchVolunteers = () => {
@@ -84,7 +80,6 @@ function StaffVolunteer() {
         getVolunteers();
     };
 
-    // Function to get full name from userMap
     const getFullName = (userId) => {
         const user = userMap[userId];
         return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
@@ -108,7 +103,6 @@ function StaffVolunteer() {
                 <IconButton color="primary" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
-                
             </Box>
             <Grid container spacing={2}>
                 {volunteerList.length > 0 ? (
@@ -120,11 +114,6 @@ function StaffVolunteer() {
                                         <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                             {volunteer.title}
                                         </Typography>
-                                        <Link to={`/edit-volunteer/${volunteer.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }} color="text.secondary">
                                         <AccountCircle sx={{ mr: 1 }} />
@@ -151,6 +140,16 @@ function StaffVolunteer() {
                                     </Box>
                                     <Box sx={{ mb: 1 }} color="text.secondary">
                                         <Typography><strong>Contact Info:</strong> {volunteer.contactInfo}</Typography>
+                                    </Box>
+                                    <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button
+                                            component={Link}
+                                            to={`/ticketdetails/${volunteer.id}`}
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            View Details
+                                        </Button>
                                     </Box>
                                 </CardContent>
                             </Card>

@@ -47,6 +47,7 @@ import ResetPassword from "./pages/ResetPassword";
 import FaqPage from './pages/faq';
 import StaffVolunteer from './pages/StaffVolunteer';
 import Dashboard from './pages/Dashboard';
+import TicketDetails from './pages/TicketDetails';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -113,6 +114,7 @@ function App() {
               <Route path="/faqpage" element={<FaqPage />} />
               <Route path ="/staff/volunteers" element={<StaffVolunteer />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/ticketDetails/:id" element={<TicketDetails />} /> 
               <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
           </Container>
