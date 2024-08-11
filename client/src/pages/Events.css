@@ -1,23 +1,36 @@
-/* Events.css */
-
+/* Event card content styling */
 .event-card-content {
     position: relative;
+    transition: transform 0.3s ease; /* Smooth transition for the zoom effect */
 }
 
+.event-card-content:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+.event-card {
+    overflow: hidden; /* Ensures the content stays within bounds */
+}
+
+/* Image container styling */
 .event-image-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 200px; /* Set the height to the desired fixed size */
+    overflow: hidden; /* Hide any overflow to ensure a clean display */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Optional: background color to fill the container */
 }
 
 .event-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
+    width: auto;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
+    transition: transform 0.3s ease; /* Smooth transition for zoom effect */
 }
 
+/* Category pill styling */
 .category-pill {
     padding: 6px 12px;
     border-radius: 20px;
@@ -32,24 +45,23 @@
 .category-brown { background-color: brown; }
 .category-navy { background-color: navy; }
 
-/* new to be added to update 8 */
-/* Events.css */
-
-.event-image-container {
-  width: 100%;
-  height: 200px; /* Set the height to the desired fixed size */
-  overflow: hidden; /* Ensure that any overflow is hidden */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Event type pill styling */
+.event-type-pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    position: absolute;
+    top: 10px;
+    margin-right: 10px; /* Add space between pills */
 }
 
-.event-image {
-  width: auto;
-  height: 100%;
-  object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
-}
+.event-type-upcoming { background-color: orange; }
+.event-type-current { background-color: navy; }
+.event-type-past { background-color: gray; }
 
+/* Custom select styling */
 .custom-select-opener {
     border: 0.1rem solid #dbdbdb;
     border-radius: 0.5rem;
@@ -69,25 +81,19 @@
     background-color: #f0f0f0; /* Optional: Add hover effect */
 }
 
+/* Margin for event card items */
 .event-card-item {
     margin-bottom: 300px; /* Adjust this value as needed */
 }
 
-/* Add these styles to Events.css */
-
-.event-type-pill {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    position: absolute;
-    top: 10px;
-    margin-right: 10px; /* Add space between pills */
+.event-card-grid {
+    display: flex;
+    flex-direction: column;
+}
+.event-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px; /* or whatever suits your design */
 }
 
-
-.event-type-upcoming { background-color: orange; }
-.event-type-current { background-color: navy; }
-.event-type-past { background-color: gray; }
 

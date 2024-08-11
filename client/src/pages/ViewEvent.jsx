@@ -42,30 +42,29 @@ function ViewEvent() {
         }
     };
 
+    const handleAddToCalendar = () => {
+        const eventStartDate = dayjs(event.eventDate).format('YYYYMMDDTHHmmss');
+        const eventEndDate = dayjs(event.endDate).format('YYYYMMDDTHHmmss');
+        const eventTitle = encodeURIComponent(event.title);
+        const eventDescription = encodeURIComponent(event.description);
+        const eventLocation = encodeURIComponent(event.location || ''); // Optional location
+
+        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${eventStartDate}/${eventEndDate}&details=${eventDescription}&location=${eventLocation}`;
+        
+        window.open(calendarUrl, '_blank');
+    };
+
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h4" gutterBottom>
+        <Box className="view-event-container">
+            <Typography variant="h4" className="event-title" sx={{ fontWeight: 'bold', mb: 3 }}>
                 {event.title}
             </Typography>
-            <Card>
-                <CardContent>
-                    <Box sx={{ mb: 2 }}>
-                        {event.imageFile && (
-                            <img
-                                alt="event"
-                                src={`${import.meta.env.VITE_FILE_BASE_URL}${event.imageFile}`}
-                                className="event-image"
-                            />
-                        )}
-                    </Box>
-                    <Typography variant="h6" gutterBottom>
-                        Description
-                    </Typography>
-                    <Typography paragraph>
-                        {event.description}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                        Details
+
+            <Box className="event-content">
+                {/* Left Column: Event Details */}
+                <Box className="event-details">
+                    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontSize: '30px' }}>
+                        Event Details
                     </Typography>
                     <Typography paragraph>
                         <strong>Event Date:</strong> {dayjs(event.eventDate).format('MMMM D, YYYY')}
@@ -87,8 +86,32 @@ function ViewEvent() {
                             Participate
                         </Button>
                     )}
-                </CardContent>
-            </Card>
+                    <Button variant="outlined" color="primary" onClick={handleAddToCalendar} startIcon={<span className="material-icons">event</span>}>
+                        Add to Calendar
+                    </Button>
+                </Box>
+
+                {/* Right Column: Event Image and Description */}
+                <Card className="event-card">
+                    <CardContent>
+                        <Box className="event-image-container">
+                            {event.imageFile && (
+                                <img
+                                    alt="event"
+                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${event.imageFile}`}
+                                    className="event-image"
+                                />
+                            )}
+                        </Box>
+                        <Typography paragraph>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontSize: '30px' }}>
+                                Event Description
+                            </Typography>
+                            {event.description}
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Box>
         </Box>
     );
 }

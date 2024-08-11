@@ -23,6 +23,7 @@ function Events() {
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [timeFilter, setTimeFilter] = useState('All');
+    const [layout, setLayout] = useState('grid'); // Add state for layout
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -149,6 +150,7 @@ function Events() {
                 <IconButton color="black" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
+            
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left', mb: 2, mr: 3 }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: 16, mb: 1 }}>
@@ -188,7 +190,7 @@ function Events() {
                 {user && user.usertype === "staff" && (
                     <Link to="/addevent" style={{ textDecoration: 'none' }}>
                         <Button variant="contained">Add</Button>
-                    </Link>
+                    </Link>  
                 )}
             </Box>
 

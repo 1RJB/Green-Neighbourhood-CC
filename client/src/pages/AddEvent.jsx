@@ -7,11 +7,24 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 
 function AddEvent() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
+    dayjs.extend(isSameOrAfter);
+
+    const validateUniqueTitle = async (title) => {
+        try {
+            const response = await http.get(`/event/check-title?title=${title}`);
+            return !response.data.exists; // Assuming the API returns { exists: true/false }
+        } catch (error) {
+            console.error('Error checking title uniqueness:', error);
+            return false; // Handle error case as needed
+        }
+    };
+
 
     const formik = useFormik({
         initialValues: {
@@ -35,12 +48,23 @@ function AddEvent() {
                 .required('Description is required'),
             eventDate: yup.string().required('Event date is required')
                 .test('is-future-date', 'Event date must be in the future', (value) => {
-                    return dayjs(value).isAfter(dayjs());
+                    const date = dayjs(value);
+                    return date.isValid() && date.isAfter(dayjs(), 'day');
                 }),
             endDate: yup.string().required('End date is required')
                 .test('is-future-date', 'Event date must be in the future', (value) => {
-                    return dayjs(value).isAfter(dayjs());
+                    const date = dayjs(value);
+                    console.log('Event Date:', value, 'Parsed Date:', date.format());
+                    return date.isValid() && date.isAfter(dayjs(), 'day');
+                })
+
+                .test('is-after-event-date', 'End date must be after event date', function (value) {
+                    const { eventDate } = this.parent;
+                    const endDate = dayjs(value);
+                    const startDate = dayjs(eventDate);
+                    return endDate.isValid() && startDate.isValid() && endDate.isSameOrAfter(startDate, 'day');
                 }),
+
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('End time is required'),
             category: yup.string().required('Category is required'),

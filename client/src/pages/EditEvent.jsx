@@ -5,11 +5,13 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } 
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 
 function EditEvent() {
     const { id } = useParams();
     const navigate = useNavigate();
-
+    dayjs.extend(isSameOrAfter); 
     const [event, setEvent] = useState({
         title: "",
         description: "",
@@ -49,7 +51,11 @@ function EditEvent() {
                 .required('Event date is required'),
             endDate: yup.date()
                 .min(today, 'Event End date cannot be in the past')
-                .required('Event End date is required'),
+                .required('Event End date is required')
+                .test('is-after-event-date', 'End date must be after event date', function (value) {
+                    const { eventDate } = this.parent;
+                    return dayjs(value).isSameOrAfter(dayjs(eventDate), 'day');
+                }),
             eventTime: yup.string().required('Event time is required'),
             endTime: yup.string().required('Event End time is required'),
             category: yup.string().required('Category is required')  // Add validation for category
@@ -170,8 +176,8 @@ function EditEvent() {
                                             margin="dense"
                                             type="date"
                                             label="Event End Date"
-                                            name="eventDate"
-                                            value={formik.values.endDate}
+                                            name="endDate"  // <-- This should be "endDate"
+                                            value={formik.values.endDate}  // <-- Bind this to formik.values.endDate
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                             error={formik.touched.endDate && Boolean(formik.errors.endDate)}
