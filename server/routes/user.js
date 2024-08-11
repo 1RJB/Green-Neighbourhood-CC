@@ -360,4 +360,26 @@ router.post("/verifyForgotOtp", async (req, res) => {
   }
 });
 
+// Get user details by email - to help send email with first name
+router.get("/userByEmail/:email", validateToken, async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({
+      where: { email },
+      attributes: ['firstName'] // Only select the first name
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 module.exports = router;
