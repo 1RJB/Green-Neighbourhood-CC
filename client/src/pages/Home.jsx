@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import './pages.css'; // Import the CSS file for styles\
 import { Link } from 'react-router-dom';
 
@@ -182,6 +182,7 @@ const Home = () => {
                     )}
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };
