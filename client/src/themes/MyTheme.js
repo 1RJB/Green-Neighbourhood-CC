@@ -26,9 +26,9 @@ const userTheme = createTheme({
 const staffTheme = createTheme({
     palette: {
         primary: {
-            main: '#fcfbf4',
+            main: '#000',
             light: '#ffffff',
-            dark: '#c9c8c1',
+            dark: '#393646',
         },
         secondary: {
             main: '#388e3c',

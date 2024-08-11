@@ -296,5 +296,6 @@ h2 {
 }
 
 .reward-item:hover .reward-title {
-    opacity: 1;
+    opacity: 0.8;
+    background-color: #155724;
 }
