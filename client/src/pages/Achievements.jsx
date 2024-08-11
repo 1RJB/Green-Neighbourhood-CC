@@ -298,7 +298,7 @@ function Achievements() {
                     <Box sx={{ mt: 2 }}>
                         <FormControlLabel
                             control={<Checkbox checked={conditionChecked} onChange={(e) => setConditionChecked(e.target.checked)} />}
-                            label={`Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || 'N/A'}`}
+                            label={`Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || "Select an achievement to view it's condition"}`}
                         />
                     </Box>
                 </DialogContent>
