@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Card, CardContent, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, IconButton } from '@mui/material';
+import { Home } from '@mui/icons-material'; // Import Home icon
 import dayjs from 'dayjs';
 import http from '../http';
 import './ViewEvent.css'; // Import CSS for ViewEvent component styling
@@ -57,6 +58,12 @@ function ViewEvent() {
 
     return (
         <Box className="view-event-container">
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <IconButton color="black" onClick={() => navigate('/events')}>
+                    <Home /> {/* Home icon for navigation */}
+                </IconButton>
+            </Box>
+
             <Typography variant="h4" className="event-title" sx={{ fontWeight: 'bold', mb: 3 }}>
                 {event.title}
             </Typography>
