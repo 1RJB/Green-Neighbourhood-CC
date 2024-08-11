@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, 
 import { Edit, Delete, Add, CardGiftcard } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
+import { toast } from 'react-toastify';
 
 function Achievements() {
     const [allAchievements, setAllAchievements] = useState([]);
@@ -150,9 +151,11 @@ function Achievements() {
         })
             .then(() => {
                 handleAwardDialogClose();
+                toast.success('Achievement awarded successfully!');
             })
             .catch((error) => {
                 console.error("Error awarding achievement:", error);
+                toast.error('Error awarding achievement: ' + error.response.data.message);
             });
     };
 
@@ -207,12 +210,12 @@ function Achievements() {
                 Achievements
             </Typography>
             {user?.usertype === 'staff' && (
-                <Box sx={{ }}>
+                <Box>
 
                     <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => handleDialogOpen('create')}>
                         Add Achievement
                     </Button>
-                    <Button variant="contained" color="secondary" sx={{ ml: 2}} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
+                    <Button variant="contained" color="secondary" sx={{ ml: 2 }} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
                         Award Achievement
                     </Button>
                     <Typography variant="h6" sx={{ mt: 2 }}>
@@ -242,7 +245,7 @@ function Achievements() {
                     <TextField name="description" label="Description" fullWidth margin="normal" value={newAchievement.description} onChange={handleInputChange} />
                     <TextField name="type" label="Type" fullWidth margin="normal" value={newAchievement.type} onChange={handleInputChange} />
                     <TextField name="imageFile" label="Image File" fullWidth margin="normal" value={newAchievement.imageFile} onChange={handleInputChange} />
-                    <TextField name="condition" label="Condition (JSON)" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
+                    <TextField name="condition" label="Condition" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
@@ -267,25 +270,25 @@ function Achievements() {
                 <DialogTitle>Award Achievement</DialogTitle>
                 <DialogContent>
                     <FormControl fullWidth margin="normal">
-                        <InputLabel>Achievement</InputLabel>
-                        <Select value={selectedAchievement} onChange={(e) => setSelectedAchievement(e.target.value)}>
-                            {allAchievements.map(ach => (
-                                <MenuItem key={ach.id} value={ach.id}>{ach.title}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel>User</InputLabel>
+                        <InputLabel>Select User</InputLabel>
                         <Select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
                             {allUsers.map(user => (
                                 <MenuItem key={user.email} value={user.email}>{user.email}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Select Achievement</InputLabel>
+                        <Select value={selectedAchievement} onChange={(e) => setSelectedAchievement(e.target.value)}>
+                            {allAchievements.map(ach => (
+                                <MenuItem key={ach.id} value={ach.id}>{ach.title}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <Box sx={{ mt: 2 }}>
                         <FormControlLabel
                             control={<Checkbox checked={conditionChecked} onChange={(e) => setConditionChecked(e.target.checked)} />}
-                            label="Condition Checked"
+                            label={`Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || 'N/A'}`}
                         />
                     </Box>
                 </DialogContent>
