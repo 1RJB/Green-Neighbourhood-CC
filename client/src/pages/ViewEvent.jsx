@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Card, CardContent, Button } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, IconButton } from '@mui/material';
+import { Home } from '@mui/icons-material'; // Import Home icon
 import dayjs from 'dayjs';
 import http from '../http';
 import './ViewEvent.css'; // Import CSS for ViewEvent component styling
@@ -28,11 +29,12 @@ function ViewEvent() {
         return <Typography>Loading...</Typography>;
     }
 
-    // Calculate the date one month before the event date
+    // Calculate dates for filtering
     const now = dayjs();
     const eventDate = dayjs(event.eventDate);
     const oneMonthBefore = eventDate.subtract(1, 'month');
     const showParticipateButton = now.isAfter(oneMonthBefore) && now.isBefore(eventDate);
+    const showAddToCalendarButton = now.isBefore(eventDate) || now.isSame(eventDate, 'day');
 
     const handleParticipate = () => {
         if (user) {
@@ -56,6 +58,12 @@ function ViewEvent() {
 
     return (
         <Box className="view-event-container">
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <IconButton color="black" onClick={() => navigate('/events')}>
+                    <Home /> {/* Home icon for navigation */}
+                </IconButton>
+            </Box>
+
             <Typography variant="h4" className="event-title" sx={{ fontWeight: 'bold', mb: 3 }}>
                 {event.title}
             </Typography>
@@ -81,14 +89,16 @@ function ViewEvent() {
                     <Typography paragraph>
                         <strong>Category:</strong> {event.category}
                     </Typography>
+                    {showAddToCalendarButton && (
+                        <Button variant="outlined" color="primary" sx={{ mb: 2 }} onClick={handleAddToCalendar} startIcon={<span className="material-icons">event</span>}>
+                            Add to Calendar
+                        </Button>
+                    )}
                     {showParticipateButton && (
                         <Button variant="contained" color="primary" onClick={handleParticipate}>
                             Participate
                         </Button>
                     )}
-                    <Button variant="outlined" color="primary" onClick={handleAddToCalendar} startIcon={<span className="material-icons">event</span>}>
-                        Add to Calendar
-                    </Button>
                 </Box>
 
                 {/* Right Column: Event Image and Description */}

@@ -37,11 +37,6 @@ router.get("/withnotice", validateToken, async (req, res) => {
                 userId: req.user.id,
                 notice: 1 // Fetch only achievements with notice = 1
             },
-            include: [{
-                model: Achievement,
-                as: 'achievement', // Ensure the alias matches your association
-                attributes: ['id', 'title', 'description', 'imageFile'] // Add any other fields you need
-            }],
             attributes: ['notice', 'earnedAt'] // Include the fields from UserAchievements table
         });
 

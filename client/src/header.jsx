@@ -8,10 +8,7 @@ import UserContext from './contexts/UserContext';
 const Header = () => {
   const { user, userType, setUser, setUserType } = useContext(UserContext);
 
-  useEffect(() => {
-    console.log('User:', user);
-    console.log('UserType:', userType);
-  }, [user, userType]);
+
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');

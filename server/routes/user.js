@@ -4,13 +4,41 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User, Achievement } = require("../models");
+const { User, Achievement, OTP } = require("../models");
 
 const yup = require("yup");
 
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Send OTP and store in database
+router.post("/sendOtp", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const otp = generateOTP();
+    console.log("Generated OTP:", otp);
+
+    // Store OTP in the database
+    const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // OTP expires in 5 minutes
+    await OTP.create({ email, otp, expiresAt });
+
+    console.log("OTP saved to database");
+
+    // Respond with a success message
+    res.json({ message: "OTP generated and stored successfully!", otp }); // Optional: send the OTP back to the client
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Failed to generate OTP. Please try again later." });
+  }
+});
+
 router.post("/register", async (req, res) => {
-  let data = req.body;
-  let validationSchema = yup.object({
+  const { firstName, lastName, email, password, confirmPassword, birthday, gender, otp } = req.body;
+
+  // Validation schema for registration
+  const validationSchema = yup.object({
     firstName: yup
       .string()
       .trim()
@@ -19,7 +47,7 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^[a-zA-Z '-,.]+$/,
-        "name only allow letters, spaces and characters: ' - , ."
+        "name only allows letters, spaces and characters: ' - , ."
       ),
     lastName: yup
       .string()
@@ -29,7 +57,7 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^[a-zA-Z '-,.]+$/,
-        "name only allow letters, spaces and characters: ' - , ."
+        "name only allows letters, spaces and characters: ' - , ."
       ),
     email: yup.string().trim().lowercase().email().max(50).required(),
     gender: yup.string().oneOf(["Male", "Female"]).required(),
@@ -42,40 +70,57 @@ router.post("/register", async (req, res) => {
       .required()
       .matches(
         /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-        "password at least 1 letter and 1 number"
+        "password must contain at least 1 letter and 1 number"
       ),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match")
-      .required()
-      .matches(
-        /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-        "password at least 1 letter and 1 number"
-      ),
+      .required(),
+    otp: yup.string().required("OTP is required"),
   });
+
   try {
-    data = await validationSchema.validate(data, { abortEarly: false });
-    // Check email
-    let user = await User.findOne({
-      where: { email: data.email },
-    });
-    if (user) {
-      res.status(400).json({ message: "Email already exists." });
-      return;
+    // Validate data against the schema
+    const data = await validationSchema.validate(req.body, { abortEarly: false });
+
+    // Validate OTP
+    const validOtp = await OTP.findOne({ where: { email: data.email, otp: data.otp } });
+
+    if (!validOtp || new Date() > validOtp.expiresAt) {
+      return res.status(400).json({ message: "Invalid or expired OTP." });
     }
+
+    // Check if the email is already registered
+    const user = await User.findOne({ where: { email: data.email } });
+
+    if (user) {
+      return res.status(400).json({ message: "Email already exists." });
+    }
+
     // Hash password
-    data.password = await bcrypt.hash(data.password, 10);
-    // Remove confirmPassword from data to avoid storing it
-    delete data.confirmPassword;
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
     // Create user
-    let result = await User.create(data);
+    const newUser = await User.create({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      gender: data.gender,
+      birthday: data.birthday,
+      password: hashedPassword,
+    });
+
+    // Delete OTP after successful registration
+    await OTP.destroy({ where: { email: data.email } });
+
     res.json({
-      message: `Email ${result.email} was registered successfully.`,
+      message: `${newUser.email} was registered successfully.`,
     });
   } catch (err) {
     res.status(400).json({ errors: err.errors });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   let data = req.body;

@@ -1,3 +1,4 @@
+// Achievement.js
 module.exports = (sequelize, DataTypes) => {
     const Achievement = sequelize.define("Achievement", {
         title: {
@@ -14,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         imageFile: {
             type: DataTypes.STRING(100)
+        },
+        condition: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: {}
         }
     }, {
         tableName: 'achievements'
