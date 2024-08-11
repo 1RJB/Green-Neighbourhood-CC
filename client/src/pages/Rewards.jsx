@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Star, ArrowForward, Add, ViewArray, EmojiEvents } from '@mui/icons-material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Forest, ArrowForward, Add, ViewArray, EmojiEvents } from '@mui/icons-material';
 import http from '../http';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
@@ -247,7 +247,7 @@ function Rewards() {
                                                                     </Box>
                                                                 ) : (
                                                                     <Typography textAlign={'center'} fontSize={14} color="primary" >
-                                                                        <Star sx={{ mr: 1 }} color="primary" />
+                                                                        <Forest sx={{ mr: 1 }} color="primary" />
                                                                         {reward.points} points
                                                                     </Typography>
                                                                 )
@@ -270,8 +270,8 @@ function Rewards() {
                                                             </Box>
                                                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                                                                 color="text.secondary">
-                                                                <Star sx={{ mr: 1 }} />
-                                                                <Typography>
+                                                                <Forest sx={{ mr: 1, mt: 1 }} />
+                                                                <Typography sx={{ mt: 1 }}>
                                                                     Points: {reward.points}
                                                                 </Typography>
                                                             </Box>

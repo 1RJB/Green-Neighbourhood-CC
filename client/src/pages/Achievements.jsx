@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Grid, Card, CardContent, Tooltip, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, DialogContentText, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox } from '@mui/material';
-import { Edit, Delete, Add, CardGiftcard } from '@mui/icons-material';
+import { Edit, Delete, Add, WorkspacePremium } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { toast, ToastContainer } from 'react-toastify';
@@ -223,7 +223,7 @@ function Achievements() {
                     <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => handleDialogOpen('create')}>
                         Add Achievement
                     </Button>
-                    <Button variant="contained" color="secondary" sx={{ ml: 2 }} startIcon={<CardGiftcard />} onClick={handleAwardDialogOpen}>
+                    <Button variant="contained" color="secondary" sx={{ ml: 2 }} startIcon={<WorkspacePremium />} onClick={handleAwardDialogOpen}>
                         Award Achievement
                     </Button>
                     <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>

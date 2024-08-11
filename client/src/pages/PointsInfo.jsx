@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Grid, Card, CardContent, Button } from '@mui/material';
-import { Star, EmojiEvents } from '@mui/icons-material';
+import { Forest, EmojiEvents } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { keyframes } from '@emotion/react';
@@ -47,7 +47,7 @@ const Points = () => {
                 Your Points
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Star
+                <Forest
                     sx={{
                         mr: 1,
                         animation: `${spinCombined} 8s infinite`,
