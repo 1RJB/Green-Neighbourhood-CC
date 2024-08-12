@@ -7,8 +7,14 @@ async function createInitialAchievements() {
             description: 'Redeemed your first reward',
             type: 'first_redemption',
             imageFile: 'first_redemption.webp',
-            condition: 'First time redeeming  a reward'
-            
+            condition: 'First time redeeming  a reward'  
+        },
+        {
+            title: 'First Redemption Collected',
+            description: 'First collection of your redeemed reward',
+            type: 'first_redemption_collected',
+            imageFile: 'first_redemption_collected.webp',
+            condition: 'First time collected a redeemed reward'
         },
         {
             title: 'First Event Registration',
