@@ -34,7 +34,7 @@
 }
 
 .category-pill {
-    position: absolute;
+    position: relative;
     top: 8px;
     right: 8px;
     display: flex;
