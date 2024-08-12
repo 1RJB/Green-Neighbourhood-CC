@@ -70,7 +70,7 @@ const Redemptions = () => {
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
             {(user?.usertype === 'staff') && (
 
-                <Box display="flex" justifyContent="space-between" mb={3}>
+                <Box display="flex" mb={3}>
                     <TextField
                         label="Filter by Reward Title"
                         value={rewardTitle}
