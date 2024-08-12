@@ -41,14 +41,14 @@ const ContactUs = () => {
       try {
         const verificationResponse = await axios.get('https://emailvalidation.abstractapi.com/v1/', {
           params: {
-            api_key: '65d044f6de87409098723f0a50c4e123',  // Replace with your actual Abstract API key
+            api_key: '65d044f6de87409098723f0a50c4e123', 
             email: values.email
           }
         });
         
         const verificationData = verificationResponse.data;
 
-        console.log('Verification Data:', verificationData); // Debug log
+        console.log('Verification Data:', verificationData);
 
         if (!verificationData.is_valid_format.value) {
           toast.error('Invalid email format');
@@ -72,7 +72,7 @@ const ContactUs = () => {
 
         const templateParams = {
           from_name: values.from_name,
-          to_name: 'Greenhood Support Team', // Replace with the actual recipient name
+          to_name: 'Greenhood Support Team', 
           message: values.message,
           reply_to: values.email,
           'g-recaptcha-response': recaptchaToken,
@@ -83,7 +83,7 @@ const ContactUs = () => {
             console.log('SUCCESS!', response.status, response.text);
             toast.success('Message sent successfully!');
             resetForm();
-            setRecaptchaToken(null); // Reset reCAPTCHA token
+            setRecaptchaToken(null); 
           }, (error) => {
             console.log('FAILED...', error);
             toast.error('Failed to send message. Please try again later.');
@@ -114,7 +114,7 @@ const ContactUs = () => {
           </Box>
         </Col>
         <Col xs={6}>  
-          <Box sx={{ marginBottom: 5 }} className="d-flex justify-content-center align-items-center" style={{marginTop:30}}>
+          <Box sx={{ marginBottom: 5 }} className="d-flex justify-content-center align-items-center">
             <Typography variant="h6">GreenHood CC was established on 17 April 2024 as a statutory board to promote racial harmony and social cohesion in Singapore. Our mission is to build and bridge communities in achieving one people, one Singapore. PA offers a wide range of programmes to cater to Singaporeans from all walks of life - connecting people to people, and people and government. We do this through our network of over 2,000 grassroots organisations (GROs), over 100 Community Clubs, five Community Development Councils, National Community Leadership Institute and PAssion WaVe.</Typography>
           </Box>
         </Col>
@@ -174,7 +174,7 @@ const ContactUs = () => {
                 sitekey="6LdxyxkqAAAAAHkTZiQF6k35dPDBg6pv89g_nHwl"
                 onChange={handleRecaptchaChange}
               />
-              <Button fullWidth variant="contained" color="secondary" sx={{ mt: 2 , marginBottom: 5}}
+              <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 , marginBottom: 5}}
                 type="submit">
                 Submit
               </Button>

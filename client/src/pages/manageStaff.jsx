@@ -8,6 +8,7 @@ import UserContext from '../contexts/UserContext';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 const ManageStaff = () => {
   const [users, setUsers] = useState([]);
@@ -15,8 +16,15 @@ const ManageStaff = () => {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const { userType, user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to login if user is not logged in
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
     if (userType === 'admin') {
       http.get('/user/allUsers', {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
@@ -32,7 +40,7 @@ const ManageStaff = () => {
     } else {
       setLoading(false);
     }
-  }, [userType]);
+  }, [userType, user, navigate]);
 
   const handleEdit = (user) => {
     setSelectedUser(user);
@@ -114,6 +122,7 @@ const ManageStaff = () => {
   if (loading) {
     return <div>Loading...</div>;
   }
+
   if (!user || userType !== 'admin') {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>

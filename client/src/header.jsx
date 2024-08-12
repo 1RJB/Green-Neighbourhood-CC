@@ -22,7 +22,6 @@ const Header = () => {
       if (userType === 'admin') {
         return (
           <>
-            <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
             <Dropdown>
               <Dropdown.Toggle as={Nav.Link}>
                 Manage

@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
                 referral_code: {
                 type: DataTypes.STRING,
                 allowNull: true,
+                defaultValue: "*********",
             },
             referred_by: {
                 type: DataTypes.STRING,
