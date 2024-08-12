@@ -132,37 +132,37 @@ const Redemptions = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            {user?.usertype === 'staff' && <TableCell>ID</TableCell>}
+                            <TableCell>ID</TableCell>
                             <TableCell>Reward Title</TableCell>
-                            {user?.usertype === 'staff' &&
-                                <><TableCell>User Name</TableCell>
-                                    <TableCell>User Email</TableCell></>}
+
+                            <><TableCell>User Name</TableCell>
+                                <TableCell>User Email</TableCell></>
                             <TableCell>Redeemed At</TableCell>
                             <TableCell>Collect By</TableCell>
                             <TableCell>Status</TableCell>
-                            {user?.usertype === 'staff' && <TableCell>Action</TableCell>}
+                            <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt, collectBy, status }) => (
                             <TableRow key={id}>
-                                {user?.usertype === 'staff' && <TableCell>{id}</TableCell>}
+                                <TableCell>{id}</TableCell>
                                 <TableCell>{reward.title}</TableCell>
-                                {user?.usertype === 'staff' &&
-                                    <><TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
-                                        <TableCell>{user.email}</TableCell></>}
+
+                                <><TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
+                                    <TableCell>{user.email}</TableCell></>
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
                                 <TableCell>{status}</TableCell>
-                                {user?.usertype === 'staff' && (
-                                    <TableCell>
-                                        <Link to={`/reward/editredemption/${id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
-                                    </TableCell>
-                                )}
+
+                                <TableCell>
+                                    <Link to={`/reward/editredemption/${id}`}>
+                                        <IconButton color="primary" sx={{ padding: '4px' }}>
+                                            <Edit />
+                                        </IconButton>
+                                    </Link>
+                                </TableCell>
+
                             </TableRow>
                         )) : <TableRow><TableCell colSpan={user?.usertype === 'staff' ? 8 : 7}>No redemptions made</TableCell></TableRow>}
                     </TableBody>
