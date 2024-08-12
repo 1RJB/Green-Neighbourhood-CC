@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Box, Typography, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, TextField, Button, Select, MenuItem,
@@ -8,6 +8,7 @@ import {
 import http from '../http';
 import { Link } from 'react-router-dom';
 import { Edit } from '@mui/icons-material';
+import UserContext from '../contexts/UserContext';
 
 const Redemptions = () => {
     const [redemptionList, setRedemptionList] = useState([]);
@@ -16,22 +17,29 @@ const Redemptions = () => {
     const [sortBy, setSortBy] = useState('redeemedAt');
     const [status, setStatus] = useState('All');
     const [order, setOrder] = useState('DESC');
-    const [open, setOpen] = useState(false); // Dialog open state
+    const [open, setOpen] = useState(false);
+    const [selectedRedemption, setSelectedRedemption] = useState(null);
+    const { user } = useContext(UserContext); // Assume UserContext provides user info
 
     const getRedemptions = async () => {
         try {
-            console.log('Fetching redemptions...');
-            const response = await http.get('/redemption', {
-                params: {
-                    rewardTitle: rewardTitle,
-                    userName: userName,
-                    sortBy: sortBy,
-                    order: order,
-                    status: status
-                }
-            });
-            console.log(response); // Log entire response
-            console.log(response.data); // Log response data
+            let endpoint = '/redemption';
+            let params = {
+                rewardTitle,
+                userName,
+                sortBy,
+                order,
+                status
+            };
+
+            if (user?.usertype !== 'staff') {
+                endpoint = '/redemption/user'; // Different endpoint for users
+                params = { ...params, userId: user.id }; // Pass user ID if needed
+            }
+
+            const response = await http.get(endpoint, { params });
+            console.log(response);
+            console.log(response.data);
 
             if (response.data) {
                 setRedemptionList(response.data);
@@ -43,7 +51,7 @@ const Redemptions = () => {
 
     useEffect(() => {
         getRedemptions();
-    }, []);
+    }, [user]);
 
     const handleOpen = (redemption) => {
         setSelectedRedemption(redemption);
@@ -60,33 +68,37 @@ const Redemptions = () => {
     return (
         <Box p={3}>
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
-            <Box display="flex" justifyContent="space-between" mb={3}>
-                <TextField
-                    label="Filter by Reward Title"
-                    value={rewardTitle}
-                    onChange={(e) => setRewardTitle(e.target.value)}
-                    variant="outlined"
-                    sx={{ mr: 2 }}
-                />
-                <TextField
-                    label="Filter by User Name"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    variant="outlined"
-                    sx={{ mr: 2 }}
-                />
-                <Select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    variant="outlined"
-                    sx={{ mr: 2 }}
-                >
-                    <MenuItem value="redeemedAt">Redeemed At</MenuItem>
-                    <MenuItem value="rewardTitle">Reward Title</MenuItem>
-                    <MenuItem value="userName">User Name</MenuItem>
-                    <MenuItem value="status">Status</MenuItem>
-                </Select>
+            {(user?.usertype === 'staff') && (
 
+                <Box display="flex" mb={3}>
+                    <TextField
+                        label="Filter by Reward Title"
+                        value={rewardTitle}
+                        onChange={(e) => setRewardTitle(e.target.value)}
+                        variant="outlined"
+                        sx={{ mr: 2 }}
+                    />
+                    <TextField
+                        label="Filter by User Name"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        variant="outlined"
+                        sx={{ mr: 2 }}
+                    />
+                    <Select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        variant="outlined"
+                        sx={{ mr: 2 }}
+                    >
+                        <MenuItem value="redeemedAt">Redeemed At</MenuItem>
+                        <MenuItem value="rewardTitle">Reward Title</MenuItem>
+                        <MenuItem value="userName">User Name</MenuItem>
+                        <MenuItem value="status">Status</MenuItem>
+                    </Select>
+                </Box>
+            )}
+            <Box display="flex" mb={3} >
                 <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
@@ -115,39 +127,44 @@ const Redemptions = () => {
                     Filter
                 </Button>
             </Box>
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            {user?.usertype === 'staff' && <TableCell>ID</TableCell>}
                             <TableCell>Reward Title</TableCell>
-                            <TableCell>User Name</TableCell>
-                            <TableCell>User Email</TableCell>
+                            {user?.usertype === 'staff' &&
+                                <><TableCell>User Name</TableCell>
+                                    <TableCell>User Email</TableCell></>}
                             <TableCell>Redeemed At</TableCell>
                             <TableCell>Collect By</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Action</TableCell>
+                            {user?.usertype === 'staff' && <TableCell>Action</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt, collectBy, status }) => (
                             <TableRow key={id}>
-                                <TableCell>{id}</TableCell>
+                                {user?.usertype === 'staff' && <TableCell>{id}</TableCell>}
                                 <TableCell>{reward.title}</TableCell>
-                                <TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
-                                <TableCell>{user.email}</TableCell>
+                                {user?.usertype === 'staff' &&
+                                    <><TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
+                                        <TableCell>{user.email}</TableCell></>}
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
                                 <TableCell>{status}</TableCell>
-                                <TableCell>
-                                    <Link to={`/reward/editredemption/${id}`}>
-                                        <IconButton color="primary" sx={{ padding: '4px' }}>
-                                            <Edit />
-                                        </IconButton>
-                                    </Link>
-                                </TableCell>
+                                {user?.usertype === 'staff' && (
+                                    <TableCell>
+                                        <Link to={`/reward/editredemption/${id}`}>
+                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Link>
+                                    </TableCell>
+                                )}
                             </TableRow>
-                        )) : <TableRow><TableCell colSpan={8}>No redemptions made</TableCell></TableRow>}
+                        )) : <TableRow><TableCell colSpan={user?.usertype === 'staff' ? 8 : 7}>No redemptions made</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>

@@ -47,7 +47,7 @@ function Register() {
       birthday: "",
       gender: "",
       otp: "",
-      referral_code: "", // New field for referral code
+      referral_code: "",
     },
     validationSchema: yup.object({
       firstName: yup
@@ -63,7 +63,7 @@ function Register() {
       lastName: yup
         .string()
         .trim()
-        .min(3, "Last Name must be at least 3 characters")
+        .min(2, "Last Name must be at least 2 characters")
         .max(25, "Last Name must be at most 25 characters")
         .required("Last Name is required")
         .matches(
@@ -85,14 +85,14 @@ function Register() {
         .max(new Date(), "Birthday cannot be in the future")
         .required("Birthday is required"),
       password: yup
-        .string()
-        .trim()
-        .min(8, "Password must be at least 8 characters")
-        .max(50, "Password must be at most 50 characters")
-        .required("Password is required")
-        .matches(
-          /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-          "Password must contain at least 1 letter and 1 number"
+      .string()
+      .trim()
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must be at most 16 characters")
+      .required("Password is required")
+      .matches(
+        /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+         "Password must contain at least 1 letter, 1 number, and 1 special character"
         ),
       confirmPassword: yup
         .string()
@@ -102,7 +102,10 @@ function Register() {
         .string()
         .matches(/^\d{6}$/, "OTP must be exactly 6 digits")
         .required("OTP is required"),
-      referral_code: yup.string().trim(), // New validation for referral code
+      referral_code: yup
+      .string()
+      .trim()
+      .matches(/^[a-zA-Z0-9-]*$/, "Referral Code can only contain letters, numbers, and hyphens"),
     }),
     onSubmit: async (values) => {
       try {
@@ -115,7 +118,7 @@ function Register() {
           birthday: values.birthday,
           gender: values.gender,
           otp: values.otp,
-          referral_code: values.referral_code, // Include referral code in the request
+          referral_code: values.referral_code,
         });
         console.log("Registration successful:", response.data);
         toast.success("Registration successful! Please log in.");
@@ -132,7 +135,7 @@ function Register() {
         email: formik.values.email,
       });
 
-      const otp = response.data.otp; // Assuming the server returns the OTP for demonstration
+      const otp = response.data.otp;
 
       const templateParams = {
         to_email: formik.values.email,
@@ -143,7 +146,7 @@ function Register() {
       toast.success("OTP sent successfully!");
 
       setIsCooldown(true);
-      setCooldownTime(60); // 1 minute cooldown
+      setCooldownTime(60);
     } catch (error) {
       console.error("Failed to send OTP", error);
       toast.error("Failed to send OTP. Please try again later.");

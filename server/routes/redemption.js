@@ -66,6 +66,56 @@ router.get("/", async (req, res) => {
     }
 });
 
+// GET: List redemptions for users
+router.get('/user', async (req, res) => {
+    let { rewardTitle, sortBy, order, status, userId } = req.query;
+
+    console.log('Query Params:', { rewardTitle, sortBy, order, status, userId });
+
+    // Define sort attribute for Sequelize query
+    let sortAttribute;
+    if (sortBy === 'rewardTitle') {
+        sortAttribute = Sequelize.literal("`reward`.`title`");
+    } else {
+        sortAttribute = sortBy || 'redeemedAt';
+    }
+
+    try {
+        const redemptions = await Redemption.findAll({
+            order: [[sortAttribute, order || 'DESC']],
+            where: {
+                userId,
+                ...(status && status !== 'All' ? { status } : {}),
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'firstName', 'lastName', 'email'],
+                },
+                {
+                    model: Reward,
+                    as: 'reward',
+                    attributes: ['id', 'title'],
+                    where: rewardTitle ? {
+                        title: { [Op.like]: `%${rewardTitle}%` }
+                    } : {}
+                }
+            ],
+        });
+
+        const redemptionsPlain = redemptions.map(redemption => redemption.get({ plain: true }));
+
+        console.log('Redemptions fetched:', JSON.stringify(redemptionsPlain, null, 2));
+
+        res.json(redemptionsPlain);
+    } catch (error) {
+        console.error('Error fetching redemptions:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 // GET: Retrieve a specific redemption by ID
 router.get("/:id", async (req, res) => {
     const id = req.params.id;
