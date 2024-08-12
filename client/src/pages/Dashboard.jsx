@@ -1,8 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import UserProfile from './userprofile'; 
+import UserContext from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState('profile');
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    setUser(null);
+    navigate('/login');
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      // Assuming there's an API endpoint for deleting the user account
+      // Use your API call here to delete the account
+      alert("Account deleted");  // Replace with actual API call and response handling
+      localStorage.removeItem('accessToken');
+      setUser(null);
+      navigate('/login');
+    }
+  };
 
   const renderComponent = () => {
     switch (activeComponent) {
@@ -33,6 +54,18 @@ const Dashboard = () => {
           onClick={() => setActiveComponent('settings')}
         >
           Settings
+        </div>
+        <div
+          style={styles.box}
+          onClick={handleDeleteAccount}
+        >
+          Delete Account
+        </div>
+        <div
+          style={styles.box}
+          onClick={handleLogout}
+        >
+          Log Out
         </div>
       </div>
       <div style={styles.content}>

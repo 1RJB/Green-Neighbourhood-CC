@@ -102,27 +102,6 @@ const UserProfile = () => {
         setIsFormEdited(true);
     };
 
-    const handleDeleteAccount = () => {
-        http.delete(`/user/userInfo/${user.id}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
-        }).then((res) => {
-            toast.success("Account deleted successfully.");
-            setUser(null);
-        }).catch(error => {
-            console.error("Failed to delete account:", error);
-            toast.error("Failed to delete account.");
-        });
-        setOpenDeleteDialog(false);
-    };
-
-    const handleClickOpenDeleteDialog = () => {
-        setOpenDeleteDialog(true);
-    };
-
-    const handleCloseDeleteDialog = () => {
-        setOpenDeleteDialog(false);
-    };
-
     const handleClickOpenSaveDialog = () => {
         setOpenSaveDialog(true);
     };
@@ -297,35 +276,6 @@ const UserProfile = () => {
                                 Save
                             </Button>
                         </form>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={handleClickOpenDeleteDialog}
-                            sx={{ my: 2 }}
-                        >
-                            Delete Account
-                        </Button>
-                        <Dialog
-                            open={openDeleteDialog}
-                            onClose={handleCloseDeleteDialog}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogTitle id="alert-dialog-title">{"Delete Account"}</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-                                    Are you sure you want to delete your account? This action cannot be undone.
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleCloseDeleteDialog} color="primary">
-                                    Cancel
-                                </Button>
-                                <Button onClick={handleDeleteAccount} color="error" autoFocus>
-                                    Delete
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
                         <Dialog
                             open={openSaveDialog}
                             onClose={handleCloseSaveDialog}
