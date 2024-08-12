@@ -35,8 +35,8 @@
 
 .category-pill {
     position: relative;
-    top: 8px;
-    right: 8px;
+    top: 2px;
+    right: 2px;
     display: flex;
     align-items: center;
     padding: 6px 12px;
