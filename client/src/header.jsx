@@ -119,6 +119,9 @@ const Header = () => {
                     <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
                       <Nav.Link as={Link} to="/achievements" style={{ color: 'black' }}>Achievements</Nav.Link>
                     </Dropdown.Item>
+                    <Dropdown.Item style={{ textAlign: 'center', display: 'block', width: '100%', border: 'none' }}>
+                      <Nav.Link as={Link} to="/reward/redemptions" style= {{ color: 'black' }}>Redemptions</Nav.Link>
+                    </Dropdown.Item>
                   </>
                 )}
                 <Dropdown.Item
