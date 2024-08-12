@@ -90,7 +90,11 @@ function EditReward() {
         http.delete(`/reward/${id}`)
             .then((res) => {
                 console.log(res.data);
-                navigate("/rewards");
+                toast.success("Reward deleted successfully.\nRedemptions associated with this reward were also deleted.");
+
+                setTimeout(() => {
+                    navigate("/rewards");
+                }, 3000);
             })
             .catch((error) => {
                 console.error('Error deleting reward:', error);
@@ -267,6 +271,9 @@ function EditReward() {
                 <DialogContent>
                     <DialogContentText>
                         Are you sure you want to delete this Reward, {reward.title}?
+                    </DialogContentText>
+                    <DialogContentText>
+                        Note: Redemptions associated with this reward will also be deleted.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
