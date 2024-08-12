@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
     Box, Typography, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, TextField, Button, Select, MenuItem,
-    IconButton, Dialog, DialogTitle, DialogContent, DialogContentText,
-    DialogActions
+    IconButton
 } from '@mui/material';
 import http from '../http';
 import { Link } from 'react-router-dom';
@@ -17,9 +16,7 @@ const Redemptions = () => {
     const [sortBy, setSortBy] = useState('redeemedAt');
     const [status, setStatus] = useState('All');
     const [order, setOrder] = useState('DESC');
-    const [open, setOpen] = useState(false);
-    const [selectedRedemption, setSelectedRedemption] = useState(null);
-    const { user } = useContext(UserContext); // Assume UserContext provides user info
+    const { user } = useContext(UserContext);
 
     const getRedemptions = async () => {
         try {
@@ -33,12 +30,11 @@ const Redemptions = () => {
             };
 
             if (user?.usertype !== 'staff') {
-                endpoint = '/redemption/user'; // Different endpoint for users
-                params = { ...params, userId: user.id }; // Pass user ID if needed
+                endpoint = '/redemption/user';
+                params = { ...params, userId: user.id };
             }
 
             const response = await http.get(endpoint, { params });
-            console.log(response);
             console.log(response.data);
 
             if (response.data) {
@@ -53,23 +49,10 @@ const Redemptions = () => {
         getRedemptions();
     }, [user]);
 
-    const handleOpen = (redemption) => {
-        setSelectedRedemption(redemption);
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setSelectedRedemption(null);
-    };
-
-    console.log('redemptionList:', redemptionList);
-
     return (
         <Box p={3}>
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
-            {(user?.usertype === 'staff') && (
-
+            {user?.usertype === 'staff' && (
                 <Box display="flex" mb={3}>
                     <TextField
                         label="Filter by Reward Title"
@@ -98,7 +81,7 @@ const Redemptions = () => {
                     </Select>
                 </Box>
             )}
-            <Box display="flex" mb={3} >
+            <Box display="flex" mb={3}>
                 <Select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
@@ -132,39 +115,47 @@ const Redemptions = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
+                            {user?.usertype === 'staff' && <TableCell>ID</TableCell>}
                             <TableCell>Reward Title</TableCell>
-
-                            <><TableCell>User Name</TableCell>
-                                <TableCell>User Email</TableCell></>
+                            {user?.usertype === 'staff' && <>
+                                <TableCell>User Name</TableCell>
+                                <TableCell>User Email</TableCell>
+                            </>}
                             <TableCell>Redeemed At</TableCell>
                             <TableCell>Collect By</TableCell>
                             <TableCell>Status</TableCell>
-                            <TableCell>Action</TableCell>
+                            {user?.usertype === 'staff' && <TableCell>Action</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt, collectBy, status }) => (
+                        {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user: redemptionUser, redeemedAt, collectBy, status }) => (
                             <TableRow key={id}>
-                                <TableCell>{id}</TableCell>
+                                {user?.usertype === 'staff' && <TableCell>{id}</TableCell>}
                                 <TableCell>{reward.title}</TableCell>
-
-                                <><TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
-                                    <TableCell>{user.email}</TableCell></>
+                                {user?.usertype === 'staff' && <>
+                                    <TableCell>{redemptionUser.firstName + ' ' + redemptionUser.lastName}</TableCell>
+                                    <TableCell>{redemptionUser.email}</TableCell>
+                                </>}
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
                                 <TableCell>{status}</TableCell>
-
-                                <TableCell>
-                                    <Link to={`/reward/editredemption/${id}`}>
-                                        <IconButton color="primary" sx={{ padding: '4px' }}>
-                                            <Edit />
-                                        </IconButton>
-                                    </Link>
-                                </TableCell>
-
+                                {user?.usertype === 'staff' && 
+                                    <TableCell>
+                                        <Link to={`/reward/editredemption/${id}`}>
+                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Link>
+                                    </TableCell>
+                                }
                             </TableRow>
-                        )) : <TableRow><TableCell colSpan={user?.usertype === 'staff' ? 8 : 7}>No redemptions made</TableCell></TableRow>}
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={user?.usertype === 'staff' ? 7 : 3} align="center">
+                                    No redemptions made
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
