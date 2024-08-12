@@ -102,7 +102,7 @@
     height: 200px;
     /* Set the height to the desired fixed size */
     overflow: hidden;
-    /* Ensure that any overflow is hidden */
+    object-fit: cover;  /* Ensure that any overflow is hidden */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -112,7 +112,7 @@
     width: auto;
     height: 100%;
     object-fit: cover;
-    /* Ensure the image covers the container while maintaining aspect ratio */
+    object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
 }
 
 .expired-reward {
@@ -273,22 +273,13 @@ h2 {
 .reward-carousel {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 1px;
     height: 100%;
-}
-
-.reward-item {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
 }
 
 .reward-image {
     height: 11rem;
-    width: auto;
+    width: 10rem;
     max-width: 19rem;
     border-radius: 10%;
 }
@@ -393,9 +384,9 @@ h2 {
 }
 
 .reward-item img {
-    width: 100px; /* Adjust width */
+    width: 200px; /* Adjust width */
     height: 100px; /* Adjust height */
-    object-fit: cover; /* Ensure the image covers the container */
+    object-fit: cover;/* Ensure the image covers the container */
     transition: opacity 0.3s ease; /* Smooth transition */
 }
 
@@ -471,4 +462,31 @@ body {
 
 .volunteer-button:hover {
     background-color: #70a8e3; /* Darker green on hover */
+}
+
+.reward-item img {
+    width: 100%;
+    /* Adjust width to 100% to maintain responsiveness */
+    height: auto; 
+    /* Height is set to auto to maintain the aspect ratio */
+    aspect-ratio: 16 / 9; 
+    /* Define the aspect ratio as 16:9 */
+    object-fit: cover; 
+    /* Ensure the image covers the container while maintaining the aspect ratio */
+    transition: opacity 0.3s ease; 
+    /* Smooth transition on hover */
+}
+
+.reward-item {
+    width: 100%;
+    /* Set the width to 100% of the parent container */
+    aspect-ratio: 16 / 9;
+    /* Maintain a 16:9 aspect ratio for the container */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 8px; /* Optional: round the corners */
+    background-color: #f0f0f0; /* Optional: background color */
 }
