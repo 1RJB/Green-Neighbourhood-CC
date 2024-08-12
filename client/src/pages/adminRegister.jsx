@@ -50,7 +50,7 @@ function AdminRegister() {
       lastName: yup
         .string()
         .trim()
-        .min(3, "Last Name must be at least 3 characters")
+        .min(2, "Last Name must be at least 3 characters")
         .max(25, "Last Name must be at most 25 characters")
         .required("Last Name is required")
         .matches(
@@ -75,11 +75,11 @@ function AdminRegister() {
         .string()
         .trim()
         .min(8, "Password must be at least 8 characters")
-        .max(50, "Password must be at most 50 characters")
+        .max(16, "Password must be at most 16 characters")
         .required("Password is required")
         .matches(
-          /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
-          "Password must contain at least 1 letter and 1 number"
+          /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+          "Password must contain at least 1 letter, 1 number, and 1 special character"
         ),
       confirmPassword: yup
         .string()

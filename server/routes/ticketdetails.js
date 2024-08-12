@@ -71,7 +71,7 @@ router.delete("/:id", async (req, res) => {
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: user.email,
-            subject: "Ticket Deletion Notice",
+            subject: "Your ticket has been processed",
             text: defaultMessage
         };
 
