@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Participant, Achievement, UserAchievement, Event } = require('../models'); // Make sure to include Event model
+const { User, Participant, Achievement, UserAchievements, Event } = require('../models'); // Make sure to include Event model
 const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken } = require('../middlewares/userauth');
@@ -301,7 +301,7 @@ router.put("/:id", validateToken, async (req, res) => {
                         await userAchievements.addAchievement(firstEventAchievement);
 
                         // Update the notice field in userachievements table
-                        await UserAchievement.update(
+                        await UserAchievements.update(
                             { notice: 1 },
                             { where: { userId: updatedParticipant.userId, achievementId: firstEventAchievement.id } }
                         );
