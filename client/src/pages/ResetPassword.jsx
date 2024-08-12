@@ -1,14 +1,17 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   Box,
   Typography,
   TextField,
-  Button
+  Button,
+  IconButton,
+  InputAdornment
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,7 +19,11 @@ function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email;
-  const otp = location.state?.otp; // Ensure OTP is captured from the state
+  const otp = location.state?.otp;
+
+  // State to manage visibility of passwords
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -43,7 +50,7 @@ function ResetPassword() {
       try {
         const response = await axios.put("http://localhost:3001/user/resetPasswordByEmail", {
           email: email,
-          otp: otp,  // Ensure this is passed correctly
+          otp: otp,
           newPassword: values.newPassword.trim(),
         });
         console.log("Password reset successful:", response.data);
@@ -55,6 +62,9 @@ function ResetPassword() {
       }
     },
   });
+
+  const toggleShowNewPassword = () => setShowNewPassword((prev) => !prev);
+  const toggleShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
 
   return (
     <Box
@@ -79,12 +89,21 @@ function ResetPassword() {
           autoComplete="off"
           label="New Password"
           name="newPassword"
-          type="password"
+          type={showNewPassword ? "text" : "password"}
           value={formik.values.newPassword}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
           helperText={formik.touched.newPassword && formik.errors.newPassword}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={toggleShowNewPassword} edge="end">
+                  {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           fullWidth
@@ -92,12 +111,21 @@ function ResetPassword() {
           autoComplete="off"
           label="Confirm Password"
           name="confirmPassword"
-          type="password"
+          type={showConfirmPassword ? "text" : "password"}
           value={formik.values.confirmPassword}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
           helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={toggleShowConfirmPassword} edge="end">
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Reset Password

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Typography, Avatar, Grid, TextField, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Box, Typography, Avatar, Grid, TextField, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast, ToastContainer } from 'react-toastify';
@@ -14,6 +15,8 @@ const UserProfile = () => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openSaveDialog, setOpenSaveDialog] = useState(false);
     const [referralLink, setReferralLink] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for toggling confirm password visibility
 
     useEffect(() => {
         // Fetch user info from the /userInfo endpoint
@@ -138,14 +141,16 @@ const UserProfile = () => {
             });
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
     if (loading) {
         return <div>Loading...</div>;
-    }
-
-    const isEditable = (field) => {
-        if (user.usertype === 'admin') return false;
-        if (user.usertype === 'staff' && field !== 'password' && field !== 'confirmPassword') return false;
-        return true;
     }
 
     return (
@@ -179,7 +184,6 @@ const UserProfile = () => {
                                 helperText={formik.touched.firstName && formik.errors.firstName}
                                 sx={{ my: 1 }}
                                 required
-                                disabled={!isEditable('firstName')}
                             />
                             <TextField
                                 label="Last Name"
@@ -191,7 +195,6 @@ const UserProfile = () => {
                                 helperText={formik.touched.lastName && formik.errors.lastName}
                                 sx={{ my: 1 }}
                                 required
-                                disabled={!isEditable('lastName')}
                             />
                             <TextField
                                 label="Email"
@@ -203,9 +206,8 @@ const UserProfile = () => {
                                 helperText={formik.touched.email && formik.errors.email}
                                 sx={{ my: 1 }}
                                 required
-                                disabled={!isEditable('email')}
                             />
-                            <FormControl component="fieldset" sx={{ my: 1 }} disabled={!isEditable('gender')}>
+                            <FormControl component="fieldset" sx={{ my: 1 }}>
                                 <FormLabel component="legend">Gender</FormLabel>
                                 <RadioGroup
                                     aria-label="gender"
@@ -236,52 +238,73 @@ const UserProfile = () => {
                                 sx={{ my: 1 }}
                                 InputLabelProps={{ shrink: true }}
                                 required
-                                disabled={!isEditable('birthday')}
                             />
                             <TextField
                                 label="Password"
                                 name="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"} // Toggle between text and password
                                 value={formik.values.password}
                                 onChange={handleFieldChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.password && Boolean(formik.errors.password)}
                                 helperText={formik.touched.password && formik.errors.password}
                                 sx={{ my: 1 }}
-                                disabled={!isEditable('password')}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={togglePasswordVisibility}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                             <TextField
                                 label="Confirm Password"
                                 name="confirmPassword"
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"} // Toggle between text and password
                                 value={formik.values.confirmPassword}
                                 onChange={handleFieldChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
                                 helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
                                 sx={{ my: 1 }}
-                                disabled={!isEditable('confirmPassword')}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle confirm password visibility"
+                                                onClick={toggleConfirmPasswordVisibility}
+                                                edge="end"
+                                            >
+                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
                             <Button
                                 variant="contained"
                                 color={isFormEdited ? "primary" : "secondary"}
                                 sx={{ my: 2 }}
-                                disabled={!isFormEdited || user.usertype === 'admin'}
+                                disabled={!isFormEdited}
                                 onClick={handleClickOpenSaveDialog}
                             >
                                 Save
                             </Button>
                         </form>
-                        {user.usertype === 'user' && (
-                            <Button
-                                variant="contained"
-                                color="error"
-                                onClick={handleClickOpenDeleteDialog}
-                                sx={{ my: 2 }}
-                            >
-                                Delete Account
-                            </Button>
-                        )}
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={handleClickOpenDeleteDialog}
+                            sx={{ my: 2 }}
+                        >
+                            Delete Account
+                        </Button>
                         <Dialog
                             open={openDeleteDialog}
                             onClose={handleCloseDeleteDialog}

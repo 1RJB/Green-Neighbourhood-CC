@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import http from "../http"; 
 import {
@@ -14,12 +14,17 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function adminRegister() {
+function AdminRegister() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for toggling confirm password visibility
 
   const formik = useFormik({
     initialValues: {
@@ -100,6 +105,14 @@ function adminRegister() {
     },
   });
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <Box
       sx={{
@@ -159,12 +172,25 @@ function adminRegister() {
           autoComplete="off"
           label="Password"
           name="password"
-          type="password"
+          type={showPassword ? "text" : "password"} // Toggle between text and password
           value={formik.values.password}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={togglePasswordVisibility}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           fullWidth
@@ -172,7 +198,7 @@ function adminRegister() {
           autoComplete="off"
           label="Confirm Password"
           name="confirmPassword"
-          type="password"
+          type={showConfirmPassword ? "text" : "password"} // Toggle between text and password
           value={formik.values.confirmPassword}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -183,6 +209,19 @@ function adminRegister() {
           helperText={
             formik.touched.confirmPassword && formik.errors.confirmPassword
           }
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle confirm password visibility"
+                  onClick={toggleConfirmPasswordVisibility}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           fullWidth
@@ -235,4 +274,4 @@ function adminRegister() {
   );
 }
 
-export default adminRegister;
+export default AdminRegister;

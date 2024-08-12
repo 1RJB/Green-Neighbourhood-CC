@@ -15,7 +15,10 @@ import {
   FormControlLabel,
   Radio,
   Grid,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -23,6 +26,8 @@ function Register() {
   const navigate = useNavigate();
   const [isCooldown, setIsCooldown] = useState(false);
   const [cooldownTime, setCooldownTime] = useState(0);
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for toggling confirm password visibility
 
   useEffect(() => {
     let timer;
@@ -85,14 +90,14 @@ function Register() {
         .max(new Date(), "Birthday cannot be in the future")
         .required("Birthday is required"),
       password: yup
-      .string()
-      .trim()
-      .min(8, "Password must be at least 8 characters")
-      .max(16, "Password must be at most 16 characters")
-      .required("Password is required")
-      .matches(
-        /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
-         "Password must contain at least 1 letter, 1 number, and 1 special character"
+        .string()
+        .trim()
+        .min(8, "Password must be at least 8 characters")
+        .max(16, "Password must be at most 16 characters")
+        .required("Password is required")
+        .matches(
+          /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/,
+          "Password must contain at least 1 letter, 1 number, and 1 special character"
         ),
       confirmPassword: yup
         .string()
@@ -103,9 +108,12 @@ function Register() {
         .matches(/^\d{6}$/, "OTP must be exactly 6 digits")
         .required("OTP is required"),
       referral_code: yup
-      .string()
-      .trim()
-      .matches(/^[a-zA-Z0-9-]*$/, "Referral Code can only contain letters, numbers, and hyphens"),
+        .string()
+        .trim()
+        .matches(
+          /^[a-zA-Z0-9-]*$/,
+          "Referral Code can only contain letters, numbers, and hyphens"
+        ),
     }),
     onSubmit: async (values) => {
       try {
@@ -151,6 +159,14 @@ function Register() {
       console.error("Failed to send OTP", error);
       toast.error("Failed to send OTP. Please try again later.");
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -206,59 +222,31 @@ function Register() {
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
         />
-        <Grid container spacing={2} alignItems="center" sx={{ mt: 2, mb: 2 }}>
-          <Grid item xs={8}>
-            <TextField
-              fullWidth
-              margin="dense"
-              autoComplete="off"
-              label="OTP"
-              name="otp"
-              value={formik.values.otp}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.otp && Boolean(formik.errors.otp)}
-              helperText={formik.touched.otp && formik.errors.otp}
-              inputProps={{
-                maxLength: 6,
-                pattern: "[0-9]{6}",
-                title: "OTP should be exactly 6 digits",
-              }}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleSendOtp}
-              disabled={isCooldown}
-            >
-              {isCooldown ? `Retry in ${cooldownTime}s` : "Send OTP"}
-            </Button>
-          </Grid>
-        </Grid>
-        <TextField
-          fullWidth
-          margin="dense"
-          autoComplete="off"
-          label="Referral Code (optional)"
-          name="referral_code"
-          value={formik.values.referral_code}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-        />
         <TextField
           fullWidth
           margin="dense"
           autoComplete="off"
           label="Password"
           name="password"
-          type="password"
+          type={showPassword ? "text" : "password"} // Toggle between text and password
           value={formik.values.password}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={togglePasswordVisibility}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           fullWidth
@@ -266,7 +254,7 @@ function Register() {
           autoComplete="off"
           label="Confirm Password"
           name="confirmPassword"
-          type="password"
+          type={showConfirmPassword ? "text" : "password"} // Toggle between text and password
           value={formik.values.confirmPassword}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -277,6 +265,19 @@ function Register() {
           helperText={
             formik.touched.confirmPassword && formik.errors.confirmPassword
           }
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle confirm password visibility"
+                  onClick={toggleConfirmPasswordVisibility}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <TextField
           fullWidth
@@ -314,6 +315,47 @@ function Register() {
               label="Female"
             />
           </RadioGroup>
+          <TextField
+          fullWidth
+          margin="dense"
+          autoComplete="off"
+          label="Referral Code (optional)"
+          name="referral_code"
+          value={formik.values.referral_code}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+          <Grid container spacing={2} alignItems="center" sx={{ mt: 2, mb: 2 }}>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              margin="dense"
+              autoComplete="off"
+              label="OTP"
+              name="otp"
+              value={formik.values.otp}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.otp && Boolean(formik.errors.otp)}
+              helperText={formik.touched.otp && formik.errors.otp}
+              inputProps={{
+                maxLength: 6,
+                pattern: "[0-9]{6}",
+                title: "OTP should be exactly 6 digits",
+              }}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleSendOtp}
+              disabled={isCooldown}
+            >
+              {isCooldown ? `Retry in ${cooldownTime}s` : "Send OTP"}
+            </Button>
+          </Grid>
+        </Grid>
           {formik.touched.gender && formik.errors.gender && (
             <Typography color="error" variant="body2" sx={{ mt: 1 }}>
               {formik.errors.gender}
