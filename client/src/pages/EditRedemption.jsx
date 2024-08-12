@@ -7,6 +7,7 @@ import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import dayjs from 'dayjs';
+import emailjs from 'emailjs-com';
 
 function EditRedemption() {
     const { id } = useParams();
@@ -50,9 +51,14 @@ function EditRedemption() {
             };
             http.put(`/redemption/${id}`, updatedData)
                 .then((res) => {
-                    console.log(res.data);
-                    toast.success('Redemption updated successfully');
-                    navigate('/reward/redemptions');
+                    toast.success('Redemption updated successfully!');
+                    if (res.data.achievementEarned) {
+                        sendEmailNotification(res.data);
+                        toast.success('Email sent to user successfully!');
+                    }
+                    setTimeout(() => {
+                        navigate('/reward/redemptions');
+                    }, 5000);
                 })
                 .catch((error) => {
                     console.error('Update error:', error.response.data);
@@ -60,6 +66,35 @@ function EditRedemption() {
                 });
         }
     });
+
+    const sendEmailNotification = (data) => {
+        let salutation = ""
+        if (data.gender === 'Female') {
+            salutation = 'Mrs.';
+        } else {
+            salutation = 'Mr.';
+        }
+
+        const templateParams = {
+            userLastName: data.userlastName,
+            user_email: data.useremail,
+            achievementTitle: "First redemption collected",
+            salutation,
+        };
+
+        emailjs.send(
+            'service_ktmad4e',
+            'template_5vf2vow',
+            templateParams,
+            'cjdyxWCfcHYahHas1'
+        )
+        .then((response) => {
+            console.log('Email sent successfully!', response.status, response.text);
+        })
+        .catch((error) => {
+            console.error('Failed to send email:', error);
+        });
+    };
 
     return (
         <Box p={3}>
@@ -144,6 +179,7 @@ function EditRedemption() {
                     </Box>
                 </Box>
             )}
+            <ToastContainer />
         </Box>
     );
 }
