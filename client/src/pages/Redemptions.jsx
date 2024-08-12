@@ -69,6 +69,7 @@ const Redemptions = () => {
         <Box p={3}>
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
             {(user?.usertype === 'staff') && (
+
                 <Box display="flex" justifyContent="space-between" mb={3}>
                     <TextField
                         label="Filter by Reward Title"
@@ -95,36 +96,38 @@ const Redemptions = () => {
                         <MenuItem value="userName">User Name</MenuItem>
                         <MenuItem value="status">Status</MenuItem>
                     </Select>
-
-                    <Select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        variant="outlined"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuItem value="All">All</MenuItem>
-                        <MenuItem value="Pending">Pending</MenuItem>
-                        <MenuItem value="Collected">Collected</MenuItem>
-                        <MenuItem value="Expired">Expired</MenuItem>
-                    </Select>
-                    <Select
-                        value={order}
-                        onChange={(e) => setOrder(e.target.value)}
-                        variant="outlined"
-                    >
-                        <MenuItem value="DESC">Descending</MenuItem>
-                        <MenuItem value="ASC">Ascending</MenuItem>
-                    </Select>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={getRedemptions}
-                        sx={{ ml: 2 }}
-                    >
-                        Filter
-                    </Button>
                 </Box>
             )}
+            <Box display="flex" mb={3} >
+                <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    variant="outlined"
+                    sx={{ mr: 2 }}
+                >
+                    <MenuItem value="All">All</MenuItem>
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Collected">Collected</MenuItem>
+                    <MenuItem value="Expired">Expired</MenuItem>
+                </Select>
+                <Select
+                    value={order}
+                    onChange={(e) => setOrder(e.target.value)}
+                    variant="outlined"
+                >
+                    <MenuItem value="DESC">Descending</MenuItem>
+                    <MenuItem value="ASC">Ascending</MenuItem>
+                </Select>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={getRedemptions}
+                    sx={{ ml: 2 }}
+                >
+                    Filter
+                </Button>
+            </Box>
+
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -143,10 +146,11 @@ const Redemptions = () => {
                     <TableBody>
                         {redemptionList.length > 0 ? redemptionList.map(({ id, reward, user, redeemedAt, collectBy, status }) => (
                             <TableRow key={id}>
-                                <TableCell>{id}</TableCell>
+                                {user?.usertype === 'staff' && <TableCell>{id}</TableCell>}
                                 <TableCell>{reward.title}</TableCell>
-                                <TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
-                                <TableCell>{user.email}</TableCell>
+                                {user?.usertype === 'staff' &&
+                                    <><TableCell>{user.firstName + ' ' + user.lastName}</TableCell>
+                                        <TableCell>{user.email}</TableCell></>}
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
                                 <TableCell>{status}</TableCell>
