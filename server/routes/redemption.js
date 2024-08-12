@@ -1,7 +1,7 @@
 // redemption.js
 const express = require('express');
 const router = express.Router();
-const { User, Reward, Redemption, Achievement } = require('../models');
+const { User, Reward, Redemption, Achievement, UserAchievement } = require('../models');
 const { Sequelize, Op, fn, col, where } = require("sequelize");
 const yup = require("yup");
 const dayjs = require('dayjs');
@@ -103,16 +103,66 @@ router.put("/:id", async (req, res) => {
     const { collectBy, status } = req.body;
 
     try {
+        // Find the redemption by ID
         const redemption = await Redemption.findByPk(id);
         if (!redemption) {
             return res.status(404).json({ error: 'Redemption not found' });
         }
 
+        // Store the old status before updating
+        const oldStatus = redemption.status;
+
+        // Update the redemption fields
         redemption.collectBy = collectBy ? dayjs(collectBy).toISOString() : null;
         redemption.status = status;
 
         await redemption.save();
-        res.json(redemption);
+
+        // Check if the status has changed to "Collected" and was not already "Collected"
+        const achievementEarned = status === "Collected" && oldStatus !== "Collected";
+
+        // Fetch the user associated with the redemption
+        const user = await User.findByPk(redemption.userId);
+
+        if (achievementEarned) {
+
+            // Award points to the user
+            user.points += 5000;
+            await user.save();
+
+            // Check for first reward redemption achievement
+            const userAchievements = await User.findByPk(redemption.userId, {
+                include: [{
+                    model: Achievement,
+                    as: 'achievements'
+                }]
+            });
+
+            // If the user hasn't earned the "first_redemption_collected" achievement, add it
+            if (!userAchievements.achievements.some(a => a.type === 'first_redemption_collected')) {
+                const firstRedemptionCollectedAchievement = await Achievement.findOne({ where: { type: 'first_redemption_collected' } });
+                if (firstRedemptionCollectedAchievement) {
+                    await userAchievements.addAchievement(firstRedemptionCollectedAchievement);
+
+                    // Update the notice field in userachievements table
+                    await UserAchievement.update(
+                        { notice: 1 },
+                        { where: { userId: redemption.userId, achievementId: firstRedemptionCollectedAchievement.id } }
+                    );
+                }
+            }
+
+            console.log(`User points updated to ${user.points}`);
+        } else {
+            console.log(`No points update needed. Old status: ${oldStatus}, New status: ${status}`);
+        }
+
+        res.json({
+            message: "Redemption was updated successfully.",
+            achievementEarned, // Include this line to indicate if an achievement was earned
+            userlastName: user.lastName,
+            useremail: user.email
+        });
     } catch (error) {
         console.error('Error updating redemption:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -194,9 +244,9 @@ router.post('/redeem/:rewardId', validateUserToken, async (req, res) => {
             }]
         });
 
-        res.json({ 
-            message: 'Reward redeemed successfully', 
-            redemption, 
+        res.json({
+            message: 'Reward redeemed successfully',
+            redemption,
             user: updatedUser,
             newAchievement: !userAchievements.some(a => a.type === 'first_redemption')
         });
