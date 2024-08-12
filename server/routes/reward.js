@@ -162,12 +162,23 @@ router.delete("/:id", validateStaffToken, async (req, res) => {
         return;
     }
 
-    let num = await Reward.destroy({
+    const anyRedemptions = await Redemption.count({
+        where: { rewardId: id }
+    });
+
+    if (anyRedemptions > 0) {
+        let num = await Redemption.destroy({
+            where: { rewardId: id }
+        });
+    }
+
+    let num1 = await Reward.destroy({
         where: { id: id }
     });
-    if (num == 1) {
+
+    if (num1 == 1) {
         res.json({
-            message: "Reward was deleted successfully."
+            message: "Reward was deleted successfully.\nAny redemptions associated with this reward were also deleted."
         });
     } else {
         res.status(400).json({
