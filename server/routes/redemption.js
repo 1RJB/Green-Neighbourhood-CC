@@ -1,7 +1,7 @@
 // redemption.js
 const express = require('express');
 const router = express.Router();
-const { User, Reward, Redemption, Achievement, UserAchievement } = require('../models');
+const { User, Reward, Redemption, Achievement, UserAchievements } = require('../models');
 const { Sequelize, Op, fn, col, where } = require("sequelize");
 const yup = require("yup");
 const dayjs = require('dayjs');
@@ -75,7 +75,7 @@ router.get("/:id", async (req, res) => {
                 {
                     model: User,
                     as: 'user',
-                    attributes: ['id', 'firstname', 'lastname', 'email']
+                    attributes: ['id', 'firstName', 'lastName', 'email']
                 },
                 {
                     model: Reward,
@@ -145,7 +145,7 @@ router.put("/:id", async (req, res) => {
                     await userAchievements.addAchievement(firstRedemptionCollectedAchievement);
 
                     // Update the notice field in userachievements table
-                    await UserAchievement.update(
+                    await UserAchievements.update(
                         { notice: 1 },
                         { where: { userId: redemption.userId, achievementId: firstRedemptionCollectedAchievement.id } }
                     );
