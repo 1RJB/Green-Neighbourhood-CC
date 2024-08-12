@@ -5,6 +5,11 @@
 
 .pages-content {
     position: relative;
+    transition: transform 0.3s ease; /* Smooth transition for the zoom effect */
+}
+
+.pages-content:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 /* Container for images in events and rewards tiles */
