@@ -1,5 +1,8 @@
 import React, { useState, useContext } from 'react';
 import UserProfile from './userprofile'; 
+import Events from './Events';
+import Rewards from './Rewards';
+import TicketDetails from './TicketDetails';
 import UserContext from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,6 +32,10 @@ const Dashboard = () => {
     switch (activeComponent) {
       case 'profile':
         return <UserProfile />;
+      case 'events':
+        return <Events />;
+      case 'rewards':
+        return <Rewards />;
       default:
         return <UserProfile />;
     }
@@ -44,16 +51,16 @@ const Dashboard = () => {
           Profile
         </div>
         <div
-          style={activeComponent === 'notifications' ? styles.activeBox : styles.box}
-          onClick={() => setActiveComponent('notifications')}
+          style={activeComponent === 'events' ? styles.activeBox : styles.box}
+          onClick={() => setActiveComponent('events')}
         >
-          Notifications
+          Events
         </div>
         <div
-          style={activeComponent === 'settings' ? styles.activeBox : styles.box}
-          onClick={() => setActiveComponent('settings')}
+          style={activeComponent === 'rewards' ? styles.activeBox : styles.box}
+          onClick={() => setActiveComponent('rewards')}
         >
-          Settings
+          Rewards
         </div>
         <div
           style={styles.box}

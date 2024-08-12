@@ -89,8 +89,12 @@ router.post("/register", async (req, res) => {
     // Validate OTP
     const validOtp = await OTP.findOne({ where: { email: data.email, otp: data.otp } });
 
-    if (!validOtp || new Date() > validOtp.expiresAt) {
-      return res.status(400).json({ message: "Invalid or expired OTP." });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid OTP." });
+    }
+
+    if (new Date() > validOtp.expiresAt) {
+      return res.status(400).json({ message: "OTP has expired." });
     }
 
     const existingUser = await User.findOne({ where: { email: data.email } });
@@ -324,21 +328,20 @@ router.post("/sendForgotOtp", async (req, res) => {
   }
 });
 
-// Verify OTP and navigate to reset password
 router.post("/verifyForgotOtp", async (req, res) => {
   const { email, otp } = req.body;
 
   try {
     const validOtp = await ForgotOTP.findOne({ where: { email, otp } });
 
-    if (!validOtp || new Date() > validOtp.expiresAt) {
-      return res.status(400).json({ message: "Invalid or expired OTP." });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid OTP." });
     }
 
-    // If OTP is valid, proceed with password reset (not shown here)
-    // You might redirect or send a token back to the client
+    if (new Date() > validOtp.expiresAt) {
+      return res.status(400).json({ message: "OTP has expired." });
+    }
 
-    // Delete OTP after successful verification
     await ForgotOTP.destroy({ where: { email } });
 
     res.json({ message: "OTP verified successfully." });
