@@ -132,6 +132,22 @@
     z-index: 1;
 }
 
+.upcoming-reward {
+    position: relative;
+}
+
+.upcoming-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 255, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 1;
+}
+
 .max-redeemed-reward {
     opacity: 0.6;
     position: relative;
