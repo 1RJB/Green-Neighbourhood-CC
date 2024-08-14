@@ -166,16 +166,22 @@ function Rewards() {
                 {
                     rewardList.map((reward, i) => {
                         const isExpired = dayjs().isAfter(dayjs(reward.endDate));
-                        const isMaxRedeemed = reward.redemptionCount >= reward.maxTotalRedeem;
+                        const isUpcoming = dayjs().isBefore(dayjs(reward.startDate));
+                        const isMaxRedeemed = reward.redemptionCount === reward.maxTotalRedeem;
                         return (
                             <Grid item xs={12} md={6} lg={4} key={reward.id}>
+
                                 <Link to={`/reward/redeem/${reward.id}`} style={{ textDecoration: 'none' }}>
                                     <Card className={
                                         (isExpired && user && user.usertype === "staff") ? "expired-reward" :
-                                            (isMaxRedeemed && user && user.usertype === "staff") ? "max-redeemed-reward" : ""
+                                            (isMaxRedeemed && user && user.usertype === "staff") ? "max-redeemed-reward" :
+                                                (isUpcoming) ? "upcoming-reward" : ""
                                     }>
                                         {isExpired && user && user.usertype === "staff" && (
                                             <div className="expired-label">Expired</div>
+                                        )}
+                                        {isUpcoming && (
+                                            <div className="upcoming-label">Upcoming</div>
                                         )}
                                         {isMaxRedeemed && user && user.usertype === "staff" && (
                                             <div className="max-redeemed-label">Max Redeemed</div>
