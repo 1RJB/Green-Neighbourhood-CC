@@ -4,6 +4,8 @@ import { Edit, Delete, Add, WorkspacePremium } from '@mui/icons-material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import { toast } from 'react-toastify';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import emailjs from 'emailjs-com'; // Import EmailJS
 
 // EmailJS public key (replace with your actual key)
@@ -19,7 +21,8 @@ function Achievements() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState('create');
     const [currentAchievement, setCurrentAchievement] = useState(null);
-    const [newAchievement, setNewAchievement] = useState({ title: '', description: '', type: '', imageFile: '', condition: '' });
+    const [imageFile, setImageFile] = useState(null);
+    const [newAchievement, setNewAchievement] = useState({ title: '', description: '', condition: '' });
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [achievementToDelete, setAchievementToDelete] = useState(null);
     const [isAwardDialogOpen, setIsAwardDialogOpen] = useState(false);
@@ -29,51 +32,90 @@ function Achievements() {
     const [conditionChecked, setConditionChecked] = useState(false);
     const { user } = useContext(UserContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const validationSchema = yup.object({
+        title: yup.string().required('Title is required'),
+        description: yup.string().required('Description is required'),
+        condition: yup.string().required('Condition is required'),
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            title: dialogMode === 'edit' && currentAchievement ? currentAchievement.title : '',
+            description: dialogMode === 'edit' && currentAchievement ? currentAchievement.description : '',
+            condition: dialogMode === 'edit' && currentAchievement ? currentAchievement.condition : '',
+            imageFile: dialogMode === 'edit' && currentAchievement ? currentAchievement.imageFile : ''
+        },
+        validationSchema: validationSchema,
+        onSubmit: async (values) => {
             try {
-                // Fetch all achievements
-                const achievementsRes = await http.get('/staffachievement');
-                console.log('Achievements Response:', achievementsRes.data);
-                const achievements = achievementsRes.data;
-                setAllAchievements(achievements);
-
-                // Fetch user count
-                const userCountRes = await http.get('/user/count');
-                console.log('User Count Response:', userCountRes.data);
-                setUserCount(userCountRes.data.count);
-
-                // Fetch total earned achievements count for all users
-                const totalAchievementsRes = await http.get('/staffachievement/totalcount');
-                console.log('Total Achievements Response:', totalAchievementsRes.data);
-                setTotalEarned(totalAchievementsRes.data.totalAchievements);
-
-                // Fetch earned achievements counts (this should be available to everyone)
-                try {
-                    const countsRes = await http.get('/staffachievement/counts');
-                    console.log('Achievement Counts Response:', countsRes.data);
-                    setAchievementCounts(countsRes.data);
-                } catch (err) {
-                    console.error('Error fetching achievement counts:', err);
+                if (dialogMode === 'create') {
+                    if (imageFile) {
+                        values.imageFile = imageFile;
+                    }
+                    await http.post('/staffachievement', values);
+                    toast.success('Achievement created successfully');
+                } else if (dialogMode === 'edit' && currentAchievement) {
+                    if (imageFile) {
+                        values.imageFile = imageFile;
+                    }
+                    await http.put(`/staffachievement/${currentAchievement.id}`, values);
+                    toast.success('Achievement updated successfully');
                 }
-
-                // Fetch earned achievements for users if not staff
-                if (user?.usertype !== 'staff') {
-                    const earnedRes = await http.get('/achievement');
-                    console.log('Earned Achievements Response:', earnedRes.data);
-                    setEarnedAchievements(earnedRes.data);
-                }
-
-                // Fetch all users for awarding achievements
-                if (user?.usertype === 'staff') {
-                    const usersRes = await http.get('/user/allUsers');
-                    console.log('Users Response:', usersRes.data);
-                    setAllUsers(usersRes.data);
-                }
+                setIsDialogOpen(false);
+                fetchData();
             } catch (error) {
-                console.error("Error fetching data:", error);
+                toast.error('Error creating/updating achievement');
             }
-        };
+        },
+        enableReinitialize: true,
+    });
+
+    const fetchData = async () => {
+        try {
+            // Fetch all achievements
+            const achievementsRes = await http.get('/staffachievement');
+            console.log('Achievements Response:', achievementsRes.data);
+            const achievements = achievementsRes.data;
+            setAllAchievements(achievements);
+
+            // Fetch user count
+            const userCountRes = await http.get('/user/count');
+            console.log('User Count Response:', userCountRes.data);
+            setUserCount(userCountRes.data.count);
+
+            // Fetch total earned achievements count for all users
+            const totalAchievementsRes = await http.get('/staffachievement/totalcount');
+            console.log('Total Achievements Response:', totalAchievementsRes.data);
+            setTotalEarned(totalAchievementsRes.data.totalAchievements);
+
+            // Fetch earned achievements counts (this should be available to everyone)
+            try {
+                const countsRes = await http.get('/staffachievement/counts');
+                console.log('Achievement Counts Response:', countsRes.data);
+                setAchievementCounts(countsRes.data);
+            } catch (err) {
+                console.error('Error fetching achievement counts:', err);
+            }
+
+            // Fetch earned achievements for users if not staff
+            if (user?.usertype !== 'staff') {
+                const earnedRes = await http.get('/achievement');
+                console.log('Earned Achievements Response:', earnedRes.data);
+                setEarnedAchievements(earnedRes.data);
+            }
+
+            // Fetch all users for awarding achievements
+            if (user?.usertype === 'staff') {
+                const usersRes = await http.get('/user/allUsers');
+                console.log('Users Response:', usersRes.data);
+                setAllUsers(usersRes.data);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    useEffect(() => {
         fetchData();
     }, [user]);
 
@@ -84,7 +126,7 @@ function Achievements() {
     const handleDialogOpen = (mode, achievement = null) => {
         setDialogMode(mode);
         setCurrentAchievement(achievement);
-        setNewAchievement({ title: achievement?.title || '', description: achievement?.description || '', type: achievement?.type || '', imageFile: achievement?.imageFile || '', condition: achievement?.condition || '' });
+        setNewAchievement({ title: achievement?.title || '', description: achievement?.description || '', condition: achievement?.condition || '' });
         setIsDialogOpen(true);
     };
 
@@ -108,25 +150,23 @@ function Achievements() {
         setNewAchievement(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleCreateOrUpdate = () => {
-        const achievementData = { ...newAchievement, condition: JSON.parse(newAchievement.condition) }; // Convert JSON string to object
-        if (dialogMode === 'create') {
-            http.post('/staffachievement', achievementData)
-                .then((res) => {
-                    setAllAchievements([...allAchievements, res.data]);
-                    handleDialogClose();
-                })
+    const onFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 1024 * 1024) {
+                toast.error('Maximum file size is 1MB');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            http.post('/file/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+                .then((res) => setImageFile(res.data.filename))
                 .catch((error) => {
-                    console.error("Error creating achievement:", error);
-                });
-        } else if (dialogMode === 'edit' && currentAchievement) {
-            http.put(`/staffachievement/${currentAchievement.id}`, achievementData)
-                .then((res) => {
-                    setAllAchievements(allAchievements.map(ach => ach.id === currentAchievement.id ? res.data : ach));
-                    handleDialogClose();
-                })
-                .catch((error) => {
-                    console.error("Error updating achievement:", error);
+                    console.error('Error uploading file:', error);
+                    toast.error('Failed to upload image.');
                 });
         }
     };
@@ -224,7 +264,12 @@ function Achievements() {
                     },
                 }}>
                     <CardContent>
-                        <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
+                        {achievement.type !== "other" ? (
+                            <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
+                        ) : (
+                            <img src={`${import.meta.env.VITE_FILE_BASE_URL}${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} />
+                        )}
+                        {/* <img src={`/achievements/${achievement.imageFile}`} alt={achievement.title} style={{ maxWidth: '100%', borderRadius: '170px' }} /> */}
                         <Typography variant="h6" align="center">{achievement.title}</Typography>
                         <Typography variant="body2" align="center" color="textSecondary">
                             {achievement.description}
@@ -282,19 +327,67 @@ function Achievements() {
             </Grid>
             <Dialog open={isDialogOpen} onClose={handleDialogClose}>
                 <DialogTitle>{dialogMode === 'create' ? 'Create Achievement' : 'Edit Achievement'}</DialogTitle>
-                <DialogContent>
-                    <TextField name="title" label="Title" fullWidth margin="normal" value={newAchievement.title} onChange={handleInputChange} />
-                    <TextField name="description" label="Description" fullWidth margin="normal" value={newAchievement.description} onChange={handleInputChange} />
-                    <TextField name="type" label="Type" fullWidth margin="normal" value={newAchievement.type} onChange={handleInputChange} />
-                    <TextField name="imageFile" label="Image File" fullWidth margin="normal" value={newAchievement.imageFile} onChange={handleInputChange} />
-                    <TextField name="condition" label="Condition" fullWidth margin="normal" value={newAchievement.condition} onChange={handleInputChange} />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={handleCreateOrUpdate}>
-                        {dialogMode === 'create' ? 'Create' : 'Update'}
-                    </Button>
-                </DialogActions>
+                <form onSubmit={formik.handleSubmit}>
+                    <DialogContent>
+                        <TextField
+                            margin="dense"
+                            name="title"
+                            label="Title"
+                            type="text"
+                            fullWidth
+                            value={formik.values.title}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.title && Boolean(formik.errors.title)}
+                            helperText={formik.touched.title && formik.errors.title}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="description"
+                            label="Description"
+                            type="text"
+                            fullWidth
+                            value={formik.values.description}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.description && Boolean(formik.errors.description)}
+                            helperText={formik.touched.description && formik.errors.description}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="condition"
+                            label="Condition"
+                            type="text"
+                            fullWidth
+                            value={formik.values.condition}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.condition && Boolean(formik.errors.condition)}
+                            helperText={formik.touched.condition && formik.errors.condition}
+                        />
+                        <Button variant="contained" component="label" sx={{ mt: 2 }}>
+                            Upload Image
+                            <input hidden accept="image/*" multiple type="file" onChange={onFileChange} />
+                        </Button>
+                        {
+                            imageFile && (
+                                <Box className="aspect-ratio-container" sx={{ mt: 2 }}>
+                                    <img
+                                        alt="achievement"
+                                        src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}
+                                        style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+                                    />
+                                </Box>
+                            )
+                        }
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose}>Cancel</Button>
+                        <Button type="submit">
+                            {dialogMode === 'create' ? 'Create' : 'Update'}
+                        </Button>
+                    </DialogActions>
+                </form>
             </Dialog>
             <Dialog open={isConfirmDialogOpen} onClose={() => setIsConfirmDialogOpen(false)}>
                 <DialogTitle>Confirm Deletion</DialogTitle>
@@ -336,7 +429,7 @@ function Achievements() {
                     <Box sx={{ mt: 2 }}>
                         <FormControlLabel
                             control={<Checkbox checked={conditionChecked} onChange={(e) => setConditionChecked(e.target.checked)} />}
-                            label={`Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || "Select an achievement to view it's condition"}`}
+                            label={`Meets Condition: ${allAchievements.find(ach => ach.id === selectedAchievement)?.condition || "Select an achievement to view it's condition"}`}
                         />
                     </Box>
                 </DialogContent>
