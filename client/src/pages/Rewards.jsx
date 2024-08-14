@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress } from '@mui/material';
-import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Forest, ArrowForward, Add, ViewArray, EmojiEvents } from '@mui/icons-material';
+import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Select, MenuItem, LinearProgress, FormControl, InputLabel } from '@mui/material';
+import { AccountCircle, AccessTime, Search, Clear, Edit, CalendarMonth, Numbers, Forest, ArrowForward, Add, ViewArray, EmojiEvents, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import http from '../http';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
@@ -24,6 +24,8 @@ function Rewards() {
     const [rewardList, setRewardList] = useState([]);
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [sortBy, setSortBy] = useState('points');
+    const [order, setOrder] = useState('DESC');
     const { user, setUser } = useContext(UserContext); // Assuming setUser exists in UserContext
     const navigate = useNavigate();
 
@@ -44,7 +46,7 @@ function Rewards() {
 
     useEffect(() => {
         getRewards();
-    }, [search, selectedCategory]);
+    }, [search, selectedCategory, sortBy, order]);
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -52,6 +54,14 @@ function Rewards() {
 
     const onCategoryChange = (e) => {
         setSelectedCategory(e.target.value);
+    };
+
+    const onSortByChange = (e) => {
+        setSortBy(e.target.value);
+    };
+
+    const onOrderChange = (e) => {
+        setOrder(e.target.value);
     };
 
     const getRewards = () => {
@@ -63,6 +73,13 @@ function Rewards() {
             }
             if (selectedCategory !== 'All') {
                 url += `${search ? '&' : ''}category=${selectedCategory}`;
+            }
+            if (sortBy) {
+                url += `${search || selectedCategory !== 'All' ? '&' : ''}sortBy=${sortBy}`;
+            }
+
+            if (order) {
+                url += `${search || selectedCategory !== 'All' || sortBy ? '&' : ''}sortOrder=${order}`;
             }
         }
         console.log("Fetching rewards with URL:", url);
@@ -94,6 +111,8 @@ function Rewards() {
     const onClickClear = () => {
         setSearch('');
         setSelectedCategory('All');
+        setSortBy('points');
+        setOrder('DESC');
         getRewards();
     }
 
@@ -108,60 +127,71 @@ function Rewards() {
                     value={search}
                     placeholder="Search"
                     onChange={onSearchChange}
-                    onKeyDown={onSearchKeyDown} />
-                <IconButton color="primary"
-                    onClick={onClickSearch}>
+                    onKeyDown={onSearchKeyDown}
+                    sx={{ flexGrow: 1, mr: 2 }} // Full width input with margin-right
+                />
+                <IconButton color="primary" onClick={onClickSearch}>
                     <Search />
                 </IconButton>
-                <IconButton color="primary"
-                    onClick={onClickClear}>
+                <IconButton color="primary" onClick={onClickClear}>
                     <Clear />
                 </IconButton>
-                <Select
-                    value={selectedCategory}
-                    onChange={onCategoryChange}
-                    sx={{ mx: 2 }}
-                >
-                    <MenuItem value="All">All Categories</MenuItem>
-                    {Object.keys(categoryColors).map((category) => (
-                        <MenuItem key={category} value={category}>
-                            {category.replace(/_/g, ' ')}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <FormControl sx={{ ml: 1, width: 150 }}>
+                    <InputLabel id="category-label">Category</InputLabel>
+                    <Select labelId="category-label" value={selectedCategory} onChange={onCategoryChange} label="Category">
+                        <MenuItem value="All">All</MenuItem>
+                        {Object.keys(categoryColors).map((category) => (
+                            <MenuItem key={category} value={category}>
+                                {category.replace(/_/g, ' ')}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl sx={{ ml: 1, mr: 0.3, width: 120 }}>
+                    <InputLabel id="sort-by-label">Sort By</InputLabel>
+                    <Select labelId="sort-by-label" value={sortBy} onChange={onSortByChange} label="Sort By">
+                        <MenuItem value="title">Name</MenuItem>
+                        <MenuItem value="points">Points</MenuItem>
+                        <MenuItem value="startDate">Start Date</MenuItem>
+                        <MenuItem value="endDate">End Date</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl sx={{ width: 72, mr: 2 }}>
+                    <InputLabel id="order-label">Order</InputLabel>
+                    <Select labelId="order-label" value={order} onChange={onOrderChange} label="Order">
+                        <MenuItem value="ASC"><ArrowUpward fontSize="small" /></MenuItem>
+                        <MenuItem value="DESC"><ArrowDownward fontSize="small" /></MenuItem>
+                    </Select>
+                </FormControl>
+
                 <Box sx={{ flexGrow: 1 }} />
                 <Link to="/leaderboard">
                     <Button variant="contained" startIcon={<EmojiEvents />} color="primary">
                         View Leaderboard
                     </Button>
                 </Link>
-                {
-                    user && user.usertype === "staff" && (
-                        <>
-                            <Link to="/reward/redemptions">
-                                <Button variant='contained' startIcon={<ViewArray />} color="secondary" sx={{ ml: 2 }}>
-                                    View Redemptions
-                                </Button>
-                            </Link>
-                            <Link to="/addreward">
-                                <Button variant='contained' startIcon={<Add />} sx={{ ml: 2 }}>
-                                    Add Reward
-                                </Button>
-                            </Link>
-                        </>
-                    )
-                }
-                {
-                    user && user.usertype === "user" && (
-                        <Link to="/points-info">
-                            <Button variant='contained' sx={{ ml: 2 }}>
-                                My Points: {user.points}
+                {user && user.usertype === "staff" && (
+                    <>
+                        <Link to="/reward/redemptions">
+                            <Button variant="contained" startIcon={<ViewArray />} color="secondary" sx={{ ml: 2 }}>
+                                View Redemptions
                             </Button>
                         </Link>
-                    )
-                }
+                        <Link to="/addreward">
+                            <Button variant="contained" startIcon={<Add />} sx={{ ml: 2 }}>
+                                Add Reward
+                            </Button>
+                        </Link>
+                    </>
+                )}
+                {user && user.usertype === "user" && (
+                    <Link to="/points-info">
+                        <Button variant="contained" sx={{ ml: 2 }}>
+                            My Points: {user.points}
+                        </Button>
+                    </Link>
+                )}
             </Box>
-
             <Grid container spacing={2}>
                 {
                     rewardList.map((reward, i) => {
