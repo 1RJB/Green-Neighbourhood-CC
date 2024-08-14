@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         type: {
             type: DataTypes.ENUM('first_redemption', 'first_redemption_collected', 'first_event_registration', 'first_event_participation', 'first_volunteer', 'other'),
-            allowNull: false
+            allowNull: false,
+            defaultValue: 'other'
         },
         imageFile: {
             type: DataTypes.STRING(100)
