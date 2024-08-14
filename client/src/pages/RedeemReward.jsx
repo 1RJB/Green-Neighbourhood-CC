@@ -83,7 +83,7 @@ const RedeemReward = () => {
             </Box>
         );
     }
-
+    const isUpcoming = dayjs().isBefore(dayjs(reward.startDate));
     return (
         <Box display="flex" justifyContent="center" alignItems="center" padding={2}>
             <Card sx={{ maxWidth: 600, width: '100%' }}>
@@ -91,7 +91,6 @@ const RedeemReward = () => {
                     <CardMedia
                         component="img"
                         alt={reward.title}
-                        height="300"
                         image={`${import.meta.env.VITE_FILE_BASE_URL}${reward.imageFile}`}
                         title={reward.title}
                     />
@@ -115,10 +114,23 @@ const RedeemReward = () => {
                     <Typography variant="body2" color="text.secondary">
                         <strong>No. Redeemable: </strong>{reward?.maxEachRedeem}
                     </Typography>
-                    {user && user.usertype === "user" && (
-                        <Button variant="contained" color="primary" onClick={handleRedeem} sx={{ mt: 2 }}>
-                            Redeem
-                        </Button>
+                    {user && user.usertype === "user" && !isUpcoming && (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button variant="contained" color="primary" onClick={handleRedeem} sx={{ mt: 2, mr: 2 }}>
+                                Redeem
+                            </Button>
+                        </Box>
+                    )}
+                    {user && user.usertype === "user" && isUpcoming && (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                                ⚠️ This reward is not available yet.
+                                Please check back on {dayjs(reward?.startDate).format("D MMMM YYYY")}.
+                            </Typography>
+                            <Button variant="contained" color="primary" disabled sx={{ mt: 2, mr: 2 }}>
+                                Redeem
+                            </Button>
+                        </Box>
                     )}
                 </CardContent>
             </Card>
