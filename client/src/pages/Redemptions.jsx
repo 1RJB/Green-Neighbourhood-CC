@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
     Box, Typography, Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Paper, TextField, Button, Select, MenuItem,
-    IconButton
+    TableHead, TableRow, Paper, Select, MenuItem,
+    IconButton, Grid, FormControl, InputLabel, Autocomplete, TextField
 } from '@mui/material';
 import http from '../http';
 import { Link } from 'react-router-dom';
@@ -16,6 +16,8 @@ const Redemptions = () => {
     const [sortBy, setSortBy] = useState('redeemedAt');
     const [status, setStatus] = useState('All');
     const [order, setOrder] = useState('DESC');
+    const [rewardOptions, setRewardOptions] = useState([]);
+    const [userOptions, setUserOptions] = useState([]);
     const { user } = useContext(UserContext);
 
     const getRedemptions = async () => {
@@ -39,6 +41,10 @@ const Redemptions = () => {
 
             if (response.data) {
                 setRedemptionList(response.data);
+                const rewards = [...new Set(response.data.map((item) => item.reward.title))];
+                const users = [...new Set(response.data.map((item) => item.user.firstName + ' ' + item.user.lastName))];
+                setRewardOptions(rewards);
+                setUserOptions(users);
             }
         } catch (error) {
             console.error('Error getting redemptions:', error);
@@ -49,67 +55,83 @@ const Redemptions = () => {
         getRedemptions();
     }, [user]);
 
+    // Automatically update results when filters change
+    useEffect(() => {
+        getRedemptions();
+    }, [rewardTitle, userName, sortBy, status, order]);
+
     return (
         <Box p={3}>
             <Typography variant="h4" gutterBottom>Redemptions</Typography>
-            {user?.usertype === 'staff' && (
-                <Box display="flex" mb={3}>
-                    <TextField
-                        label="Filter by Reward Title"
+            <Grid container spacing={2} mb={3}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Autocomplete
+                        options={rewardOptions}
                         value={rewardTitle}
-                        onChange={(e) => setRewardTitle(e.target.value)}
-                        variant="outlined"
-                        sx={{ mr: 2 }}
+                        onChange={(event, newValue) => setRewardTitle(newValue || '')}
+                        renderInput={(params) => (
+                            <TextField {...params} label="Filter by Reward Title" variant="outlined" fullWidth />
+                        )}
                     />
-                    <TextField
-                        label="Filter by User Name"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                        variant="outlined"
-                        sx={{ mr: 2 }}
-                    />
-                    <Select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        variant="outlined"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuItem value="redeemedAt">Redeemed At</MenuItem>
-                        <MenuItem value="rewardTitle">Reward Title</MenuItem>
-                        <MenuItem value="userName">User Name</MenuItem>
-                        <MenuItem value="status">Status</MenuItem>
-                    </Select>
-                </Box>
-            )}
-            <Box display="flex" mb={3}>
-                <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    variant="outlined"
-                    sx={{ mr: 2 }}
-                >
-                    <MenuItem value="All">All</MenuItem>
-                    <MenuItem value="Pending">Pending</MenuItem>
-                    <MenuItem value="Collected">Collected</MenuItem>
-                    <MenuItem value="Expired">Expired</MenuItem>
-                </Select>
-                <Select
-                    value={order}
-                    onChange={(e) => setOrder(e.target.value)}
-                    variant="outlined"
-                >
-                    <MenuItem value="DESC">Descending</MenuItem>
-                    <MenuItem value="ASC">Ascending</MenuItem>
-                </Select>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={getRedemptions}
-                    sx={{ ml: 2 }}
-                >
-                    Filter
-                </Button>
-            </Box>
+                </Grid>
+                {user?.usertype === 'staff' && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Autocomplete
+                            options={userOptions}
+                            value={userName}
+                            onChange={(event, newValue) => setUserName(newValue || '')}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Filter by User Name" variant="outlined" fullWidth />
+                            )}
+                        />
+                    </Grid>
+                )}
+                <Grid item xs={12} sm={6} md={4}>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel>Sort By</InputLabel>
+                        <Select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            label="Sort By"
+                        >
+                            <MenuItem value="redeemedAt">Redeemed At</MenuItem>
+                            <MenuItem value="rewardTitle">Reward Title</MenuItem>
+                            <MenuItem value="userName">User Name</MenuItem>
+                            <MenuItem value="status">Status</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2} mb={3}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel>Status</InputLabel>
+                        <Select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            label="Status"
+                        >
+                            <MenuItem value="All">All</MenuItem>
+                            <MenuItem value="Pending">Pending</MenuItem>
+                            <MenuItem value="Collected">Collected</MenuItem>
+                            <MenuItem value="Expired">Expired</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={order}
+                            onChange={(e) => setOrder(e.target.value)}
+                            label="Order"
+                        >
+                            <MenuItem value="DESC">Descending</MenuItem>
+                            <MenuItem value="ASC">Ascending</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
 
             <TableContainer component={Paper}>
                 <Table>
@@ -139,7 +161,7 @@ const Redemptions = () => {
                                 <TableCell>{new Date(redeemedAt).toLocaleString()}</TableCell>
                                 <TableCell>{new Date(collectBy).toLocaleDateString()}</TableCell>
                                 <TableCell>{status}</TableCell>
-                                {user?.usertype === 'staff' && 
+                                {user?.usertype === 'staff' &&
                                     <TableCell>
                                         <Link to={`/reward/editredemption/${id}`}>
                                             <IconButton color="primary" sx={{ padding: '4px' }}>
