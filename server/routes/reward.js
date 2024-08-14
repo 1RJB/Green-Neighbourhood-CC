@@ -42,6 +42,8 @@ router.get("/", async (req, res) => {
     let condition = {};
     let search = req.query.search;
     let category = req.query.category;
+    let sortBy = req.query.sortBy || 'createdAt'; // Default sorting field
+    let sortOrder = req.query.sortOrder || 'DESC'; // Default sorting order
 
     if (search) {
         condition[Op.or] = [
@@ -57,7 +59,7 @@ router.get("/", async (req, res) => {
     try {
         let list = await Reward.findAll({
             where: condition,
-            order: [['createdAt', 'DESC']],
+            order: [[sortBy, sortOrder]],
             include: [
                 {
                     model: Staff,
