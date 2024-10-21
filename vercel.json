@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "name": "client",
+      "rootDirectory": "./client",
+      "buildCommand": "npm run build",
+      "outputDirectory": "build"
+    },
+    {
+      "name": "server",
+      "rootDirectory": "./server",
+      "buildCommand": "npm install",
+      "outputDirectory": "."
+    }
+  ]
+}
