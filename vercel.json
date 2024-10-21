@@ -1,16 +1,24 @@
 {
-  "projects": [
+  "version": 2,
+  "builds": [
     {
-      "name": "client",
-      "rootDirectory": "./client",
-      "buildCommand": "npm run build",
-      "outputDirectory": "build"
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
     },
     {
-      "name": "server",
-      "rootDirectory": "./server",
-      "buildCommand": "npm install",
-      "outputDirectory": "."
+      "src": "server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/dist/$1"
     }
   ]
 }
